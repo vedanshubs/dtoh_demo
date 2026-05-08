@@ -1,0 +1,68 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Clinic Booking MCP API",
+    "version": "1.0.0",
+    "description": "REST wrapper around the clinic-booking MCP tools for ChatGPT Custom GPT Actions"
+  },
+  "servers": [{ "url": "http://localhost:8000" }],
+  "paths": {
+    "/actions/search_clinics": {
+      "post": {
+        "operationId": "search_clinics",
+        "summary": "Search for drug test collection clinics near a zip code",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["zipcode", "radius", "service_identifier"],
+                "properties": {
+                  "zipcode": { "type": "string", "description": "5-digit US zip code" },
+                  "radius": { "type": "number", "description": "Search radius in miles (1-60)" },
+                  "service_identifier": { "type": "string", "description": "eScreen service code" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "List of clinics",
+            "content": { "application/json": { "schema": { "type": "array", "items": { "type": "object" } } } }
+          }
+        }
+      }
+    },
+    "/actions/place_order": {
+      "post": {
+        "operationId": "place_order",
+        "summary": "Place a drug test booking at a clinic",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["clinic_id", "donor_id", "service_identifier", "reason_for_test"],
+                "properties": {
+                  "clinic_id": { "type": "integer" },
+                  "donor_id": { "type": "integer" },
+                  "service_identifier": { "type": "string" },
+                  "reason_for_test": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Booking result",
+            "content": { "application/json": { "schema": { "type": "object" } } }
+          }
+        }
+      }
+    }
+  }
+}

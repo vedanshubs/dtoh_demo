@@ -1,0 +1,10 @@
+{
+  "mcpServers": {
+    "clinic-booking": {
+      "url": "http://localhost:8010/sse"
+    },
+    "data-viz": {
+      "url": "http://localhost:8011/sse"
+    }
+  }
+}
