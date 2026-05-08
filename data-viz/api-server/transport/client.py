@@ -5,7 +5,7 @@ from mcp import ClientSession, StdioServerParameters
 from mcp.client.stdio import stdio_client
 
 _HERE = pathlib.Path(__file__).resolve().parent.parent  # api-server/
-_MCP_SERVER = _HERE.parent / "mcp-server"
+_MCP_SERVER = _HERE.parent.parent / "mcp-server"
 
 
 class MCPClientManager:

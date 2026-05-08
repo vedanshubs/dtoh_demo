@@ -4,9 +4,9 @@ import pathlib
 from mcp import ClientSession, StdioServerParameters
 from mcp.client.stdio import stdio_client
 
-# Absolute path to api-server directory — works regardless of cwd
+# Absolute path to unified mcp-server at project root
 _HERE = pathlib.Path(__file__).resolve().parent.parent  # api-server/
-_MCP_SERVER = _HERE.parent / "mcp-server"
+_MCP_SERVER = _HERE.parent.parent / "mcp-server"
 
 
 class MCPClientManager:
