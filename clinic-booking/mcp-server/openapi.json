@@ -5,7 +5,7 @@
     "version": "1.0.0",
     "description": "REST wrapper around the clinic-booking MCP tools for ChatGPT Custom GPT Actions"
   },
-  "servers": [{ "url": "http://localhost:8000" }],
+  "servers": [{ "url": "https://rebirth-press-properly.ngrok-free.dev" }],
   "paths": {
     "/actions/search_clinics": {
       "post": {

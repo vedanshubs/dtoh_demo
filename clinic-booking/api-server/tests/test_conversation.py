@@ -1,10 +1,10 @@
 import pytest
 from unittest.mock import AsyncMock, MagicMock
-from claude.conversation import run_turn  # transport.client is used internally
+from claude.conversation import run_turn
 
 
 @pytest.mark.asyncio
-async def test_run_turn_end_turn():
+async def test_run_turn_stop():
     mock_mcp = AsyncMock()
     mock_tool = MagicMock()
     mock_tool.name = "search_clinics"
@@ -12,18 +12,20 @@ async def test_run_turn_end_turn():
     mock_tool.inputSchema = {"type": "object", "properties": {}}
     mock_mcp.list_tools.return_value = [mock_tool]
 
-    mock_client_response = MagicMock()
-    mock_client_response.stop_reason = "end_turn"
-    text_block = MagicMock()
-    text_block.type = "text"
-    text_block.text = "Here are some clinics near you."
-    mock_client_response.content = [text_block]
+    # Build a mock that matches OpenAI's response structure
+    mock_choice = MagicMock()
+    mock_choice.finish_reason = "stop"
+    mock_choice.message.content = "Here are some clinics near you."
+    mock_choice.message.tool_calls = None
+
+    mock_response = MagicMock()
+    mock_response.choices = [mock_choice]
 
     import claude.conversation as conv_module
     original_get_client = conv_module.get_client
 
     mock_client = AsyncMock()
-    mock_client.messages.create = AsyncMock(return_value=mock_client_response)
+    mock_client.chat.completions.create = AsyncMock(return_value=mock_response)
     conv_module.get_client = lambda: mock_client
 
     result = await run_turn(

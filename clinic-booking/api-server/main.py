@@ -1,9 +1,17 @@
+import logging
 import os
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from dotenv import load_dotenv
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
+    datefmt="%H:%M:%S",
+)
+log = logging.getLogger(__name__)
 
 from transport.client import MCPClientManager
 from claude.conversation import run_turn
@@ -29,15 +37,18 @@ MOCK_TEST_TYPES = [
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    log.info("Starting MCP server subprocess...")
     await mcp_manager.start()
+    log.info("MCP server ready")
     yield
+    log.info("Shutting down MCP server...")
     await mcp_manager.stop()
 
 
 app = FastAPI(lifespan=lifespan)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],
+    allow_origins=["http://localhost:5173", "http://localhost:5174", "http://localhost:5175"],
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -60,6 +71,7 @@ async def list_donors():
 @app.post("/api/chat")
 async def chat(req: ChatRequest):
     donor = next((d for d in MOCK_DONORS if d["id"] == req.donor_id), MOCK_DONORS[0])
+    log.info("Chat request | donor=%s %s | message=%r", donor["first_name"], donor["last_name"], req.user_message[:80])
     system_prompt = build_system_prompt(donor, MOCK_TEST_TYPES)
     messages = list(req.messages) + [{"role": "user", "content": req.user_message}]
     result = await run_turn(messages, system_prompt, req.donor_id, mcp_manager)

@@ -1,11 +1,11 @@
 import os
-import anthropic
+from openai import AsyncOpenAI
 
 _client = None
 
 
-def get_client() -> anthropic.AsyncAnthropic:
+def get_client() -> AsyncOpenAI:
     global _client
     if _client is None:
-        _client = anthropic.AsyncAnthropic(api_key=os.environ["ANTHROPIC_API_KEY"])
+        _client = AsyncOpenAI(api_key=os.environ["OPENAI_API_KEY"])
     return _client

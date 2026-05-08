@@ -1,8 +1,11 @@
 import json
+import logging
 from claude.client import get_client
 from transport.client import MCPClientManager
 
-MODEL = "claude-sonnet-4-6"
+log = logging.getLogger(__name__)
+
+MODEL = "gpt-4.1-mini"
 MAX_ITERATIONS = 10
 
 
@@ -13,59 +16,66 @@ async def run_turn(
     mcp: MCPClientManager,
 ) -> dict:
     tools = await mcp.list_tools()
-    anthropic_tools = [
+    openai_tools = [
         {
-            "name": t.name,
-            "description": t.description,
-            "input_schema": t.inputSchema,
+            "type": "function",
+            "function": {
+                "name": t.name,
+                "description": t.description,
+                "parameters": t.inputSchema,
+            },
         }
         for t in tools
     ]
     client = get_client()
-    current_messages = list(messages)
+    current_messages = [{"role": "system", "content": system_prompt}] + list(messages)
 
-    for _ in range(MAX_ITERATIONS):
-        response = await client.messages.create(
+    for iteration in range(MAX_ITERATIONS):
+        log.info("Calling %s (iteration %d, %d messages)", MODEL, iteration + 1, len(current_messages))
+        response = await client.chat.completions.create(
             model=MODEL,
-            max_tokens=4096,
-            system=system_prompt,
-            tools=anthropic_tools,
             messages=current_messages,
+            tools=openai_tools,
         )
 
-        if response.stop_reason == "end_turn":
-            text = next(
-                (b.text for b in response.content if b.type == "text"), ""
-            )
-            current_messages.append(
-                {"role": "assistant", "content": [{"type": "text", "text": text}]}
-            )
-            return {"reply": text, "messages": current_messages}
+        choice = response.choices[0]
+        log.info("finish_reason=%s", choice.finish_reason)
 
-        if response.stop_reason == "tool_use":
-            tool_uses = [b for b in response.content if b.type == "tool_use"]
-            current_messages.append(
-                {
-                    "role": "assistant",
-                    "content": [
-                        {"type": "tool_use", "id": b.id, "name": b.name, "input": b.input}
-                        for b in tool_uses
-                    ],
-                }
-            )
-            tool_results = []
-            for block in tool_uses:
-                args = dict(block.input)
-                if block.name == "place_order":
-                    args["donor_id"] = donor_id
-                result = await mcp.call_tool(block.name, args)
-                tool_results.append(
+        if choice.finish_reason == "stop":
+            text = choice.message.content or ""
+            current_messages.append({"role": "assistant", "content": text})
+            log.info("Final reply: %s", text[:120])
+            return {"reply": text, "messages": current_messages[1:]}
+
+        if choice.finish_reason == "tool_calls":
+            tool_calls = choice.message.tool_calls
+            current_messages.append({
+                "role": "assistant",
+                "content": choice.message.content,
+                "tool_calls": [
                     {
-                        "type": "tool_result",
-                        "tool_use_id": block.id,
-                        "content": json.dumps(result),
+                        "id": tc.id,
+                        "type": "function",
+                        "function": {
+                            "name": tc.function.name,
+                            "arguments": tc.function.arguments,
+                        },
                     }
-                )
-            current_messages.append({"role": "user", "content": tool_results})
+                    for tc in tool_calls
+                ],
+            })
+            for tc in tool_calls:
+                args = json.loads(tc.function.arguments)
+                if tc.function.name == "place_order":
+                    args["donor_id"] = donor_id
+                log.info("Tool call → %s(%s)", tc.function.name, json.dumps(args))
+                result = await mcp.call_tool(tc.function.name, args)
+                log.info("Tool result ← %s: %s", tc.function.name, str(result)[:200])
+                current_messages.append({
+                    "role": "tool",
+                    "tool_call_id": tc.id,
+                    "content": json.dumps(result),
+                })
 
-    return {"reply": "I'm sorry, I wasn't able to complete your request.", "messages": current_messages}
+    log.warning("Reached MAX_ITERATIONS without end_turn")
+    return {"reply": "I wasn't able to complete your request.", "messages": current_messages[1:]}

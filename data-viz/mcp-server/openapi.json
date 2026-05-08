@@ -5,7 +5,7 @@
     "version": "1.0.0",
     "description": "REST wrapper around the data-viz MCP tools for ChatGPT Custom GPT Actions"
   },
-  "servers": [{ "url": "http://localhost:8001" }],
+  "servers": [{ "url": "NGROK_URL_HERE" }],
   "paths": {
     "/actions/get_results_summary": {
       "post": {

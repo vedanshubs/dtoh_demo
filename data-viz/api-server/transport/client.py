@@ -1,7 +1,11 @@
 import json
 import os
+import pathlib
 from mcp import ClientSession, StdioServerParameters
 from mcp.client.stdio import stdio_client
+
+_HERE = pathlib.Path(__file__).resolve().parent.parent  # api-server/
+_MCP_SERVER = _HERE.parent / "mcp-server"
 
 
 class MCPClientManager:
@@ -12,9 +16,10 @@ class MCPClientManager:
         self._write = None
 
     async def start(self):
-        server_path = os.getenv("MCP_SERVER_PATH", "../mcp-server/server.py")
+        server_path = os.getenv("MCP_SERVER_PATH") or str(_MCP_SERVER / "server.py")
+        python_bin = os.getenv("MCP_PYTHON") or str(_MCP_SERVER / "venv" / "bin" / "python")
         server_params = StdioServerParameters(
-            command="python",
+            command=python_bin,
             args=[server_path],
             env={**os.environ},
         )

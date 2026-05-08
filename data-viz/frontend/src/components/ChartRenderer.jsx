@@ -1,16 +1,47 @@
-import { BarChart, Bar, XAxis, YAxis, Tooltip, PieChart, Pie, Cell, ResponsiveContainer } from 'recharts'
+import {
+  BarChart, Bar, XAxis, YAxis, Tooltip, PieChart, Pie, Cell,
+  LineChart, Line, ResponsiveContainer, CartesianGrid, Legend,
+} from 'recharts'
 
-const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8']
+const COLORS = ['#c8102e', '#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899', '#06b6d4']
+
+const darkTooltipStyle = {
+  contentStyle: {
+    background: '#fff',
+    border: '1px solid #e2e8f0',
+    borderRadius: 8,
+    color: '#1e293b',
+    fontSize: 12,
+    boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
+  },
+  labelStyle: { color: '#64748b', fontSize: 11 },
+  itemStyle: { color: '#1e293b' },
+}
+
+const axisStyle = { fill: '#94a3b8', fontSize: 11 }
 
 export default function ChartRenderer({ visualization, data }) {
   if (visualization === 'stat') {
     const entries = Object.entries(data).filter(([k]) => !['client_id', 'date_range'].includes(k))
     return (
-      <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
-        {entries.map(([k, v]) => (
-          <div key={k} style={{ border: '1px solid #ddd', borderRadius: 8, padding: 24, textAlign: 'center', minWidth: 140 }}>
-            <div style={{ fontSize: 32, fontWeight: 'bold' }}>{typeof v === 'number' ? v.toFixed(1) : v}</div>
-            <div style={{ color: '#666', marginTop: 4 }}>{k.replace(/_/g, ' ')}</div>
+      <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+        {entries.map(([k, v], i) => (
+          <div key={k} style={{
+            flex: '1 1 120px',
+            background: '#fff',
+            border: '1px solid #e2e8f0',
+            borderRadius: 10, padding: '16px 14px', textAlign: 'center',
+            borderTop: `3px solid ${COLORS[i % COLORS.length]}`,
+          }}>
+            <div style={{
+              fontSize: 26, fontWeight: 700, color: '#1e293b',
+              marginBottom: 4,
+            }}>
+              {typeof v === 'number' ? v.toFixed(1) : v}
+            </div>
+            <div style={{ color: '#94a3b8', fontSize: 11, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+              {k.replace(/_/g, ' ')}
+            </div>
           </div>
         ))}
       </div>
@@ -23,12 +54,13 @@ export default function ChartRenderer({ visualization, data }) {
     const dataKey = Object.keys(chartData[0]).find(k => typeof chartData[0][k] === 'number') || 'count'
     const nameKey = Object.keys(chartData[0]).find(k => typeof chartData[0][k] === 'string') || 'label'
     return (
-      <ResponsiveContainer width="100%" height={300}>
-        <BarChart data={chartData}>
-          <XAxis dataKey={nameKey} />
-          <YAxis />
-          <Tooltip />
-          <Bar dataKey={dataKey} fill="#0088FE" />
+      <ResponsiveContainer width="100%" height={280}>
+        <BarChart data={chartData} margin={{ top: 4, right: 8, bottom: 4, left: -10 }}>
+          <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.06)" />
+          <XAxis dataKey={nameKey} tick={axisStyle} axisLine={false} tickLine={false} />
+          <YAxis tick={axisStyle} axisLine={false} tickLine={false} />
+          <Tooltip {...darkTooltipStyle} />
+          <Bar dataKey={dataKey} fill="#c8102e" radius={[4, 4, 0, 0]} />
         </BarChart>
       </ResponsiveContainer>
     )
@@ -40,13 +72,51 @@ export default function ChartRenderer({ visualization, data }) {
     const nameKey = Object.keys(chartData[0]).find(k => typeof chartData[0][k] === 'string') || 'label'
     const valueKey = Object.keys(chartData[0]).find(k => typeof chartData[0][k] === 'number') || 'count'
     return (
-      <ResponsiveContainer width="100%" height={300}>
+      <ResponsiveContainer width="100%" height={280}>
         <PieChart>
-          <Pie data={chartData} dataKey={valueKey} nameKey={nameKey} cx="50%" cy="50%" outerRadius={100} label>
-            {chartData.map((_, i) => <Cell key={i} fill={COLORS[i % COLORS.length]} />)}
+          <Pie
+            data={chartData}
+            dataKey={valueKey}
+            nameKey={nameKey}
+            cx="50%" cy="50%"
+            outerRadius={100}
+            innerRadius={40}
+            paddingAngle={2}
+            label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+            labelLine={{ stroke: '#e2e8f0' }}
+          >
+            {chartData.map((_, i) => (
+              <Cell key={i} fill={COLORS[i % COLORS.length]} strokeWidth={0} />
+            ))}
           </Pie>
-          <Tooltip />
+          <Tooltip {...darkTooltipStyle} />
+          <Legend
+            formatter={(v) => <span style={{ color: '#64748b', fontSize: 11 }}>{v}</span>}
+          />
         </PieChart>
+      </ResponsiveContainer>
+    )
+  }
+
+  if (visualization === 'line_chart') {
+    const chartData = Array.isArray(data) ? data : data.breakdown || data.trend || []
+    if (!chartData.length) return null
+    const xKey = Object.keys(chartData[0]).find(k => typeof chartData[0][k] === 'string') || 'period'
+    const yKey = Object.keys(chartData[0]).find(k => typeof chartData[0][k] === 'number') || 'value'
+    return (
+      <ResponsiveContainer width="100%" height={280}>
+        <LineChart data={chartData} margin={{ top: 4, right: 8, bottom: 4, left: -10 }}>
+          <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.06)" />
+          <XAxis dataKey={xKey} tick={axisStyle} axisLine={false} tickLine={false} />
+          <YAxis tick={axisStyle} axisLine={false} tickLine={false} />
+          <Tooltip {...darkTooltipStyle} />
+          <Line
+            type="monotone" dataKey={yKey}
+            stroke="#c8102e" strokeWidth={2.5}
+            dot={{ fill: '#c8102e', strokeWidth: 0, r: 4 }}
+            activeDot={{ r: 6, fill: '#fff', stroke: '#c8102e', strokeWidth: 2 }}
+          />
+        </LineChart>
       </ResponsiveContainer>
     )
   }
@@ -56,18 +126,38 @@ export default function ChartRenderer({ visualization, data }) {
     if (!rows.length) return null
     const cols = Object.keys(rows[0])
     return (
-      <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-        <thead>
-          <tr>{cols.map(c => <th key={c} style={{ textAlign: 'left', padding: '8px', borderBottom: '2px solid #ddd' }}>{c}</th>)}</tr>
-        </thead>
-        <tbody>
-          {rows.map((row, i) => (
-            <tr key={i}>
-              {cols.map(c => <td key={c} style={{ padding: '8px', borderBottom: '1px solid #eee' }}>{row[c]}</td>)}
+      <div style={{ overflowX: 'auto' }}>
+        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12 }}>
+          <thead>
+            <tr>
+              {cols.map(c => (
+                <th key={c} style={{
+                  textAlign: 'left', padding: '8px 10px',
+                  borderBottom: '1px solid #e2e8f0',
+                  color: '#64748b', fontWeight: 600, fontSize: 11,
+                  textTransform: 'uppercase', letterSpacing: '0.04em',
+                  whiteSpace: 'nowrap', background: '#f8fafc',
+                }}>{c.replace(/_/g, ' ')}</th>
+              ))}
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {rows.map((row, i) => (
+              <tr key={i}
+                style={{ borderBottom: '1px solid #f1f5f9', transition: 'background 0.1s' }}
+                onMouseEnter={e => e.currentTarget.style.background = '#f8fafc'}
+                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+              >
+                {cols.map(c => (
+                  <td key={c} style={{ padding: '8px 10px', color: '#475569' }}>
+                    {typeof row[c] === 'number' ? row[c].toLocaleString() : row[c]}
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     )
   }
 
