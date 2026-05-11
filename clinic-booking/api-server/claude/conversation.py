@@ -15,6 +15,7 @@ async def run_turn(
     donor_id: int,
     mcp: MCPClientManager,
 ) -> dict:
+    last_clinics: list = []  # captured from search_clinics tool result
     tools = await mcp.list_tools()
     openai_tools = [
         {
@@ -45,7 +46,10 @@ async def run_turn(
             text = choice.message.content or ""
             current_messages.append({"role": "assistant", "content": text})
             log.info("Final reply: %s", text[:120])
-            return {"reply": text, "messages": current_messages[1:]}
+            response_payload = {"reply": text, "messages": current_messages[1:]}
+            if last_clinics:
+                response_payload["clinics"] = last_clinics
+            return response_payload
 
         if choice.finish_reason == "tool_calls":
             tool_calls = choice.message.tool_calls
@@ -71,6 +75,10 @@ async def run_turn(
                 log.info("Tool call → %s(%s)", tc.function.name, json.dumps(args))
                 result = await mcp.call_tool(tc.function.name, args)
                 log.info("Tool result ← %s: %s", tc.function.name, str(result)[:200])
+                if tc.function.name == "search_clinics" and isinstance(result, list):
+                    valid = [c for c in result if isinstance(c, dict) and not c.get("error")]
+                    if valid:
+                        last_clinics = valid
                 current_messages.append({
                     "role": "tool",
                     "tool_call_id": tc.id,

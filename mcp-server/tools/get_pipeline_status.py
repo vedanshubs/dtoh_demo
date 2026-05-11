@@ -7,9 +7,5 @@ async def handle_get_pipeline_status(
     status: str | None = None,
     reason_for_test: str | None = None,
     specimen_type: str | None = None,
-    use_mock: bool = True,
 ) -> dict:
-    if use_mock:
-        return mock_pipeline_status(client_id, date_range)
-    from db.queries import query_pipeline_status
-    return await query_pipeline_status(client_id, date_range, status, reason_for_test, specimen_type)
+    return mock_pipeline_status(client_id, date_range)

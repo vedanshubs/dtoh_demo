@@ -21,9 +21,8 @@ logging.basicConfig(
 log = logging.getLogger(__name__)
 
 mcp = FastMCP("ubs-escreen")
-USE_MOCK = os.getenv("USE_MOCK", "true").lower() == "true"
 CLIENT_ID = os.getenv("ESCREEN_CLIENT_ACCOUNT", "DEMO_CLIENT")
-log.info("Server starting (USE_MOCK=%s, CLIENT_ID=%s)", USE_MOCK, CLIENT_ID)
+log.info("Server starting (CLIENT_ID=%s, mock-only mode)", CLIENT_ID)
 
 
 # ── Clinic Booking Tools ──────────────────────────────────────────────────────
@@ -33,7 +32,7 @@ async def search_clinics(zipcode: str, radius: float, service_identifier: str) -
     """Search for drug test collection clinics near a zip code.
     Returns a list of clinic objects with address, distance, attributes, and Google Maps URL."""
     log.info("search_clinics(zipcode=%s, radius=%s, service=%s)", zipcode, radius, service_identifier)
-    result = await handle_search_clinics(zipcode, radius, service_identifier, USE_MOCK)
+    result = await handle_search_clinics(zipcode, radius, service_identifier)
     log.info("search_clinics returned %d clinics", len(result))
     return result
 
@@ -48,7 +47,7 @@ async def place_order(
     """Place a drug test booking at a clinic for a donor.
     Fetches donor PII server-side. Returns registration_id on success."""
     log.info("place_order(clinic_id=%s, donor_id=%s, service=%s, reason=%s)", clinic_id, donor_id, service_identifier, reason_for_test)
-    result = await handle_place_order(clinic_id, donor_id, service_identifier, reason_for_test, USE_MOCK)
+    result = await handle_place_order(clinic_id, donor_id, service_identifier, reason_for_test)
     log.info("place_order result: success=%s, registration_id=%s", result.get("success"), result.get("registration_id"))
     return result
 
@@ -66,7 +65,7 @@ async def get_results_summary(
     """Get completed drug test result counts grouped by disposition.
     date_range examples: 'last 30 days', 'last 90 days', 'last quarter', 'current year'."""
     log.info("get_results_summary(date_range=%s, disposition=%s)", date_range, disposition)
-    result = await handle_get_results_summary(CLIENT_ID, date_range, disposition, reason_for_test, specimen_type, regulation, USE_MOCK)
+    result = await handle_get_results_summary(CLIENT_ID, date_range, disposition, reason_for_test, specimen_type, regulation)
     log.info("get_results_summary → total=%s", result.get("total"))
     return result
 
@@ -80,7 +79,7 @@ async def get_pipeline_status(
 ) -> dict:
     """Get counts of drug tests currently in progress, grouped by pipeline stage."""
     log.info("get_pipeline_status(date_range=%s, status=%s)", date_range, status)
-    result = await handle_get_pipeline_status(CLIENT_ID, date_range, status, reason_for_test, specimen_type, USE_MOCK)
+    result = await handle_get_pipeline_status(CLIENT_ID, date_range, status, reason_for_test, specimen_type)
     log.info("get_pipeline_status → total_in_progress=%s", result.get("total_in_progress"))
     return result
 
@@ -93,7 +92,7 @@ async def get_analyte_breakdown(
 ) -> dict:
     """Get per-substance positive/negative counts from analyte records."""
     log.info("get_analyte_breakdown(date_range=%s, analyte=%s)", date_range, analyte_name)
-    result = await handle_get_analyte_breakdown(CLIENT_ID, date_range, analyte_name, disposition, USE_MOCK)
+    result = await handle_get_analyte_breakdown(CLIENT_ID, date_range, analyte_name, disposition)
     log.info("get_analyte_breakdown → %d analytes", len(result.get("analytes", [])))
     return result
 
@@ -107,7 +106,7 @@ async def get_turnaround_stats(
 ) -> dict:
     """Get average turnaround time statistics across all lifecycle stages."""
     log.info("get_turnaround_stats(date_range=%s)", date_range)
-    result = await handle_get_turnaround_stats(CLIENT_ID, date_range, reason_for_test, specimen_type, regulation, USE_MOCK)
+    result = await handle_get_turnaround_stats(CLIENT_ID, date_range, reason_for_test, specimen_type, regulation)
     log.info("get_turnaround_stats → avg_end_to_end=%s days", result.get("avg_end_to_end_days"))
     return result
 

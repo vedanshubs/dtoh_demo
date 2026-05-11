@@ -1,6 +1,6 @@
-﻿import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect } from 'react'
 
-/* â”€â”€ Icons â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ── Icons ───────────────────────────────────────────────────────────── */
 const IconSend = () => (
   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
     <line x1="22" y1="2" x2="11" y2="13" /><polygon points="22 2 15 22 11 13 2 9 22 2" />
@@ -14,6 +14,31 @@ const IconBot = () => (
 const IconClear = () => (
   <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <polyline points="3 6 5 6 21 6" /><path d="M19 6l-1 14H6L5 6" /><path d="M10 11v6" /><path d="M14 11v6" /><path d="M9 6V4h6v2" />
+  </svg>
+)
+const IconMapPin = () => (
+  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" />
+  </svg>
+)
+const IconClock = () => (
+  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" />
+  </svg>
+)
+const IconPhone = () => (
+  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.7 12.18 19.79 19.79 0 0 1 1.61 3.58 2 2 0 0 1 3.59 1.4h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9a16 16 0 0 0 6 6l.92-.92a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21.5 16.92z" />
+  </svg>
+)
+const IconExternalLink = () => (
+  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" /><polyline points="15 3 21 3 21 9" /><line x1="10" y1="14" x2="21" y2="3" />
+  </svg>
+)
+const IconBook = () => (
+  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" /><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
   </svg>
 )
 
@@ -51,7 +76,121 @@ function BotAvatar() {
   )
 }
 
-/* â”€â”€ Main component â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ── Clinic card list ────────────────────────────────────────────────── */
+function ClinicCards({ clinics, onBook }) {
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginTop: 10 }}>
+      {clinics.map((c, i) => {
+        const walkIn = c.Attributes?.some(a => a.AttributeName === 'WalkIn' && a.AttributeValue === 'Y')
+        const collectionTypes = c.Attributes?.find(a => a.AttributeName === 'CollectionType')?.AttributeValue || ''
+        const phone = c.PhoneNumber
+          ? c.PhoneNumber.replace(/(\d{3})(\d{3})(\d{4})/, '($1) $2-$3')
+          : null
+        const mapUrl = c.GoogleMapsUrl
+          || (c.Latitude && c.Longitude
+            ? `https://www.google.com/maps?q=${c.Latitude},${c.Longitude}`
+            : `https://www.google.com/maps/search/${encodeURIComponent(`${c.SiteName} ${c.Address1} ${c.City} ${c.State}`)}`)
+
+        return (
+          <div key={c.EscreenSiteId ?? i} style={{
+            background: '#fff',
+            border: '1px solid #e2e8f0',
+            borderRadius: 12,
+            padding: '14px 16px',
+            boxShadow: '0 1px 4px rgba(0,0,0,0.04)',
+            animation: `fadeSlideIn 0.25s ${i * 0.06}s ease both`,
+          }}>
+            {/* Top row: name + distance */}
+            <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 8, marginBottom: 8 }}>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ fontSize: 13.5, fontWeight: 700, color: '#0f172a', marginBottom: 3 }}>{c.SiteName}</div>
+                <div style={{ fontSize: 11.5, color: '#64748b', display: 'flex', alignItems: 'center', gap: 4 }}>
+                  <IconMapPin />
+                  {c.Address1}, {c.City}, {c.State} {c.ZipCode}
+                </div>
+              </div>
+              {c.Distance != null && (
+                <div style={{
+                  flexShrink: 0,
+                  background: '#f0fdf4', border: '1px solid #bbf7d0',
+                  borderRadius: 20, padding: '3px 10px',
+                  fontSize: 11.5, fontWeight: 700, color: '#15803d',
+                  whiteSpace: 'nowrap',
+                }}>{c.Distance} mi</div>
+              )}
+            </div>
+
+            {/* Meta row */}
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 12 }}>
+              {c.Hours && (
+                <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, color: '#475569' }}>
+                  <IconClock />{c.Hours}
+                </span>
+              )}
+              {phone && (
+                <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, color: '#475569' }}>
+                  <IconPhone />{phone}
+                </span>
+              )}
+              {walkIn && (
+                <span style={{
+                  fontSize: 10.5, fontWeight: 600, color: '#0369a1',
+                  background: '#e0f2fe', border: '1px solid #bae6fd',
+                  borderRadius: 20, padding: '2px 8px',
+                }}>Walk-in</span>
+              )}
+              {collectionTypes && collectionTypes.split(',').map(t => (
+                <span key={t} style={{
+                  fontSize: 10.5, color: '#7c3aed',
+                  background: '#f5f3ff', border: '1px solid #ddd6fe',
+                  borderRadius: 20, padding: '2px 8px',
+                }}>{t.trim()}</span>
+              ))}
+            </div>
+
+            {/* Action buttons */}
+            <div style={{ display: 'flex', gap: 8 }}>
+              <a
+                href={mapUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  display: 'inline-flex', alignItems: 'center', gap: 5,
+                  padding: '7px 14px', borderRadius: 8,
+                  background: '#1e40af', color: '#fff',
+                  fontSize: 12, fontWeight: 600, textDecoration: 'none',
+                  transition: 'background 0.15s',
+                  border: 'none',
+                }}
+                onMouseEnter={e => e.currentTarget.style.background = '#1d4ed8'}
+                onMouseLeave={e => e.currentTarget.style.background = '#1e40af'}
+              >
+                <IconExternalLink /> View on Map
+              </a>
+              <button
+                onClick={() => onBook(c)}
+                style={{
+                  display: 'inline-flex', alignItems: 'center', gap: 5,
+                  padding: '7px 14px', borderRadius: 8,
+                  background: 'linear-gradient(135deg, #c8102e, #9b0f23)',
+                  color: '#fff', fontSize: 12, fontWeight: 600,
+                  border: 'none', cursor: 'pointer',
+                  transition: 'opacity 0.15s', boxShadow: '0 2px 6px rgba(200,16,46,0.3)',
+                }}
+                onMouseEnter={e => e.currentTarget.style.opacity = '0.88'}
+                onMouseLeave={e => e.currentTarget.style.opacity = '1'}
+              >
+                <IconBook /> Book This Clinic
+              </button>
+            </div>
+          </div>
+        )
+      })}
+    </div>
+  )
+}
+
+/* ── Main component ──────────────────────────────────────────────────── */
 export default function Chat({ donorId }) {
   const [messages, setMessages] = useState([])
   const [history,  setHistory]  = useState([])
@@ -64,7 +203,6 @@ export default function Chat({ donorId }) {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages, loading])
 
-  // Reset chat when donor changes
   useEffect(() => {
     setMessages([])
     setHistory([])
@@ -85,13 +223,21 @@ export default function Chat({ donorId }) {
       if (!res.ok) throw new Error(`Server error ${res.status}`)
       const data = await res.json()
       setHistory(data.messages)
-      setMessages(prev => [...prev, { role: 'assistant', text: data.reply }])
+      setMessages(prev => [...prev, {
+        role: 'assistant',
+        text: data.reply,
+        clinics: data.clinics ?? null,
+      }])
     } catch (err) {
-      setMessages(prev => [...prev, { role: 'assistant', text: `âš ï¸ ${err.message || 'Something went wrong. Please try again.'}`, error: true }])
+      setMessages(prev => [...prev, { role: 'assistant', text: `⚠️ ${err.message || 'Something went wrong.'}`, error: true }])
     } finally {
       setLoading(false)
       setTimeout(() => inputRef.current?.focus(), 50)
     }
+  }
+
+  const handleBook = (clinic) => {
+    send(`Book ${clinic.SiteName} (Site ID ${clinic.EscreenSiteId ?? clinic.CollectionSiteId})`)
   }
 
   const handleKey = (e) => {
@@ -102,38 +248,32 @@ export default function Chat({ donorId }) {
 
   return (
     <div style={{
-      background: '#ffffff',
-      borderRadius: 14,
-      border: '1px solid #e2e8f0',
-      boxShadow: '0 1px 6px rgba(0,0,0,0.06)',
+      background: '#ffffff', borderRadius: 14,
+      border: '1px solid #e2e8f0', boxShadow: '0 1px 6px rgba(0,0,0,0.06)',
       display: 'flex', flexDirection: 'column',
       height: '100%', overflow: 'hidden',
     }}>
       {/* Header */}
       <div style={{
-        padding: '13px 18px',
-        borderBottom: '1px solid #f1f5f9',
-        display: 'flex', alignItems: 'center', gap: 10, flexShrink: 0,
-        background: '#fff',
+        padding: '13px 18px', borderBottom: '1px solid #f1f5f9',
+        display: 'flex', alignItems: 'center', gap: 10, flexShrink: 0, background: '#fff',
       }}>
         <BotAvatar />
         <div style={{ flex: 1 }}>
           <div style={{ fontSize: 13.5, fontWeight: 600, color: '#0f172a' }}>Booking Assistant</div>
           <div style={{ fontSize: 11, color: '#10b981', display: 'flex', alignItems: 'center', gap: 5, marginTop: 1 }}>
             <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#10b981', display: 'inline-block' }} />
-            AI-powered Â· MCP tools active
+            AI-powered · MCP tools active
           </div>
         </div>
         {messages.length > 0 && (
           <button
             onClick={() => { setMessages([]); setHistory([]) }}
-            title="Clear conversation"
             style={{
               display: 'flex', alignItems: 'center', gap: 5,
               padding: '5px 10px', borderRadius: 8,
               border: '1px solid #e2e8f0', background: 'transparent',
-              fontSize: 11.5, color: '#64748b', cursor: 'pointer',
-              transition: 'all 0.15s',
+              fontSize: 11.5, color: '#64748b', cursor: 'pointer', transition: 'all 0.15s',
             }}
             onMouseEnter={e => { e.currentTarget.style.background = '#fef2f2'; e.currentTarget.style.color = '#c8102e'; e.currentTarget.style.borderColor = '#fecaca' }}
             onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#64748b'; e.currentTarget.style.borderColor = '#e2e8f0' }}
@@ -153,7 +293,7 @@ export default function Chat({ donorId }) {
               border: '2px solid #fecaca',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               margin: '0 auto 16px', fontSize: 26,
-            }}>ðŸ¥</div>
+            }}>🏥</div>
             <div style={{ fontSize: 16, fontWeight: 700, color: '#0f172a', marginBottom: 6 }}>
               {donorId ? 'Ready to assist' : 'Select a candidate first'}
             </div>
@@ -184,30 +324,35 @@ export default function Chat({ donorId }) {
         )}
 
         {messages.map((m, i) => (
-          <div
-            key={i}
-            style={{
-              display: 'flex',
-              justifyContent: m.role === 'user' ? 'flex-end' : 'flex-start',
-              alignItems: 'flex-end', gap: 8, marginBottom: 12,
-              animation: 'fadeSlideIn 0.25s ease',
-            }}
-          >
-            {m.role === 'assistant' && <BotAvatar />}
-            <div style={{
-              maxWidth: '76%',
-              padding: '10px 14px',
-              borderRadius: m.role === 'user' ? '16px 16px 4px 16px' : '4px 16px 16px 16px',
-              background: m.role === 'user'
-                ? 'linear-gradient(135deg, #c8102e 0%, #9b0f23 100%)'
-                : m.error ? '#fef2f2' : '#f1f5f9',
-              color: m.role === 'user' ? '#fff' : m.error ? '#dc2626' : '#0f172a',
-              fontSize: 13.5, lineHeight: 1.7,
-              whiteSpace: 'pre-wrap', wordBreak: 'break-word',
-              boxShadow: m.role === 'user' ? '0 3px 12px rgba(200,16,46,0.3)' : '0 1px 3px rgba(0,0,0,0.05)',
-              border: m.error ? '1px solid #fecaca' : 'none',
-            }}>
-              {m.text}
+          <div key={i} style={{
+            display: 'flex',
+            justifyContent: m.role === 'user' ? 'flex-end' : 'flex-start',
+            alignItems: 'flex-start', gap: 8, marginBottom: 14,
+            animation: 'fadeSlideIn 0.25s ease',
+          }}>
+            {m.role === 'assistant' && (
+              <div style={{ paddingTop: 2 }}><BotAvatar /></div>
+            )}
+            <div style={{ maxWidth: m.clinics ? '92%' : '76%', minWidth: 0 }}>
+              {/* Text bubble */}
+              <div style={{
+                padding: '10px 14px',
+                borderRadius: m.role === 'user' ? '16px 16px 4px 16px' : '4px 16px 16px 16px',
+                background: m.role === 'user'
+                  ? 'linear-gradient(135deg, #c8102e 0%, #9b0f23 100%)'
+                  : m.error ? '#fef2f2' : '#f1f5f9',
+                color: m.role === 'user' ? '#fff' : m.error ? '#dc2626' : '#0f172a',
+                fontSize: 13.5, lineHeight: 1.7,
+                whiteSpace: 'pre-wrap', wordBreak: 'break-word',
+                boxShadow: m.role === 'user' ? '0 3px 12px rgba(200,16,46,0.3)' : '0 1px 3px rgba(0,0,0,0.05)',
+                border: m.error ? '1px solid #fecaca' : 'none',
+              }}>
+                {m.text}
+              </div>
+              {/* Clinic cards */}
+              {m.clinics && m.clinics.length > 0 && (
+                <ClinicCards clinics={m.clinics} onBook={handleBook} />
+              )}
             </div>
           </div>
         ))}
@@ -215,10 +360,7 @@ export default function Chat({ donorId }) {
         {loading && (
           <div style={{ display: 'flex', alignItems: 'flex-end', gap: 8, marginBottom: 12 }}>
             <BotAvatar />
-            <div style={{
-              padding: '11px 15px', borderRadius: '4px 16px 16px 16px',
-              background: '#f1f5f9', boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
-            }}>
+            <div style={{ padding: '11px 15px', borderRadius: '4px 16px 16px 16px', background: '#f1f5f9', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
               <TypingDots />
             </div>
           </div>
@@ -229,18 +371,15 @@ export default function Chat({ donorId }) {
       {/* Input bar */}
       <div style={{ padding: '12px 16px', borderTop: '1px solid #f1f5f9', background: '#fff', flexShrink: 0 }}>
         {!donorId && (
-          <div style={{
-            textAlign: 'center', fontSize: 12, color: '#94a3b8',
-            padding: '8px 0 4px',
-          }}>â¬… Select a candidate to enable chat</div>
+          <div style={{ textAlign: 'center', fontSize: 12, color: '#94a3b8', padding: '8px 0 4px' }}>
+            ⬅ Select a candidate to enable chat
+          </div>
         )}
         <div style={{
           display: 'flex', gap: 8, alignItems: 'flex-end',
-          background: '#f8fafc',
-          border: '1.5px solid #e2e8f0',
+          background: '#f8fafc', border: '1.5px solid #e2e8f0',
           borderRadius: 12, padding: '8px 8px 8px 14px',
-          transition: 'border-color 0.15s',
-          opacity: donorId ? 1 : 0.5,
+          transition: 'border-color 0.15s', opacity: donorId ? 1 : 0.5,
         }}
           onFocus={e => e.currentTarget.style.borderColor = '#c8102e'}
           onBlur={e => e.currentTarget.style.borderColor = '#e2e8f0'}
@@ -251,7 +390,7 @@ export default function Chat({ donorId }) {
             onChange={e => setInput(e.target.value)}
             onKeyDown={handleKey}
             disabled={!donorId || loading}
-            placeholder={donorId ? 'Ask about clinics, test types, or bookingâ€¦' : 'Select a candidate first'}
+            placeholder={donorId ? 'Ask about clinics, test types, or booking…' : 'Select a candidate first'}
             rows={1}
             style={{
               flex: 1, border: 'none', background: 'transparent',
@@ -270,8 +409,7 @@ export default function Chat({ donorId }) {
             style={{
               width: 34, height: 34, borderRadius: 8, border: 'none',
               background: input.trim() && donorId && !loading
-                ? 'linear-gradient(135deg, #c8102e, #8b0000)'
-                : '#e2e8f0',
+                ? 'linear-gradient(135deg, #c8102e, #8b0000)' : '#e2e8f0',
               color: input.trim() && donorId && !loading ? '#fff' : '#94a3b8',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               cursor: input.trim() && donorId && !loading ? 'pointer' : 'default',
@@ -283,10 +421,9 @@ export default function Chat({ donorId }) {
           </button>
         </div>
         <p style={{ fontSize: 10.5, color: '#cbd5e1', textAlign: 'center', marginTop: 7 }}>
-          Shift+Enter for new line Â· Enter to send
+          Shift+Enter for new line · Enter to send
         </p>
       </div>
     </div>
   )
 }
-

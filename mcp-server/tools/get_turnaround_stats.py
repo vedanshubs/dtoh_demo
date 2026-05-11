@@ -7,9 +7,5 @@ async def handle_get_turnaround_stats(
     reason_for_test: str | None = None,
     specimen_type: str | None = None,
     regulation: str | None = None,
-    use_mock: bool = True,
 ) -> dict:
-    if use_mock:
-        return mock_turnaround_stats(client_id, date_range)
-    from db.queries import query_turnaround_stats
-    return await query_turnaround_stats(client_id, date_range, reason_for_test, specimen_type, regulation)
+    return mock_turnaround_stats(client_id, date_range)
