@@ -77,10 +77,16 @@ function BotAvatar() {
 }
 
 /* ── Clinic card list ────────────────────────────────────────────────── */
+const PAGE_SIZE = 5
+
 function ClinicCards({ clinics, onBook }) {
+  const [visible, setVisible] = useState(PAGE_SIZE)
+  const shown = clinics.slice(0, visible)
+  const hasMore = visible < clinics.length
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginTop: 10 }}>
-      {clinics.map((c, i) => {
+      {shown.map((c, i) => {
         const walkIn = c.Attributes?.some(a => a.AttributeName === 'WalkIn' && a.AttributeValue === 'Y')
         const collectionTypes = c.Attributes?.find(a => a.AttributeName === 'CollectionType')?.AttributeValue || ''
         const phone = c.PhoneNumber
@@ -186,6 +192,22 @@ function ClinicCards({ clinics, onBook }) {
           </div>
         )
       })}
+
+      {hasMore && (
+        <button
+          onClick={() => setVisible(v => v + PAGE_SIZE)}
+          style={{
+            width: '100%', padding: '9px 0', borderRadius: 10,
+            border: '1.5px dashed #cbd5e1', background: '#f8fafc',
+            fontSize: 12.5, fontWeight: 600, color: '#475569',
+            cursor: 'pointer', transition: 'all 0.15s',
+          }}
+          onMouseEnter={e => { e.currentTarget.style.background = '#f1f5f9'; e.currentTarget.style.borderColor = '#94a3b8'; e.currentTarget.style.color = '#1e293b' }}
+          onMouseLeave={e => { e.currentTarget.style.background = '#f8fafc'; e.currentTarget.style.borderColor = '#cbd5e1'; e.currentTarget.style.color = '#475569' }}
+        >
+          Show more ({Math.min(PAGE_SIZE, clinics.length - visible)} of {clinics.length - visible} remaining)
+        </button>
+      )}
     </div>
   )
 }

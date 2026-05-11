@@ -53,14 +53,14 @@ def mock_analyte_breakdown(client_id: str, date_range: str, **kwargs) -> dict:
         "date_range": date_range,
         "total_positives": 20,
         "analytes": [
-            {"analyte": "Marijuana/THC",          "positive": 11, "negative": 301, "positive_rate_pct": 3.5},
-            {"analyte": "Cocaine Metabolites",    "positive": 3,  "negative": 309, "positive_rate_pct": 1.0},
-            {"analyte": "Amphetamines",           "positive": 2,  "negative": 310, "positive_rate_pct": 0.6},
-            {"analyte": "Opiates (Codeine/Morph)","positive": 2,  "negative": 310, "positive_rate_pct": 0.6},
-            {"analyte": "Oxycodone",              "positive": 1,  "negative": 311, "positive_rate_pct": 0.3},
-            {"analyte": "Phencyclidine (PCP)",   "positive": 1,  "negative": 311, "positive_rate_pct": 0.3},
-            {"analyte": "Benzodiazepines",        "positive": 0,  "negative": 312, "positive_rate_pct": 0.0},
-            {"analyte": "Methamphetamines",       "positive": 0,  "negative": 312, "positive_rate_pct": 0.0},
+            {"analyte": "THC/Marijuana",              "positive": 11, "negative": 301, "positive_rate_pct": 3.5},
+            {"analyte": "Cocaine Metabolites",        "positive": 3,  "negative": 309, "positive_rate_pct": 1.0},
+            {"analyte": "Amphetamines",               "positive": 2,  "negative": 310, "positive_rate_pct": 0.6},
+            {"analyte": "Opiates (Codeine/Morphine)", "positive": 2,  "negative": 310, "positive_rate_pct": 0.6},
+            {"analyte": "Oxycodone",                  "positive": 1,  "negative": 311, "positive_rate_pct": 0.3},
+            {"analyte": "PCP",                        "positive": 1,  "negative": 311, "positive_rate_pct": 0.3},
+            {"analyte": "Benzodiazepines",            "positive": 0,  "negative": 312, "positive_rate_pct": 0.0},
+            {"analyte": "Methamphetamines",           "positive": 0,  "negative": 312, "positive_rate_pct": 0.0},
         ],
     }
 

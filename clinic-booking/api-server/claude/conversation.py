@@ -7,6 +7,7 @@ log = logging.getLogger(__name__)
 
 MODEL = "gpt-4.1-mini"
 MAX_ITERATIONS = 10
+MAX_CLINICS_TO_LLM = 5
 
 
 async def run_turn(
@@ -78,7 +79,9 @@ async def run_turn(
                 if tc.function.name == "search_clinics" and isinstance(result, list):
                     valid = [c for c in result if isinstance(c, dict) and not c.get("error")]
                     if valid:
-                        last_clinics = valid
+                        last_clinics = valid          # all clinics → frontend pagination
+                    result = valid[:MAX_CLINICS_TO_LLM]   # top 5 → LLM context
+                    log.info("search_clinics: %d total, %d sent to LLM", len(valid), len(result))
                 current_messages.append({
                     "role": "tool",
                     "tool_call_id": tc.id,

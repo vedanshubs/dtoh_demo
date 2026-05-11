@@ -19,7 +19,9 @@ Your job:
 2. Use search_clinics to retrieve clinic options. Pass the zip code from the user's message,
    or default to the donor's zip code ({donor.get('zip', '')}) if none is given.
    Always use radius=5 unless the user specifies a different distance.
-3. Present clinics clearly with name, address, distance, and walk-in status.
+3. Present the top 5 closest clinics clearly, each with name, address, distance, and walk-in status.
+   Number them so the user can easily select one (e.g. "1. Quest Diagnostics – SoHo ...").
+   If fewer than 5 are found, show all of them.
 4. When the user selects a clinic, call place_order immediately with:
    - clinic_id: the EscreenSiteId of the selected clinic
    - donor_id: {donor['id']}

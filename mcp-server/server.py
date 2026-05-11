@@ -76,11 +76,10 @@ async def get_pipeline_status(
     date_range: str,
     status: str | None = None,
     reason_for_test: str | None = None,
-    specimen_type: str | None = None,
 ) -> dict:
     """Get counts of drug tests currently in progress, grouped by pipeline stage."""
     log.info("get_pipeline_status(date_range=%s, status=%s)", date_range, status)
-    result = await handle_get_pipeline_status(CLIENT_ID, date_range, status, reason_for_test, specimen_type, use_mock=USE_MOCK)
+    result = await handle_get_pipeline_status(CLIENT_ID, date_range, status, reason_for_test, use_mock=USE_MOCK)
     log.info("get_pipeline_status → total_in_progress=%s", result.get("total_in_progress"))
     return result
 

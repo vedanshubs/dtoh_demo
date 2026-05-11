@@ -1,4 +1,5 @@
 import json
+import logging
 import os
 import pathlib
 from mcp import ClientSession, StdioServerParameters
@@ -7,6 +8,8 @@ from mcp.client.stdio import stdio_client
 # Absolute path to unified mcp-server at project root
 _HERE = pathlib.Path(__file__).resolve().parent.parent  # api-server/
 _MCP_SERVER = _HERE.parent.parent / "mcp-server"
+
+log = logging.getLogger(__name__)
 
 
 class MCPClientManager:
@@ -42,13 +45,21 @@ class MCPClientManager:
 
     async def call_tool(self, name: str, arguments: dict):
         result = await self._session.call_tool(name, arguments)
+        log.info("call_tool %s: content_blocks=%d", name, len(result.content))
         if not result.content:
             return []
-        text = result.content[0].text
-        # If the MCP server flagged an error, surface it clearly
         if getattr(result, 'isError', False):
-            raise RuntimeError(f"MCP tool '{name}' error: {text}")
-        try:
-            return json.loads(text)
-        except json.JSONDecodeError:
-            raise RuntimeError(f"MCP tool '{name}' returned non-JSON: {text[:300]}")
+            raise RuntimeError(f"MCP tool '{name}' error: {result.content[0].text}")
+
+        # FastMCP may serialize list[dict] as one TextContent per element.
+        # Collect and parse all content blocks, then unwrap single-item results.
+        parsed = []
+        for block in result.content:
+            try:
+                parsed.append(json.loads(block.text))
+            except (json.JSONDecodeError, AttributeError):
+                pass
+
+        if len(parsed) == 1:
+            return parsed[0]   # single dict or already-a-list
+        return parsed           # multiple blocks → reconstruct the list
