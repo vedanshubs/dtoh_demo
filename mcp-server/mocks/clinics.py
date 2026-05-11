@@ -1,98 +1,10 @@
-# Mock clinics near UBS office – 1285 Avenue of the Americas, New York, NY 10019
-MOCK_CLINICS = [
-    {
-        "EscreenSiteId": 10001,
-        "SiteName": "Quest Diagnostics – Midtown Manhattan",
-        "Address1": "1440 Broadway, Suite 300",
-        "City": "New York",
-        "State": "NY",
-        "ZipCode": "10018",
-        "PhoneNumber": "2125550191",
-        "Latitude": 40.7549,
-        "Longitude": -73.9862,
-        "Distance": 0.3,
-        "Hours": "Mon-Fri 7:00am-4:00pm",
-        "Attributes": [
-            {"AttributeName": "WalkIn", "AttributeValue": "Y"},
-            {"AttributeName": "Handicap", "AttributeValue": "Y"},
-            {"AttributeName": "CollectionType", "AttributeValue": "Urine"},
-        ],
-        "GoogleMapsUrl": "https://www.google.com/maps?q=40.7549,-73.9862",
-    },
-    {
-        "EscreenSiteId": 10002,
-        "SiteName": "LabCorp – Rockefeller Center",
-        "Address1": "1270 Avenue of the Americas, Floor 2",
-        "City": "New York",
-        "State": "NY",
-        "ZipCode": "10020",
-        "PhoneNumber": "2125550282",
-        "Latitude": 40.7587,
-        "Longitude": -73.9787,
-        "Distance": 0.5,
-        "Hours": "Mon-Fri 7:30am-5:00pm, Sat 8:00am-12:00pm",
-        "Attributes": [
-            {"AttributeName": "WalkIn", "AttributeValue": "Y"},
-            {"AttributeName": "Handicap", "AttributeValue": "Y"},
-            {"AttributeName": "CollectionType", "AttributeValue": "Urine,Hair"},
-        ],
-        "GoogleMapsUrl": "https://www.google.com/maps?q=40.7587,-73.9787",
-    },
-    {
-        "EscreenSiteId": 10003,
-        "SiteName": "ClinPath – Columbus Circle",
-        "Address1": "1775 Broadway, Suite 430",
-        "City": "New York",
-        "State": "NY",
-        "ZipCode": "10019",
-        "PhoneNumber": "2125550373",
-        "Latitude": 40.7681,
-        "Longitude": -73.9819,
-        "Distance": 0.8,
-        "Hours": "Mon-Fri 8:00am-4:30pm",
-        "Attributes": [
-            {"AttributeName": "WalkIn", "AttributeValue": "N"},
-            {"AttributeName": "Handicap", "AttributeValue": "Y"},
-            {"AttributeName": "CollectionType", "AttributeValue": "Urine"},
-        ],
-        "GoogleMapsUrl": "https://www.google.com/maps?q=40.7681,-73.9819",
-    },
-    {
-        "EscreenSiteId": 10004,
-        "SiteName": "BioReference Laboratories – Penn Station",
-        "Address1": "2 Penn Plaza, Suite 1100",
-        "City": "New York",
-        "State": "NY",
-        "ZipCode": "10121",
-        "PhoneNumber": "2125550464",
-        "Latitude": 40.7505,
-        "Longitude": -73.9934,
-        "Distance": 1.4,
-        "Hours": "Mon-Fri 7:00am-6:00pm, Sat 8:00am-2:00pm",
-        "Attributes": [
-            {"AttributeName": "WalkIn", "AttributeValue": "Y"},
-            {"AttributeName": "Handicap", "AttributeValue": "Y"},
-            {"AttributeName": "CollectionType", "AttributeValue": "Urine,Hair,Oral Fluid"},
-        ],
-        "GoogleMapsUrl": "https://www.google.com/maps?q=40.7505,-73.9934",
-    },
-    {
-        "EscreenSiteId": 10005,
-        "SiteName": "Quest Diagnostics – Grand Central",
-        "Address1": "420 Lexington Ave, Suite 300",
-        "City": "New York",
-        "State": "NY",
-        "ZipCode": "10170",
-        "PhoneNumber": "2125550515",
-        "Latitude": 40.7527,
-        "Longitude": -73.9772,
-        "Distance": 1.9,
-        "Hours": "Mon-Fri 7:00am-5:00pm",
-        "Attributes": [
-            {"AttributeName": "WalkIn", "AttributeValue": "Y"},
-            {"AttributeName": "Handicap", "AttributeValue": "N"},
-            {"AttributeName": "CollectionType", "AttributeValue": "Urine,Blood"},
-        ],
-        "GoogleMapsUrl": "https://www.google.com/maps?q=40.7527,-73.9772",
-    },
-]
+import json
+from functools import lru_cache
+from pathlib import Path
+
+_PATH = Path(__file__).parent / "clinics.json"
+
+
+@lru_cache(maxsize=1)
+def load_clinics() -> list:
+    return json.loads(_PATH.read_text())

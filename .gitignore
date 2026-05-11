@@ -39,4 +39,12 @@ Thumbs.db
 
 # Documents — sensitive integration details, not for source control
 *.pdf
-*.txt
+
+# Allow generated SQL seed files and fixture JSON (committed intentionally)
+!db/seed_data.sql
+!db/seed_poc2_data.sql
+!db/seed_poc2_reference.sql
+!db/schema_poc2.sql
+!mcp-server/mocks/clinics.json
+!mcp-server/mocks/zipcodes.json
+

@@ -1,4 +1,5 @@
 from mocks.responses import mock_analyte_breakdown
+from db.queries import query_analyte_breakdown
 
 
 async def handle_get_analyte_breakdown(
@@ -6,5 +7,12 @@ async def handle_get_analyte_breakdown(
     date_range: str,
     analyte_name: str | None = None,
     disposition: str | None = None,
+    use_mock: bool = True,
 ) -> dict:
-    return mock_analyte_breakdown(client_id, date_range)
+    if use_mock:
+        return mock_analyte_breakdown(client_id, date_range)
+    return await query_analyte_breakdown(
+        client_id, date_range,
+        analyte_name=analyte_name,
+        disposition=disposition,
+    )

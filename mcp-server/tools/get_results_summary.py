@@ -1,4 +1,5 @@
 from mocks.responses import mock_results_summary
+from db.queries import query_results_summary
 
 
 async def handle_get_results_summary(
@@ -8,5 +9,14 @@ async def handle_get_results_summary(
     reason_for_test: str | None = None,
     specimen_type: str | None = None,
     regulation: str | None = None,
+    use_mock: bool = True,
 ) -> dict:
-    return mock_results_summary(client_id, date_range)
+    if use_mock:
+        return mock_results_summary(client_id, date_range)
+    return await query_results_summary(
+        client_id, date_range,
+        disposition=disposition,
+        reason_for_test=reason_for_test,
+        specimen_type=specimen_type,
+        regulation=regulation,
+    )

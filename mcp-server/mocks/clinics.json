@@ -1,0 +1,3873 @@
+[
+  {
+    "EscreenSiteId": 20001,
+    "SiteName": "Quest Diagnostics \u2013 SoHo",
+    "Address1": "854 Lexington Ave, Suite 900",
+    "City": "New York",
+    "State": "NY",
+    "ZipCode": "10001",
+    "PhoneNumber": "2128637940",
+    "Latitude": 40.7466,
+    "Longitude": -73.9989,
+    "GoogleMapsUrl": "https://www.google.com/maps?q=40.7466,-73.9989",
+    "SupportedSpecimenTypes": [
+      "U",
+      "O"
+    ],
+    "Attributes": [
+      {
+        "AttributeName": "Walk In Drug Testing - No Appointment Required",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Handicap Access",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "DOT Certified Physician",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "After Hours Drug Screening",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Public Transportation",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Observed Collections",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Clinic Hours",
+        "AttributeValue": "MondayHoursOpen:07:30;MondayHoursClose:17:00;TuesdayHoursOpen:07:30;TuesdayHoursClose:17:00;WednesdayHoursOpen:07:30;WednesdayHoursClose:17:00;ThursdayHoursOpen:07:30;ThursdayHoursClose:17:00;FridayHoursOpen:07:30;FridayHoursClose:17:00;SaturdayHoursOpen:08:00;SaturdayHoursClose:13:00;SundayHoursOpen:00:00;SundayHoursClose:00:00"
+      }
+    ]
+  },
+  {
+    "EscreenSiteId": 20002,
+    "SiteName": "BioReference Laboratories \u2013 Downtown",
+    "Address1": "967 7th Ave, Suite 500",
+    "City": "New York",
+    "State": "NY",
+    "ZipCode": "10001",
+    "PhoneNumber": "9179593103",
+    "Latitude": 40.7451,
+    "Longitude": -73.9999,
+    "GoogleMapsUrl": "https://www.google.com/maps?q=40.7451,-73.9999",
+    "SupportedSpecimenTypes": [
+      "U"
+    ],
+    "Attributes": [
+      {
+        "AttributeName": "Walk In Drug Testing - No Appointment Required",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Handicap Access",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "DOT Certified Physician",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "After Hours Drug Screening",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Public Transportation",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Observed Collections",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Clinic Hours",
+        "AttributeValue": "MondayHoursOpen:07:30;MondayHoursClose:17:00;TuesdayHoursOpen:07:30;TuesdayHoursClose:17:00;WednesdayHoursOpen:07:30;WednesdayHoursClose:17:00;ThursdayHoursOpen:07:30;ThursdayHoursClose:17:00;FridayHoursOpen:07:30;FridayHoursClose:17:00;SaturdayHoursOpen:00:00;SaturdayHoursClose:00:00;SundayHoursOpen:00:00;SundayHoursClose:00:00"
+      }
+    ]
+  },
+  {
+    "EscreenSiteId": 20003,
+    "SiteName": "BioReference Laboratories \u2013 Tribeca",
+    "Address1": "373 Lexington Ave, Suite 300",
+    "City": "New York",
+    "State": "NY",
+    "ZipCode": "10002",
+    "PhoneNumber": "2125030564",
+    "Latitude": 40.7147,
+    "Longitude": -73.9886,
+    "GoogleMapsUrl": "https://www.google.com/maps?q=40.7147,-73.9886",
+    "SupportedSpecimenTypes": [
+      "U",
+      "H"
+    ],
+    "Attributes": [
+      {
+        "AttributeName": "Walk In Drug Testing - No Appointment Required",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Handicap Access",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "DOT Certified Physician",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "After Hours Drug Screening",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Public Transportation",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Observed Collections",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Clinic Hours",
+        "AttributeValue": "MondayHoursOpen:07:30;MondayHoursClose:17:00;TuesdayHoursOpen:07:30;TuesdayHoursClose:17:00;WednesdayHoursOpen:07:30;WednesdayHoursClose:17:00;ThursdayHoursOpen:07:30;ThursdayHoursClose:17:00;FridayHoursOpen:07:30;FridayHoursClose:17:00;SaturdayHoursOpen:00:00;SaturdayHoursClose:00:00;SundayHoursOpen:00:00;SundayHoursClose:00:00"
+      }
+    ]
+  },
+  {
+    "EscreenSiteId": 20004,
+    "SiteName": "Carbon Health \u2013 Times Square",
+    "Address1": "246 5th Ave, Suite 400",
+    "City": "New York",
+    "State": "NY",
+    "ZipCode": "10002",
+    "PhoneNumber": "2128710122",
+    "Latitude": 40.7188,
+    "Longitude": -73.9852,
+    "GoogleMapsUrl": "https://www.google.com/maps?q=40.7188,-73.9852",
+    "SupportedSpecimenTypes": [
+      "U",
+      "B"
+    ],
+    "Attributes": [
+      {
+        "AttributeName": "Walk In Drug Testing - No Appointment Required",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Handicap Access",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "DOT Certified Physician",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "After Hours Drug Screening",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Public Transportation",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Observed Collections",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Clinic Hours",
+        "AttributeValue": "MondayHoursOpen:07:30;MondayHoursClose:17:00;TuesdayHoursOpen:07:30;TuesdayHoursClose:17:00;WednesdayHoursOpen:07:30;WednesdayHoursClose:17:00;ThursdayHoursOpen:07:30;ThursdayHoursClose:17:00;FridayHoursOpen:07:30;FridayHoursClose:17:00;SaturdayHoursOpen:00:00;SaturdayHoursClose:00:00;SundayHoursOpen:00:00;SundayHoursClose:00:00"
+      }
+    ]
+  },
+  {
+    "EscreenSiteId": 20005,
+    "SiteName": "GoHealth Urgent Care \u2013 Midtown",
+    "Address1": "649 5th Ave, Suite 600",
+    "City": "New York",
+    "State": "NY",
+    "ZipCode": "10003",
+    "PhoneNumber": "9172814893",
+    "Latitude": 40.7331,
+    "Longitude": -73.9923,
+    "GoogleMapsUrl": "https://www.google.com/maps?q=40.7331,-73.9923",
+    "SupportedSpecimenTypes": [
+      "U",
+      "H"
+    ],
+    "Attributes": [
+      {
+        "AttributeName": "Walk In Drug Testing - No Appointment Required",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Handicap Access",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "DOT Certified Physician",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "After Hours Drug Screening",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Public Transportation",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Observed Collections",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Clinic Hours",
+        "AttributeValue": "MondayHoursOpen:07:30;MondayHoursClose:17:00;TuesdayHoursOpen:07:30;TuesdayHoursClose:17:00;WednesdayHoursOpen:07:30;WednesdayHoursClose:17:00;ThursdayHoursOpen:07:30;ThursdayHoursClose:17:00;FridayHoursOpen:07:30;FridayHoursClose:17:00;SaturdayHoursOpen:00:00;SaturdayHoursClose:00:00;SundayHoursOpen:00:00;SundayHoursClose:00:00"
+      }
+    ]
+  },
+  {
+    "EscreenSiteId": 20006,
+    "SiteName": "Quest Diagnostics \u2013 Murray Hill",
+    "Address1": "471 5th Ave, Suite 100",
+    "City": "New York",
+    "State": "NY",
+    "ZipCode": "10003",
+    "PhoneNumber": "9172278248",
+    "Latitude": 40.7316,
+    "Longitude": -73.9923,
+    "GoogleMapsUrl": "https://www.google.com/maps?q=40.7316,-73.9923",
+    "SupportedSpecimenTypes": [
+      "U",
+      "B"
+    ],
+    "Attributes": [
+      {
+        "AttributeName": "Walk In Drug Testing - No Appointment Required",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Handicap Access",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "DOT Certified Physician",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "After Hours Drug Screening",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Public Transportation",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Observed Collections",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Clinic Hours",
+        "AttributeValue": "MondayHoursOpen:07:30;MondayHoursClose:17:00;TuesdayHoursOpen:07:30;TuesdayHoursClose:17:00;WednesdayHoursOpen:07:30;WednesdayHoursClose:17:00;ThursdayHoursOpen:07:30;ThursdayHoursClose:17:00;FridayHoursOpen:07:30;FridayHoursClose:17:00;SaturdayHoursOpen:00:00;SaturdayHoursClose:00:00;SundayHoursOpen:00:00;SundayHoursClose:00:00"
+      }
+    ]
+  },
+  {
+    "EscreenSiteId": 20007,
+    "SiteName": "AFC Urgent Care \u2013 Upper West Side",
+    "Address1": "548 Varick St, Floor 2",
+    "City": "New York",
+    "State": "NY",
+    "ZipCode": "10004",
+    "PhoneNumber": "9170310518",
+    "Latitude": 40.7044,
+    "Longitude": -74.0386,
+    "GoogleMapsUrl": "https://www.google.com/maps?q=40.7044,-74.0386",
+    "SupportedSpecimenTypes": [
+      "U",
+      "H",
+      "B"
+    ],
+    "Attributes": [
+      {
+        "AttributeName": "Walk In Drug Testing - No Appointment Required",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Handicap Access",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "DOT Certified Physician",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "After Hours Drug Screening",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Public Transportation",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Observed Collections",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Clinic Hours",
+        "AttributeValue": "MondayHoursOpen:07:30;MondayHoursClose:17:00;TuesdayHoursOpen:07:30;TuesdayHoursClose:17:00;WednesdayHoursOpen:07:30;WednesdayHoursClose:17:00;ThursdayHoursOpen:07:30;ThursdayHoursClose:17:00;FridayHoursOpen:07:30;FridayHoursClose:17:00;SaturdayHoursOpen:08:00;SaturdayHoursClose:13:00;SundayHoursOpen:00:00;SundayHoursClose:00:00"
+      }
+    ]
+  },
+  {
+    "EscreenSiteId": 20008,
+    "SiteName": "Carbon Health \u2013 Flatiron",
+    "Address1": "294 Lexington Ave, Suite 700",
+    "City": "New York",
+    "State": "NY",
+    "ZipCode": "10007",
+    "PhoneNumber": "2126513338",
+    "Latitude": 40.7158,
+    "Longitude": -74.0053,
+    "GoogleMapsUrl": "https://www.google.com/maps?q=40.7158,-74.0053",
+    "SupportedSpecimenTypes": [
+      "U",
+      "H",
+      "B"
+    ],
+    "Attributes": [
+      {
+        "AttributeName": "Walk In Drug Testing - No Appointment Required",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Handicap Access",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "DOT Certified Physician",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "After Hours Drug Screening",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Public Transportation",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Observed Collections",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Clinic Hours",
+        "AttributeValue": "MondayHoursOpen:07:30;MondayHoursClose:17:00;TuesdayHoursOpen:07:30;TuesdayHoursClose:17:00;WednesdayHoursOpen:07:30;WednesdayHoursClose:17:00;ThursdayHoursOpen:07:30;ThursdayHoursClose:17:00;FridayHoursOpen:07:30;FridayHoursClose:17:00;SaturdayHoursOpen:08:00;SaturdayHoursClose:13:00;SundayHoursOpen:00:00;SundayHoursClose:00:00"
+      }
+    ]
+  },
+  {
+    "EscreenSiteId": 20009,
+    "SiteName": "Carbon Health \u2013 West Village",
+    "Address1": "653 Broadway, Suite 400",
+    "City": "New York",
+    "State": "NY",
+    "ZipCode": "10007",
+    "PhoneNumber": "6464746872",
+    "Latitude": 40.7103,
+    "Longitude": -74.0066,
+    "GoogleMapsUrl": "https://www.google.com/maps?q=40.7103,-74.0066",
+    "SupportedSpecimenTypes": [
+      "U",
+      "H",
+      "O",
+      "B"
+    ],
+    "Attributes": [
+      {
+        "AttributeName": "Walk In Drug Testing - No Appointment Required",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Handicap Access",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "DOT Certified Physician",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "After Hours Drug Screening",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Public Transportation",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Observed Collections",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Clinic Hours",
+        "AttributeValue": "MondayHoursOpen:07:00;MondayHoursClose:18:30;TuesdayHoursOpen:07:00;TuesdayHoursClose:18:30;WednesdayHoursOpen:07:00;WednesdayHoursClose:18:30;ThursdayHoursOpen:07:00;ThursdayHoursClose:18:30;FridayHoursOpen:07:00;FridayHoursClose:18:30;SaturdayHoursOpen:00:00;SaturdayHoursClose:00:00;SundayHoursOpen:00:00;SundayHoursClose:00:00"
+      }
+    ]
+  },
+  {
+    "EscreenSiteId": 20010,
+    "SiteName": "Quest Diagnostics \u2013 Hell's Kitchen",
+    "Address1": "261 Broadway, Suite 200",
+    "City": "New York",
+    "State": "NY",
+    "ZipCode": "10009",
+    "PhoneNumber": "9173990916",
+    "Latitude": 40.7257,
+    "Longitude": -73.9755,
+    "GoogleMapsUrl": "https://www.google.com/maps?q=40.7257,-73.9755",
+    "SupportedSpecimenTypes": [
+      "U"
+    ],
+    "Attributes": [
+      {
+        "AttributeName": "Walk In Drug Testing - No Appointment Required",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Handicap Access",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "DOT Certified Physician",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "After Hours Drug Screening",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Public Transportation",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Observed Collections",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Clinic Hours",
+        "AttributeValue": "MondayHoursOpen:07:30;MondayHoursClose:17:00;TuesdayHoursOpen:07:30;TuesdayHoursClose:17:00;WednesdayHoursOpen:07:30;WednesdayHoursClose:17:00;ThursdayHoursOpen:07:30;ThursdayHoursClose:17:00;FridayHoursOpen:07:30;FridayHoursClose:17:00;SaturdayHoursOpen:08:00;SaturdayHoursClose:13:00;SundayHoursOpen:00:00;SundayHoursClose:00:00"
+      }
+    ]
+  },
+  {
+    "EscreenSiteId": 20011,
+    "SiteName": "BioReference Laboratories \u2013 Chelsea",
+    "Address1": "760 5th Ave, Floor 6",
+    "City": "New York",
+    "State": "NY",
+    "ZipCode": "10009",
+    "PhoneNumber": "9173842513",
+    "Latitude": 40.7238,
+    "Longitude": -73.9813,
+    "GoogleMapsUrl": "https://www.google.com/maps?q=40.7238,-73.9813",
+    "SupportedSpecimenTypes": [
+      "U",
+      "H",
+      "O"
+    ],
+    "Attributes": [
+      {
+        "AttributeName": "Walk In Drug Testing - No Appointment Required",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Handicap Access",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "DOT Certified Physician",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "After Hours Drug Screening",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Public Transportation",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Observed Collections",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Clinic Hours",
+        "AttributeValue": "MondayHoursOpen:07:30;MondayHoursClose:17:00;TuesdayHoursOpen:07:30;TuesdayHoursClose:17:00;WednesdayHoursOpen:07:30;WednesdayHoursClose:17:00;ThursdayHoursOpen:07:30;ThursdayHoursClose:17:00;FridayHoursOpen:07:30;FridayHoursClose:17:00;SaturdayHoursOpen:00:00;SaturdayHoursClose:00:00;SundayHoursOpen:00:00;SundayHoursClose:00:00"
+      }
+    ]
+  },
+  {
+    "EscreenSiteId": 20012,
+    "SiteName": "GoHealth Urgent Care \u2013 Financial District",
+    "Address1": "779 Lexington Ave, Suite 500",
+    "City": "New York",
+    "State": "NY",
+    "ZipCode": "10010",
+    "PhoneNumber": "2124874016",
+    "Latitude": 40.7409,
+    "Longitude": -73.9836,
+    "GoogleMapsUrl": "https://www.google.com/maps?q=40.7409,-73.9836",
+    "SupportedSpecimenTypes": [
+      "U",
+      "O"
+    ],
+    "Attributes": [
+      {
+        "AttributeName": "Walk In Drug Testing - No Appointment Required",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Handicap Access",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "DOT Certified Physician",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "After Hours Drug Screening",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Public Transportation",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Observed Collections",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Clinic Hours",
+        "AttributeValue": "MondayHoursOpen:07:30;MondayHoursClose:17:00;TuesdayHoursOpen:07:30;TuesdayHoursClose:17:00;WednesdayHoursOpen:07:30;WednesdayHoursClose:17:00;ThursdayHoursOpen:07:30;ThursdayHoursClose:17:00;FridayHoursOpen:07:30;FridayHoursClose:17:00;SaturdayHoursOpen:08:00;SaturdayHoursClose:13:00;SundayHoursOpen:00:00;SundayHoursClose:00:00"
+      }
+    ]
+  },
+  {
+    "EscreenSiteId": 20013,
+    "SiteName": "Concentra \u2013 Gramercy",
+    "Address1": "109 Lexington Ave, Suite 300",
+    "City": "New York",
+    "State": "NY",
+    "ZipCode": "10010",
+    "PhoneNumber": "2125331586",
+    "Latitude": 40.74,
+    "Longitude": -73.9846,
+    "GoogleMapsUrl": "https://www.google.com/maps?q=40.74,-73.9846",
+    "SupportedSpecimenTypes": [
+      "U"
+    ],
+    "Attributes": [
+      {
+        "AttributeName": "Walk In Drug Testing - No Appointment Required",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Handicap Access",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "DOT Certified Physician",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "After Hours Drug Screening",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Public Transportation",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Observed Collections",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Clinic Hours",
+        "AttributeValue": "MondayHoursOpen:07:00;MondayHoursClose:18:30;TuesdayHoursOpen:07:00;TuesdayHoursClose:18:30;WednesdayHoursOpen:07:00;WednesdayHoursClose:18:30;ThursdayHoursOpen:07:00;ThursdayHoursClose:18:30;FridayHoursOpen:07:00;FridayHoursClose:18:30;SaturdayHoursOpen:08:00;SaturdayHoursClose:13:00;SundayHoursOpen:00:00;SundayHoursClose:00:00"
+      }
+    ]
+  },
+  {
+    "EscreenSiteId": 20014,
+    "SiteName": "Concentra \u2013 Upper West Side",
+    "Address1": "440 8th Ave, Suite 400",
+    "City": "New York",
+    "State": "NY",
+    "ZipCode": "10010",
+    "PhoneNumber": "6465433036",
+    "Latitude": 40.7358,
+    "Longitude": -73.9821,
+    "GoogleMapsUrl": "https://www.google.com/maps?q=40.7358,-73.9821",
+    "SupportedSpecimenTypes": [
+      "U",
+      "H"
+    ],
+    "Attributes": [
+      {
+        "AttributeName": "Walk In Drug Testing - No Appointment Required",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Handicap Access",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "DOT Certified Physician",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "After Hours Drug Screening",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Public Transportation",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Observed Collections",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Clinic Hours",
+        "AttributeValue": "MondayHoursOpen:07:30;MondayHoursClose:17:00;TuesdayHoursOpen:07:30;TuesdayHoursClose:17:00;WednesdayHoursOpen:07:30;WednesdayHoursClose:17:00;ThursdayHoursOpen:07:30;ThursdayHoursClose:17:00;FridayHoursOpen:07:30;FridayHoursClose:17:00;SaturdayHoursOpen:08:00;SaturdayHoursClose:13:00;SundayHoursOpen:00:00;SundayHoursClose:00:00"
+      }
+    ]
+  },
+  {
+    "EscreenSiteId": 20015,
+    "SiteName": "GoHealth Urgent Care \u2013 Financial District",
+    "Address1": "367 Park Ave, Suite 500",
+    "City": "New York",
+    "State": "NY",
+    "ZipCode": "10011",
+    "PhoneNumber": "2126934060",
+    "Latitude": 40.7475,
+    "Longitude": -74.0033,
+    "GoogleMapsUrl": "https://www.google.com/maps?q=40.7475,-74.0033",
+    "SupportedSpecimenTypes": [
+      "U",
+      "H"
+    ],
+    "Attributes": [
+      {
+        "AttributeName": "Walk In Drug Testing - No Appointment Required",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Handicap Access",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "DOT Certified Physician",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "After Hours Drug Screening",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Public Transportation",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Observed Collections",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Clinic Hours",
+        "AttributeValue": "MondayHoursOpen:07:30;MondayHoursClose:17:00;TuesdayHoursOpen:07:30;TuesdayHoursClose:17:00;WednesdayHoursOpen:07:30;WednesdayHoursClose:17:00;ThursdayHoursOpen:07:30;ThursdayHoursClose:17:00;FridayHoursOpen:07:30;FridayHoursClose:17:00;SaturdayHoursOpen:00:00;SaturdayHoursClose:00:00;SundayHoursOpen:00:00;SundayHoursClose:00:00"
+      }
+    ]
+  },
+  {
+    "EscreenSiteId": 20016,
+    "SiteName": "ClinPath \u2013 Upper West Side",
+    "Address1": "438 Hudson St, Floor 2",
+    "City": "New York",
+    "State": "NY",
+    "ZipCode": "10011",
+    "PhoneNumber": "2123662994",
+    "Latitude": 40.7435,
+    "Longitude": -73.9966,
+    "GoogleMapsUrl": "https://www.google.com/maps?q=40.7435,-73.9966",
+    "SupportedSpecimenTypes": [
+      "U",
+      "H"
+    ],
+    "Attributes": [
+      {
+        "AttributeName": "Walk In Drug Testing - No Appointment Required",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Handicap Access",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "DOT Certified Physician",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "After Hours Drug Screening",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Public Transportation",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Observed Collections",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Clinic Hours",
+        "AttributeValue": "MondayHoursOpen:07:30;MondayHoursClose:17:00;TuesdayHoursOpen:07:30;TuesdayHoursClose:17:00;WednesdayHoursOpen:07:30;WednesdayHoursClose:17:00;ThursdayHoursOpen:07:30;ThursdayHoursClose:17:00;FridayHoursOpen:07:30;FridayHoursClose:17:00;SaturdayHoursOpen:08:00;SaturdayHoursClose:13:00;SundayHoursOpen:00:00;SundayHoursClose:00:00"
+      }
+    ]
+  },
+  {
+    "EscreenSiteId": 20017,
+    "SiteName": "BioReference Laboratories \u2013 Murray Hill",
+    "Address1": "623 Avenue of the Americas, Suite 300",
+    "City": "New York",
+    "State": "NY",
+    "ZipCode": "10012",
+    "PhoneNumber": "2124332003",
+    "Latitude": 40.7251,
+    "Longitude": -73.9995,
+    "GoogleMapsUrl": "https://www.google.com/maps?q=40.7251,-73.9995",
+    "SupportedSpecimenTypes": [
+      "U"
+    ],
+    "Attributes": [
+      {
+        "AttributeName": "Walk In Drug Testing - No Appointment Required",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Handicap Access",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "DOT Certified Physician",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "After Hours Drug Screening",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Public Transportation",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Observed Collections",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Clinic Hours",
+        "AttributeValue": "MondayHoursOpen:07:30;MondayHoursClose:17:00;TuesdayHoursOpen:07:30;TuesdayHoursClose:17:00;WednesdayHoursOpen:07:30;WednesdayHoursClose:17:00;ThursdayHoursOpen:07:30;ThursdayHoursClose:17:00;FridayHoursOpen:07:30;FridayHoursClose:17:00;SaturdayHoursOpen:00:00;SaturdayHoursClose:00:00;SundayHoursOpen:00:00;SundayHoursClose:00:00"
+      }
+    ]
+  },
+  {
+    "EscreenSiteId": 20018,
+    "SiteName": "Northwell Health Labs \u2013 Tribeca",
+    "Address1": "509 Madison Ave, Suite 100",
+    "City": "New York",
+    "State": "NY",
+    "ZipCode": "10012",
+    "PhoneNumber": "9178708317",
+    "Latitude": 40.7273,
+    "Longitude": -74.0018,
+    "GoogleMapsUrl": "https://www.google.com/maps?q=40.7273,-74.0018",
+    "SupportedSpecimenTypes": [
+      "U",
+      "H"
+    ],
+    "Attributes": [
+      {
+        "AttributeName": "Walk In Drug Testing - No Appointment Required",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Handicap Access",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "DOT Certified Physician",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "After Hours Drug Screening",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Public Transportation",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Observed Collections",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Clinic Hours",
+        "AttributeValue": "MondayHoursOpen:07:30;MondayHoursClose:17:00;TuesdayHoursOpen:07:30;TuesdayHoursClose:17:00;WednesdayHoursOpen:07:30;WednesdayHoursClose:17:00;ThursdayHoursOpen:07:30;ThursdayHoursClose:17:00;FridayHoursOpen:07:30;FridayHoursClose:17:00;SaturdayHoursOpen:00:00;SaturdayHoursClose:00:00;SundayHoursOpen:00:00;SundayHoursClose:00:00"
+      }
+    ]
+  },
+  {
+    "EscreenSiteId": 20019,
+    "SiteName": "Carbon Health \u2013 West Village",
+    "Address1": "556 Park Ave, Suite 800",
+    "City": "New York",
+    "State": "NY",
+    "ZipCode": "10013",
+    "PhoneNumber": "2124714345",
+    "Latitude": 40.7191,
+    "Longitude": -74.002,
+    "GoogleMapsUrl": "https://www.google.com/maps?q=40.7191,-74.002",
+    "SupportedSpecimenTypes": [
+      "U",
+      "H",
+      "B"
+    ],
+    "Attributes": [
+      {
+        "AttributeName": "Walk In Drug Testing - No Appointment Required",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Handicap Access",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "DOT Certified Physician",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "After Hours Drug Screening",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Public Transportation",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Observed Collections",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Clinic Hours",
+        "AttributeValue": "MondayHoursOpen:07:30;MondayHoursClose:17:00;TuesdayHoursOpen:07:30;TuesdayHoursClose:17:00;WednesdayHoursOpen:07:30;WednesdayHoursClose:17:00;ThursdayHoursOpen:07:30;ThursdayHoursClose:17:00;FridayHoursOpen:07:30;FridayHoursClose:17:00;SaturdayHoursOpen:08:00;SaturdayHoursClose:13:00;SundayHoursOpen:00:00;SundayHoursClose:00:00"
+      }
+    ]
+  },
+  {
+    "EscreenSiteId": 20020,
+    "SiteName": "ClinPath \u2013 Downtown",
+    "Address1": "577 8th Ave, Suite 400",
+    "City": "New York",
+    "State": "NY",
+    "ZipCode": "10013",
+    "PhoneNumber": "9176705466",
+    "Latitude": 40.719,
+    "Longitude": -74.0067,
+    "GoogleMapsUrl": "https://www.google.com/maps?q=40.719,-74.0067",
+    "SupportedSpecimenTypes": [
+      "U",
+      "H"
+    ],
+    "Attributes": [
+      {
+        "AttributeName": "Walk In Drug Testing - No Appointment Required",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Handicap Access",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "DOT Certified Physician",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "After Hours Drug Screening",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Public Transportation",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Observed Collections",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Clinic Hours",
+        "AttributeValue": "MondayHoursOpen:07:30;MondayHoursClose:17:00;TuesdayHoursOpen:07:30;TuesdayHoursClose:17:00;WednesdayHoursOpen:07:30;WednesdayHoursClose:17:00;ThursdayHoursOpen:07:30;ThursdayHoursClose:17:00;FridayHoursOpen:07:30;FridayHoursClose:17:00;SaturdayHoursOpen:00:00;SaturdayHoursClose:00:00;SundayHoursOpen:00:00;SundayHoursClose:00:00"
+      }
+    ]
+  },
+  {
+    "EscreenSiteId": 20021,
+    "SiteName": "AFC Urgent Care \u2013 Gramercy",
+    "Address1": "784 8th Ave, Suite 300",
+    "City": "New York",
+    "State": "NY",
+    "ZipCode": "10013",
+    "PhoneNumber": "9170162720",
+    "Latitude": 40.7196,
+    "Longitude": -74.0062,
+    "GoogleMapsUrl": "https://www.google.com/maps?q=40.7196,-74.0062",
+    "SupportedSpecimenTypes": [
+      "U",
+      "H"
+    ],
+    "Attributes": [
+      {
+        "AttributeName": "Walk In Drug Testing - No Appointment Required",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Handicap Access",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "DOT Certified Physician",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "After Hours Drug Screening",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Public Transportation",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Observed Collections",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Clinic Hours",
+        "AttributeValue": "MondayHoursOpen:07:30;MondayHoursClose:17:00;TuesdayHoursOpen:07:30;TuesdayHoursClose:17:00;WednesdayHoursOpen:07:30;WednesdayHoursClose:17:00;ThursdayHoursOpen:07:30;ThursdayHoursClose:17:00;FridayHoursOpen:07:30;FridayHoursClose:17:00;SaturdayHoursOpen:00:00;SaturdayHoursClose:00:00;SundayHoursOpen:00:00;SundayHoursClose:00:00"
+      }
+    ]
+  },
+  {
+    "EscreenSiteId": 20022,
+    "SiteName": "MedExpress \u2013 Flatiron",
+    "Address1": "867 Varick St, Suite 600",
+    "City": "New York",
+    "State": "NY",
+    "ZipCode": "10014",
+    "PhoneNumber": "2129232719",
+    "Latitude": 40.7364,
+    "Longitude": -74.0062,
+    "GoogleMapsUrl": "https://www.google.com/maps?q=40.7364,-74.0062",
+    "SupportedSpecimenTypes": [
+      "U",
+      "B"
+    ],
+    "Attributes": [
+      {
+        "AttributeName": "Walk In Drug Testing - No Appointment Required",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Handicap Access",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "DOT Certified Physician",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "After Hours Drug Screening",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Public Transportation",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Observed Collections",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Clinic Hours",
+        "AttributeValue": "MondayHoursOpen:07:30;MondayHoursClose:17:00;TuesdayHoursOpen:07:30;TuesdayHoursClose:17:00;WednesdayHoursOpen:07:30;WednesdayHoursClose:17:00;ThursdayHoursOpen:07:30;ThursdayHoursClose:17:00;FridayHoursOpen:07:30;FridayHoursClose:17:00;SaturdayHoursOpen:00:00;SaturdayHoursClose:00:00;SundayHoursOpen:00:00;SundayHoursClose:00:00"
+      }
+    ]
+  },
+  {
+    "EscreenSiteId": 20023,
+    "SiteName": "LabCorp \u2013 Chelsea",
+    "Address1": "126 5th Ave, Suite 700",
+    "City": "New York",
+    "State": "NY",
+    "ZipCode": "10014",
+    "PhoneNumber": "6469190586",
+    "Latitude": 40.7374,
+    "Longitude": -74.0091,
+    "GoogleMapsUrl": "https://www.google.com/maps?q=40.7374,-74.0091",
+    "SupportedSpecimenTypes": [
+      "U",
+      "O"
+    ],
+    "Attributes": [
+      {
+        "AttributeName": "Walk In Drug Testing - No Appointment Required",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Handicap Access",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "DOT Certified Physician",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "After Hours Drug Screening",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Public Transportation",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Observed Collections",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Clinic Hours",
+        "AttributeValue": "MondayHoursOpen:07:30;MondayHoursClose:17:00;TuesdayHoursOpen:07:30;TuesdayHoursClose:17:00;WednesdayHoursOpen:07:30;WednesdayHoursClose:17:00;ThursdayHoursOpen:07:30;ThursdayHoursClose:17:00;FridayHoursOpen:07:30;FridayHoursClose:17:00;SaturdayHoursOpen:08:00;SaturdayHoursClose:13:00;SundayHoursOpen:00:00;SundayHoursClose:00:00"
+      }
+    ]
+  },
+  {
+    "EscreenSiteId": 20024,
+    "SiteName": "MedExpress \u2013 Hell's Kitchen",
+    "Address1": "824 Park Ave, Floor 3",
+    "City": "New York",
+    "State": "NY",
+    "ZipCode": "10016",
+    "PhoneNumber": "6469453147",
+    "Latitude": 40.7489,
+    "Longitude": -73.9788,
+    "GoogleMapsUrl": "https://www.google.com/maps?q=40.7489,-73.9788",
+    "SupportedSpecimenTypes": [
+      "U",
+      "H"
+    ],
+    "Attributes": [
+      {
+        "AttributeName": "Walk In Drug Testing - No Appointment Required",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Handicap Access",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "DOT Certified Physician",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "After Hours Drug Screening",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Public Transportation",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Observed Collections",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Clinic Hours",
+        "AttributeValue": "MondayHoursOpen:07:00;MondayHoursClose:18:30;TuesdayHoursOpen:07:00;TuesdayHoursClose:18:30;WednesdayHoursOpen:07:00;WednesdayHoursClose:18:30;ThursdayHoursOpen:07:00;ThursdayHoursClose:18:30;FridayHoursOpen:07:00;FridayHoursClose:18:30;SaturdayHoursOpen:00:00;SaturdayHoursClose:00:00;SundayHoursOpen:00:00;SundayHoursClose:00:00"
+      }
+    ]
+  },
+  {
+    "EscreenSiteId": 20025,
+    "SiteName": "BioReference Laboratories \u2013 Midtown",
+    "Address1": "364 7th Ave, Floor 5",
+    "City": "New York",
+    "State": "NY",
+    "ZipCode": "10016",
+    "PhoneNumber": "2127770143",
+    "Latitude": 40.7477,
+    "Longitude": -73.9826,
+    "GoogleMapsUrl": "https://www.google.com/maps?q=40.7477,-73.9826",
+    "SupportedSpecimenTypes": [
+      "U",
+      "H",
+      "O"
+    ],
+    "Attributes": [
+      {
+        "AttributeName": "Walk In Drug Testing - No Appointment Required",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Handicap Access",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "DOT Certified Physician",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "After Hours Drug Screening",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Public Transportation",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Observed Collections",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Clinic Hours",
+        "AttributeValue": "MondayHoursOpen:07:30;MondayHoursClose:17:00;TuesdayHoursOpen:07:30;TuesdayHoursClose:17:00;WednesdayHoursOpen:07:30;WednesdayHoursClose:17:00;ThursdayHoursOpen:07:30;ThursdayHoursClose:17:00;FridayHoursOpen:07:30;FridayHoursClose:17:00;SaturdayHoursOpen:00:00;SaturdayHoursClose:00:00;SundayHoursOpen:00:00;SundayHoursClose:00:00"
+      }
+    ]
+  },
+  {
+    "EscreenSiteId": 20026,
+    "SiteName": "GoHealth Urgent Care \u2013 SoHo",
+    "Address1": "413 5th Ave, Suite 200",
+    "City": "New York",
+    "State": "NY",
+    "ZipCode": "10017",
+    "PhoneNumber": "9177498941",
+    "Latitude": 40.7506,
+    "Longitude": -73.9744,
+    "GoogleMapsUrl": "https://www.google.com/maps?q=40.7506,-73.9744",
+    "SupportedSpecimenTypes": [
+      "U"
+    ],
+    "Attributes": [
+      {
+        "AttributeName": "Walk In Drug Testing - No Appointment Required",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Handicap Access",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "DOT Certified Physician",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "After Hours Drug Screening",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Public Transportation",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Observed Collections",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Clinic Hours",
+        "AttributeValue": "MondayHoursOpen:07:30;MondayHoursClose:17:00;TuesdayHoursOpen:07:30;TuesdayHoursClose:17:00;WednesdayHoursOpen:07:30;WednesdayHoursClose:17:00;ThursdayHoursOpen:07:30;ThursdayHoursClose:17:00;FridayHoursOpen:07:30;FridayHoursClose:17:00;SaturdayHoursOpen:00:00;SaturdayHoursClose:00:00;SundayHoursOpen:00:00;SundayHoursClose:00:00"
+      }
+    ]
+  },
+  {
+    "EscreenSiteId": 20027,
+    "SiteName": "Concentra \u2013 Times Square",
+    "Address1": "399 Park Ave, Suite 800",
+    "City": "New York",
+    "State": "NY",
+    "ZipCode": "10017",
+    "PhoneNumber": "6467116719",
+    "Latitude": 40.7482,
+    "Longitude": -73.9776,
+    "GoogleMapsUrl": "https://www.google.com/maps?q=40.7482,-73.9776",
+    "SupportedSpecimenTypes": [
+      "U",
+      "O",
+      "B"
+    ],
+    "Attributes": [
+      {
+        "AttributeName": "Walk In Drug Testing - No Appointment Required",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Handicap Access",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "DOT Certified Physician",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "After Hours Drug Screening",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Public Transportation",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Observed Collections",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Clinic Hours",
+        "AttributeValue": "MondayHoursOpen:07:30;MondayHoursClose:17:00;TuesdayHoursOpen:07:30;TuesdayHoursClose:17:00;WednesdayHoursOpen:07:30;WednesdayHoursClose:17:00;ThursdayHoursOpen:07:30;ThursdayHoursClose:17:00;FridayHoursOpen:07:30;FridayHoursClose:17:00;SaturdayHoursOpen:00:00;SaturdayHoursClose:00:00;SundayHoursOpen:00:00;SundayHoursClose:00:00"
+      }
+    ]
+  },
+  {
+    "EscreenSiteId": 20028,
+    "SiteName": "LabCorp \u2013 Times Square",
+    "Address1": "909 Hudson St, Suite 900",
+    "City": "New York",
+    "State": "NY",
+    "ZipCode": "10018",
+    "PhoneNumber": "2129133412",
+    "Latitude": 40.757,
+    "Longitude": -73.991,
+    "GoogleMapsUrl": "https://www.google.com/maps?q=40.757,-73.991",
+    "SupportedSpecimenTypes": [
+      "U",
+      "H",
+      "B"
+    ],
+    "Attributes": [
+      {
+        "AttributeName": "Walk In Drug Testing - No Appointment Required",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Handicap Access",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "DOT Certified Physician",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "After Hours Drug Screening",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Public Transportation",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Observed Collections",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Clinic Hours",
+        "AttributeValue": "MondayHoursOpen:07:30;MondayHoursClose:17:00;TuesdayHoursOpen:07:30;TuesdayHoursClose:17:00;WednesdayHoursOpen:07:30;WednesdayHoursClose:17:00;ThursdayHoursOpen:07:30;ThursdayHoursClose:17:00;FridayHoursOpen:07:30;FridayHoursClose:17:00;SaturdayHoursOpen:00:00;SaturdayHoursClose:00:00;SundayHoursOpen:00:00;SundayHoursClose:00:00"
+      }
+    ]
+  },
+  {
+    "EscreenSiteId": 20029,
+    "SiteName": "Carbon Health \u2013 Flatiron",
+    "Address1": "389 Avenue of the Americas, Suite 400",
+    "City": "New York",
+    "State": "NY",
+    "ZipCode": "10018",
+    "PhoneNumber": "9173242102",
+    "Latitude": 40.7512,
+    "Longitude": -73.9936,
+    "GoogleMapsUrl": "https://www.google.com/maps?q=40.7512,-73.9936",
+    "SupportedSpecimenTypes": [
+      "U"
+    ],
+    "Attributes": [
+      {
+        "AttributeName": "Walk In Drug Testing - No Appointment Required",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Handicap Access",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "DOT Certified Physician",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "After Hours Drug Screening",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Public Transportation",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Observed Collections",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Clinic Hours",
+        "AttributeValue": "MondayHoursOpen:07:30;MondayHoursClose:17:00;TuesdayHoursOpen:07:30;TuesdayHoursClose:17:00;WednesdayHoursOpen:07:30;WednesdayHoursClose:17:00;ThursdayHoursOpen:07:30;ThursdayHoursClose:17:00;FridayHoursOpen:07:30;FridayHoursClose:17:00;SaturdayHoursOpen:00:00;SaturdayHoursClose:00:00;SundayHoursOpen:00:00;SundayHoursClose:00:00"
+      }
+    ]
+  },
+  {
+    "EscreenSiteId": 20030,
+    "SiteName": "Carbon Health \u2013 Financial District",
+    "Address1": "612 Varick St, Floor 8",
+    "City": "New York",
+    "State": "NY",
+    "ZipCode": "10018",
+    "PhoneNumber": "9179904902",
+    "Latitude": 40.7565,
+    "Longitude": -73.9884,
+    "GoogleMapsUrl": "https://www.google.com/maps?q=40.7565,-73.9884",
+    "SupportedSpecimenTypes": [
+      "U",
+      "H"
+    ],
+    "Attributes": [
+      {
+        "AttributeName": "Walk In Drug Testing - No Appointment Required",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Handicap Access",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "DOT Certified Physician",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "After Hours Drug Screening",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Public Transportation",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Observed Collections",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Clinic Hours",
+        "AttributeValue": "MondayHoursOpen:07:30;MondayHoursClose:17:00;TuesdayHoursOpen:07:30;TuesdayHoursClose:17:00;WednesdayHoursOpen:07:30;WednesdayHoursClose:17:00;ThursdayHoursOpen:07:30;ThursdayHoursClose:17:00;FridayHoursOpen:07:30;FridayHoursClose:17:00;SaturdayHoursOpen:08:00;SaturdayHoursClose:13:00;SundayHoursOpen:00:00;SundayHoursClose:00:00"
+      }
+    ]
+  },
+  {
+    "EscreenSiteId": 20031,
+    "SiteName": "Carbon Health \u2013 Downtown",
+    "Address1": "428 Lexington Ave, Suite 600",
+    "City": "New York",
+    "State": "NY",
+    "ZipCode": "10019",
+    "PhoneNumber": "2125451680",
+    "Latitude": 40.7656,
+    "Longitude": -73.9873,
+    "GoogleMapsUrl": "https://www.google.com/maps?q=40.7656,-73.9873",
+    "SupportedSpecimenTypes": [
+      "U"
+    ],
+    "Attributes": [
+      {
+        "AttributeName": "Walk In Drug Testing - No Appointment Required",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Handicap Access",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "DOT Certified Physician",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "After Hours Drug Screening",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Public Transportation",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Observed Collections",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Clinic Hours",
+        "AttributeValue": "MondayHoursOpen:07:30;MondayHoursClose:17:00;TuesdayHoursOpen:07:30;TuesdayHoursClose:17:00;WednesdayHoursOpen:07:30;WednesdayHoursClose:17:00;ThursdayHoursOpen:07:30;ThursdayHoursClose:17:00;FridayHoursOpen:07:30;FridayHoursClose:17:00;SaturdayHoursOpen:08:00;SaturdayHoursClose:13:00;SundayHoursOpen:00:00;SundayHoursClose:00:00"
+      }
+    ]
+  },
+  {
+    "EscreenSiteId": 20032,
+    "SiteName": "Carbon Health \u2013 SoHo",
+    "Address1": "662 Park Ave, Floor 8",
+    "City": "New York",
+    "State": "NY",
+    "ZipCode": "10019",
+    "PhoneNumber": "6468086131",
+    "Latitude": 40.7679,
+    "Longitude": -73.989,
+    "GoogleMapsUrl": "https://www.google.com/maps?q=40.7679,-73.989",
+    "SupportedSpecimenTypes": [
+      "U",
+      "H",
+      "O"
+    ],
+    "Attributes": [
+      {
+        "AttributeName": "Walk In Drug Testing - No Appointment Required",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Handicap Access",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "DOT Certified Physician",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "After Hours Drug Screening",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Public Transportation",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Observed Collections",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Clinic Hours",
+        "AttributeValue": "MondayHoursOpen:07:30;MondayHoursClose:17:00;TuesdayHoursOpen:07:30;TuesdayHoursClose:17:00;WednesdayHoursOpen:07:30;WednesdayHoursClose:17:00;ThursdayHoursOpen:07:30;ThursdayHoursClose:17:00;FridayHoursOpen:07:30;FridayHoursClose:17:00;SaturdayHoursOpen:00:00;SaturdayHoursClose:00:00;SundayHoursOpen:00:00;SundayHoursClose:00:00"
+      }
+    ]
+  },
+  {
+    "EscreenSiteId": 20033,
+    "SiteName": "AFC Urgent Care \u2013 Hell's Kitchen",
+    "Address1": "349 Avenue of the Americas, Suite 300",
+    "City": "New York",
+    "State": "NY",
+    "ZipCode": "10022",
+    "PhoneNumber": "6465840449",
+    "Latitude": 40.7609,
+    "Longitude": -73.9635,
+    "GoogleMapsUrl": "https://www.google.com/maps?q=40.7609,-73.9635",
+    "SupportedSpecimenTypes": [
+      "U"
+    ],
+    "Attributes": [
+      {
+        "AttributeName": "Walk In Drug Testing - No Appointment Required",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Handicap Access",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "DOT Certified Physician",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "After Hours Drug Screening",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Public Transportation",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Observed Collections",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Clinic Hours",
+        "AttributeValue": "MondayHoursOpen:07:30;MondayHoursClose:17:00;TuesdayHoursOpen:07:30;TuesdayHoursClose:17:00;WednesdayHoursOpen:07:30;WednesdayHoursClose:17:00;ThursdayHoursOpen:07:30;ThursdayHoursClose:17:00;FridayHoursOpen:07:30;FridayHoursClose:17:00;SaturdayHoursOpen:00:00;SaturdayHoursClose:00:00;SundayHoursOpen:00:00;SundayHoursClose:00:00"
+      }
+    ]
+  },
+  {
+    "EscreenSiteId": 20034,
+    "SiteName": "BioReference Laboratories \u2013 Gramercy",
+    "Address1": "429 Madison Ave, Suite 400",
+    "City": "New York",
+    "State": "NY",
+    "ZipCode": "10022",
+    "PhoneNumber": "6466270289",
+    "Latitude": 40.7603,
+    "Longitude": -73.9683,
+    "GoogleMapsUrl": "https://www.google.com/maps?q=40.7603,-73.9683",
+    "SupportedSpecimenTypes": [
+      "U",
+      "H",
+      "O"
+    ],
+    "Attributes": [
+      {
+        "AttributeName": "Walk In Drug Testing - No Appointment Required",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Handicap Access",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "DOT Certified Physician",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "After Hours Drug Screening",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Public Transportation",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Observed Collections",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Clinic Hours",
+        "AttributeValue": "MondayHoursOpen:07:30;MondayHoursClose:17:00;TuesdayHoursOpen:07:30;TuesdayHoursClose:17:00;WednesdayHoursOpen:07:30;WednesdayHoursClose:17:00;ThursdayHoursOpen:07:30;ThursdayHoursClose:17:00;FridayHoursOpen:07:30;FridayHoursClose:17:00;SaturdayHoursOpen:08:00;SaturdayHoursClose:13:00;SundayHoursOpen:00:00;SundayHoursClose:00:00"
+      }
+    ]
+  },
+  {
+    "EscreenSiteId": 20035,
+    "SiteName": "Concentra \u2013 Upper West Side",
+    "Address1": "176 Avenue of the Americas, Floor 6",
+    "City": "New York",
+    "State": "NY",
+    "ZipCode": "10036",
+    "PhoneNumber": "6467809134",
+    "Latitude": 40.7623,
+    "Longitude": -73.987,
+    "GoogleMapsUrl": "https://www.google.com/maps?q=40.7623,-73.987",
+    "SupportedSpecimenTypes": [
+      "U"
+    ],
+    "Attributes": [
+      {
+        "AttributeName": "Walk In Drug Testing - No Appointment Required",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Handicap Access",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "DOT Certified Physician",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "After Hours Drug Screening",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Public Transportation",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Observed Collections",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Clinic Hours",
+        "AttributeValue": "MondayHoursOpen:07:30;MondayHoursClose:17:00;TuesdayHoursOpen:07:30;TuesdayHoursClose:17:00;WednesdayHoursOpen:07:30;WednesdayHoursClose:17:00;ThursdayHoursOpen:07:30;ThursdayHoursClose:17:00;FridayHoursOpen:07:30;FridayHoursClose:17:00;SaturdayHoursOpen:08:00;SaturdayHoursClose:13:00;SundayHoursOpen:00:00;SundayHoursClose:00:00"
+      }
+    ]
+  },
+  {
+    "EscreenSiteId": 20036,
+    "SiteName": "Carbon Health \u2013 Chelsea",
+    "Address1": "147 7th Ave, Suite 500",
+    "City": "New York",
+    "State": "NY",
+    "ZipCode": "10038",
+    "PhoneNumber": "2121969379",
+    "Latitude": 40.7101,
+    "Longitude": -74.0002,
+    "GoogleMapsUrl": "https://www.google.com/maps?q=40.7101,-74.0002",
+    "SupportedSpecimenTypes": [
+      "U",
+      "H",
+      "B"
+    ],
+    "Attributes": [
+      {
+        "AttributeName": "Walk In Drug Testing - No Appointment Required",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Handicap Access",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "DOT Certified Physician",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "After Hours Drug Screening",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Public Transportation",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Observed Collections",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Clinic Hours",
+        "AttributeValue": "MondayHoursOpen:07:00;MondayHoursClose:18:30;TuesdayHoursOpen:07:00;TuesdayHoursClose:18:30;WednesdayHoursOpen:07:00;WednesdayHoursClose:18:30;ThursdayHoursOpen:07:00;ThursdayHoursClose:18:30;FridayHoursOpen:07:00;FridayHoursClose:18:30;SaturdayHoursOpen:08:00;SaturdayHoursClose:13:00;SundayHoursOpen:00:00;SundayHoursClose:00:00"
+      }
+    ]
+  },
+  {
+    "EscreenSiteId": 20037,
+    "SiteName": "Carbon Health \u2013 Murray Hill",
+    "Address1": "552 7th Ave, Suite 500",
+    "City": "New York",
+    "State": "NY",
+    "ZipCode": "10038",
+    "PhoneNumber": "6461369594",
+    "Latitude": 40.7099,
+    "Longitude": -74.0061,
+    "GoogleMapsUrl": "https://www.google.com/maps?q=40.7099,-74.0061",
+    "SupportedSpecimenTypes": [
+      "U"
+    ],
+    "Attributes": [
+      {
+        "AttributeName": "Walk In Drug Testing - No Appointment Required",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Handicap Access",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "DOT Certified Physician",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "After Hours Drug Screening",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Public Transportation",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Observed Collections",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Clinic Hours",
+        "AttributeValue": "MondayHoursOpen:07:30;MondayHoursClose:17:00;TuesdayHoursOpen:07:30;TuesdayHoursClose:17:00;WednesdayHoursOpen:07:30;WednesdayHoursClose:17:00;ThursdayHoursOpen:07:30;ThursdayHoursClose:17:00;FridayHoursOpen:07:30;FridayHoursClose:17:00;SaturdayHoursOpen:00:00;SaturdayHoursClose:00:00;SundayHoursOpen:00:00;SundayHoursClose:00:00"
+      }
+    ]
+  },
+  {
+    "EscreenSiteId": 20038,
+    "SiteName": "Northwell Health Labs \u2013 West Village",
+    "Address1": "720 Avenue of the Americas, Floor 4",
+    "City": "New York",
+    "State": "NY",
+    "ZipCode": "10038",
+    "PhoneNumber": "9172104709",
+    "Latitude": 40.7107,
+    "Longitude": -73.9996,
+    "GoogleMapsUrl": "https://www.google.com/maps?q=40.7107,-73.9996",
+    "SupportedSpecimenTypes": [
+      "U",
+      "H",
+      "O"
+    ],
+    "Attributes": [
+      {
+        "AttributeName": "Walk In Drug Testing - No Appointment Required",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Handicap Access",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "DOT Certified Physician",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "After Hours Drug Screening",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Public Transportation",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Observed Collections",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Clinic Hours",
+        "AttributeValue": "MondayHoursOpen:07:30;MondayHoursClose:17:00;TuesdayHoursOpen:07:30;TuesdayHoursClose:17:00;WednesdayHoursOpen:07:30;WednesdayHoursClose:17:00;ThursdayHoursOpen:07:30;ThursdayHoursClose:17:00;FridayHoursOpen:07:30;FridayHoursClose:17:00;SaturdayHoursOpen:00:00;SaturdayHoursClose:00:00;SundayHoursOpen:00:00;SundayHoursClose:00:00"
+      }
+    ]
+  },
+  {
+    "EscreenSiteId": 20039,
+    "SiteName": "GoHealth Urgent Care \u2013 Downtown",
+    "Address1": "950 Hudson St, Floor 8",
+    "City": "Jersey City",
+    "State": "NJ",
+    "ZipCode": "07302",
+    "PhoneNumber": "2016851604",
+    "Latitude": 40.718,
+    "Longitude": -74.0398,
+    "GoogleMapsUrl": "https://www.google.com/maps?q=40.718,-74.0398",
+    "SupportedSpecimenTypes": [
+      "U",
+      "H"
+    ],
+    "Attributes": [
+      {
+        "AttributeName": "Walk In Drug Testing - No Appointment Required",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Handicap Access",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "DOT Certified Physician",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "After Hours Drug Screening",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Public Transportation",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Observed Collections",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Clinic Hours",
+        "AttributeValue": "MondayHoursOpen:08:00;MondayHoursClose:17:00;TuesdayHoursOpen:08:00;TuesdayHoursClose:17:00;WednesdayHoursOpen:08:00;WednesdayHoursClose:17:00;ThursdayHoursOpen:08:00;ThursdayHoursClose:17:00;FridayHoursOpen:08:00;FridayHoursClose:17:00;SaturdayHoursOpen:00:00;SaturdayHoursClose:00:00;SundayHoursOpen:00:00;SundayHoursClose:00:00"
+      }
+    ]
+  },
+  {
+    "EscreenSiteId": 20040,
+    "SiteName": "BioReference Laboratories \u2013 Journal Square",
+    "Address1": "734 Observer Hwy, Floor 4",
+    "City": "Jersey City",
+    "State": "NJ",
+    "ZipCode": "07304",
+    "PhoneNumber": "2010471138",
+    "Latitude": 40.7261,
+    "Longitude": -74.0671,
+    "GoogleMapsUrl": "https://www.google.com/maps?q=40.7261,-74.0671",
+    "SupportedSpecimenTypes": [
+      "U",
+      "H"
+    ],
+    "Attributes": [
+      {
+        "AttributeName": "Walk In Drug Testing - No Appointment Required",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Handicap Access",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "DOT Certified Physician",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "After Hours Drug Screening",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Public Transportation",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Observed Collections",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Clinic Hours",
+        "AttributeValue": "MondayHoursOpen:08:00;MondayHoursClose:17:00;TuesdayHoursOpen:08:00;TuesdayHoursClose:17:00;WednesdayHoursOpen:08:00;WednesdayHoursClose:17:00;ThursdayHoursOpen:08:00;ThursdayHoursClose:17:00;FridayHoursOpen:08:00;FridayHoursClose:17:00;SaturdayHoursOpen:00:00;SaturdayHoursClose:00:00;SundayHoursOpen:00:00;SundayHoursClose:00:00"
+      }
+    ]
+  },
+  {
+    "EscreenSiteId": 20041,
+    "SiteName": "MedExpress \u2013 Powerhouse Arts District",
+    "Address1": "524 Marin Blvd, Suite 800",
+    "City": "Jersey City",
+    "State": "NJ",
+    "ZipCode": "07304",
+    "PhoneNumber": "2015158506",
+    "Latitude": 40.7266,
+    "Longitude": -74.0697,
+    "GoogleMapsUrl": "https://www.google.com/maps?q=40.7266,-74.0697",
+    "SupportedSpecimenTypes": [
+      "U",
+      "H"
+    ],
+    "Attributes": [
+      {
+        "AttributeName": "Walk In Drug Testing - No Appointment Required",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Handicap Access",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "DOT Certified Physician",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "After Hours Drug Screening",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Public Transportation",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Observed Collections",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Clinic Hours",
+        "AttributeValue": "MondayHoursOpen:08:00;MondayHoursClose:17:00;TuesdayHoursOpen:08:00;TuesdayHoursClose:17:00;WednesdayHoursOpen:08:00;WednesdayHoursClose:17:00;ThursdayHoursOpen:08:00;ThursdayHoursClose:17:00;FridayHoursOpen:08:00;FridayHoursClose:17:00;SaturdayHoursOpen:00:00;SaturdayHoursClose:00:00;SundayHoursOpen:00:00;SundayHoursClose:00:00"
+      }
+    ]
+  },
+  {
+    "EscreenSiteId": 20042,
+    "SiteName": "Northwell Health Labs \u2013 Newport",
+    "Address1": "228 Observer Hwy, Suite 200",
+    "City": "Jersey City",
+    "State": "NJ",
+    "ZipCode": "07305",
+    "PhoneNumber": "2014228421",
+    "Latitude": 40.6942,
+    "Longitude": -74.0802,
+    "GoogleMapsUrl": "https://www.google.com/maps?q=40.6942,-74.0802",
+    "SupportedSpecimenTypes": [
+      "U",
+      "O",
+      "B"
+    ],
+    "Attributes": [
+      {
+        "AttributeName": "Walk In Drug Testing - No Appointment Required",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Handicap Access",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "DOT Certified Physician",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "After Hours Drug Screening",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Public Transportation",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Observed Collections",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Clinic Hours",
+        "AttributeValue": "MondayHoursOpen:08:00;MondayHoursClose:17:00;TuesdayHoursOpen:08:00;TuesdayHoursClose:17:00;WednesdayHoursOpen:08:00;WednesdayHoursClose:17:00;ThursdayHoursOpen:08:00;ThursdayHoursClose:17:00;FridayHoursOpen:08:00;FridayHoursClose:17:00;SaturdayHoursOpen:00:00;SaturdayHoursClose:00:00;SundayHoursOpen:00:00;SundayHoursClose:00:00"
+      }
+    ]
+  },
+  {
+    "EscreenSiteId": 20043,
+    "SiteName": "Concentra \u2013 Heights",
+    "Address1": "638 Newark Ave, Suite 200",
+    "City": "Jersey City",
+    "State": "NJ",
+    "ZipCode": "07306",
+    "PhoneNumber": "2018470076",
+    "Latitude": 40.7293,
+    "Longitude": -74.0614,
+    "GoogleMapsUrl": "https://www.google.com/maps?q=40.7293,-74.0614",
+    "SupportedSpecimenTypes": [
+      "U",
+      "H",
+      "O"
+    ],
+    "Attributes": [
+      {
+        "AttributeName": "Walk In Drug Testing - No Appointment Required",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Handicap Access",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "DOT Certified Physician",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "After Hours Drug Screening",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Public Transportation",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Observed Collections",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Clinic Hours",
+        "AttributeValue": "MondayHoursOpen:08:00;MondayHoursClose:17:00;TuesdayHoursOpen:08:00;TuesdayHoursClose:17:00;WednesdayHoursOpen:08:00;WednesdayHoursClose:17:00;ThursdayHoursOpen:08:00;ThursdayHoursClose:17:00;FridayHoursOpen:08:00;FridayHoursClose:17:00;SaturdayHoursOpen:00:00;SaturdayHoursClose:00:00;SundayHoursOpen:00:00;SundayHoursClose:00:00"
+      }
+    ]
+  },
+  {
+    "EscreenSiteId": 20044,
+    "SiteName": "Concentra \u2013 Hoboken Center",
+    "Address1": "699 Observer Hwy, Suite 600",
+    "City": "Jersey City",
+    "State": "NJ",
+    "ZipCode": "07307",
+    "PhoneNumber": "2018367365",
+    "Latitude": 40.7482,
+    "Longitude": -74.0497,
+    "GoogleMapsUrl": "https://www.google.com/maps?q=40.7482,-74.0497",
+    "SupportedSpecimenTypes": [
+      "U"
+    ],
+    "Attributes": [
+      {
+        "AttributeName": "Walk In Drug Testing - No Appointment Required",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Handicap Access",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "DOT Certified Physician",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "After Hours Drug Screening",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Public Transportation",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Observed Collections",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Clinic Hours",
+        "AttributeValue": "MondayHoursOpen:08:00;MondayHoursClose:17:00;TuesdayHoursOpen:08:00;TuesdayHoursClose:17:00;WednesdayHoursOpen:08:00;WednesdayHoursClose:17:00;ThursdayHoursOpen:08:00;ThursdayHoursClose:17:00;FridayHoursOpen:08:00;FridayHoursClose:17:00;SaturdayHoursOpen:00:00;SaturdayHoursClose:00:00;SundayHoursOpen:00:00;SundayHoursClose:00:00"
+      }
+    ]
+  },
+  {
+    "EscreenSiteId": 20045,
+    "SiteName": "Concentra \u2013 Bayfront",
+    "Address1": "195 Kennedy Blvd, Suite 600",
+    "City": "Jersey City",
+    "State": "NJ",
+    "ZipCode": "07310",
+    "PhoneNumber": "5516049451",
+    "Latitude": 40.7225,
+    "Longitude": -74.0343,
+    "GoogleMapsUrl": "https://www.google.com/maps?q=40.7225,-74.0343",
+    "SupportedSpecimenTypes": [
+      "U",
+      "O"
+    ],
+    "Attributes": [
+      {
+        "AttributeName": "Walk In Drug Testing - No Appointment Required",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Handicap Access",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "DOT Certified Physician",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "After Hours Drug Screening",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Public Transportation",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Observed Collections",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Clinic Hours",
+        "AttributeValue": "MondayHoursOpen:08:00;MondayHoursClose:17:00;TuesdayHoursOpen:08:00;TuesdayHoursClose:17:00;WednesdayHoursOpen:08:00;WednesdayHoursClose:17:00;ThursdayHoursOpen:08:00;ThursdayHoursClose:17:00;FridayHoursOpen:08:00;FridayHoursClose:17:00;SaturdayHoursOpen:08:00;SaturdayHoursClose:13:00;SundayHoursOpen:00:00;SundayHoursClose:00:00"
+      }
+    ]
+  },
+  {
+    "EscreenSiteId": 20046,
+    "SiteName": "BioReference Laboratories \u2013 Journal Square",
+    "Address1": "926 Kennedy Blvd, Suite 900",
+    "City": "Hoboken",
+    "State": "NJ",
+    "ZipCode": "07030",
+    "PhoneNumber": "5515502296",
+    "Latitude": 40.7461,
+    "Longitude": -74.0318,
+    "GoogleMapsUrl": "https://www.google.com/maps?q=40.7461,-74.0318",
+    "SupportedSpecimenTypes": [
+      "U",
+      "H"
+    ],
+    "Attributes": [
+      {
+        "AttributeName": "Walk In Drug Testing - No Appointment Required",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Handicap Access",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "DOT Certified Physician",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "After Hours Drug Screening",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Public Transportation",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Observed Collections",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Clinic Hours",
+        "AttributeValue": "MondayHoursOpen:08:00;MondayHoursClose:17:00;TuesdayHoursOpen:08:00;TuesdayHoursClose:17:00;WednesdayHoursOpen:08:00;WednesdayHoursClose:17:00;ThursdayHoursOpen:08:00;ThursdayHoursClose:17:00;FridayHoursOpen:08:00;FridayHoursClose:17:00;SaturdayHoursOpen:08:00;SaturdayHoursClose:13:00;SundayHoursOpen:00:00;SundayHoursClose:00:00"
+      }
+    ]
+  },
+  {
+    "EscreenSiteId": 20047,
+    "SiteName": "MedExpress \u2013 Heights",
+    "Address1": "419 Marin Blvd, Floor 2",
+    "City": "Hoboken",
+    "State": "NJ",
+    "ZipCode": "07030",
+    "PhoneNumber": "5517976438",
+    "Latitude": 40.7436,
+    "Longitude": -74.0351,
+    "GoogleMapsUrl": "https://www.google.com/maps?q=40.7436,-74.0351",
+    "SupportedSpecimenTypes": [
+      "U",
+      "H",
+      "B"
+    ],
+    "Attributes": [
+      {
+        "AttributeName": "Walk In Drug Testing - No Appointment Required",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Handicap Access",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "DOT Certified Physician",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "After Hours Drug Screening",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Public Transportation",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Observed Collections",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Clinic Hours",
+        "AttributeValue": "MondayHoursOpen:08:00;MondayHoursClose:17:00;TuesdayHoursOpen:08:00;TuesdayHoursClose:17:00;WednesdayHoursOpen:08:00;WednesdayHoursClose:17:00;ThursdayHoursOpen:08:00;ThursdayHoursClose:17:00;FridayHoursOpen:08:00;FridayHoursClose:17:00;SaturdayHoursOpen:00:00;SaturdayHoursClose:00:00;SundayHoursOpen:00:00;SundayHoursClose:00:00"
+      }
+    ]
+  },
+  {
+    "EscreenSiteId": 20048,
+    "SiteName": "Quest Diagnostics \u2013 Downtown",
+    "Address1": "107 Hudson St, Floor 4",
+    "City": "Union City",
+    "State": "NJ",
+    "ZipCode": "07087",
+    "PhoneNumber": "2016838851",
+    "Latitude": 40.7668,
+    "Longitude": -74.0316,
+    "GoogleMapsUrl": "https://www.google.com/maps?q=40.7668,-74.0316",
+    "SupportedSpecimenTypes": [
+      "U",
+      "H"
+    ],
+    "Attributes": [
+      {
+        "AttributeName": "Walk In Drug Testing - No Appointment Required",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Handicap Access",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "DOT Certified Physician",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "After Hours Drug Screening",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Public Transportation",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Observed Collections",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Clinic Hours",
+        "AttributeValue": "MondayHoursOpen:08:00;MondayHoursClose:17:00;TuesdayHoursOpen:08:00;TuesdayHoursClose:17:00;WednesdayHoursOpen:08:00;WednesdayHoursClose:17:00;ThursdayHoursOpen:08:00;ThursdayHoursClose:17:00;FridayHoursOpen:08:00;FridayHoursClose:17:00;SaturdayHoursOpen:00:00;SaturdayHoursClose:00:00;SundayHoursOpen:00:00;SundayHoursClose:00:00"
+      }
+    ]
+  },
+  {
+    "EscreenSiteId": 20049,
+    "SiteName": "BioReference Laboratories \u2013 Powerhouse Arts District",
+    "Address1": "527 Washington Blvd, Suite 700",
+    "City": "Union City",
+    "State": "NJ",
+    "ZipCode": "07087",
+    "PhoneNumber": "2016136968",
+    "Latitude": 40.7682,
+    "Longitude": -74.0307,
+    "GoogleMapsUrl": "https://www.google.com/maps?q=40.7682,-74.0307",
+    "SupportedSpecimenTypes": [
+      "U",
+      "H"
+    ],
+    "Attributes": [
+      {
+        "AttributeName": "Walk In Drug Testing - No Appointment Required",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Handicap Access",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "DOT Certified Physician",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "After Hours Drug Screening",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Public Transportation",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Observed Collections",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Clinic Hours",
+        "AttributeValue": "MondayHoursOpen:08:00;MondayHoursClose:17:00;TuesdayHoursOpen:08:00;TuesdayHoursClose:17:00;WednesdayHoursOpen:08:00;WednesdayHoursClose:17:00;ThursdayHoursOpen:08:00;ThursdayHoursClose:17:00;FridayHoursOpen:08:00;FridayHoursClose:17:00;SaturdayHoursOpen:08:00;SaturdayHoursClose:13:00;SundayHoursOpen:00:00;SundayHoursClose:00:00"
+      }
+    ]
+  },
+  {
+    "EscreenSiteId": 20050,
+    "SiteName": "LabCorp \u2013 Bayfront",
+    "Address1": "457 Washington Blvd, Suite 300",
+    "City": "West New York",
+    "State": "NJ",
+    "ZipCode": "07093",
+    "PhoneNumber": "2017799799",
+    "Latitude": 40.7878,
+    "Longitude": -74.0106,
+    "GoogleMapsUrl": "https://www.google.com/maps?q=40.7878,-74.0106",
+    "SupportedSpecimenTypes": [
+      "U",
+      "H"
+    ],
+    "Attributes": [
+      {
+        "AttributeName": "Walk In Drug Testing - No Appointment Required",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Handicap Access",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "DOT Certified Physician",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "After Hours Drug Screening",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Public Transportation",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Observed Collections",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Clinic Hours",
+        "AttributeValue": "MondayHoursOpen:08:00;MondayHoursClose:17:00;TuesdayHoursOpen:08:00;TuesdayHoursClose:17:00;WednesdayHoursOpen:08:00;WednesdayHoursClose:17:00;ThursdayHoursOpen:08:00;ThursdayHoursClose:17:00;FridayHoursOpen:08:00;FridayHoursClose:17:00;SaturdayHoursOpen:00:00;SaturdayHoursClose:00:00;SundayHoursOpen:00:00;SundayHoursClose:00:00"
+      }
+    ]
+  },
+  {
+    "EscreenSiteId": 20051,
+    "SiteName": "AFC Urgent Care \u2013 Newport",
+    "Address1": "572 Kennedy Blvd, Suite 100",
+    "City": "Weehawken",
+    "State": "NJ",
+    "ZipCode": "07086",
+    "PhoneNumber": "5517980793",
+    "Latitude": 40.7686,
+    "Longitude": -74.0237,
+    "GoogleMapsUrl": "https://www.google.com/maps?q=40.7686,-74.0237",
+    "SupportedSpecimenTypes": [
+      "U",
+      "H",
+      "B"
+    ],
+    "Attributes": [
+      {
+        "AttributeName": "Walk In Drug Testing - No Appointment Required",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Handicap Access",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "DOT Certified Physician",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "After Hours Drug Screening",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Public Transportation",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Observed Collections",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Clinic Hours",
+        "AttributeValue": "MondayHoursOpen:08:00;MondayHoursClose:17:00;TuesdayHoursOpen:08:00;TuesdayHoursClose:17:00;WednesdayHoursOpen:08:00;WednesdayHoursClose:17:00;ThursdayHoursOpen:08:00;ThursdayHoursClose:17:00;FridayHoursOpen:08:00;FridayHoursClose:17:00;SaturdayHoursOpen:08:00;SaturdayHoursClose:13:00;SundayHoursOpen:00:00;SundayHoursClose:00:00"
+      }
+    ]
+  },
+  {
+    "EscreenSiteId": 20052,
+    "SiteName": "BioReference Laboratories \u2013 Hoboken Center",
+    "Address1": "353 Marin Blvd, Floor 8",
+    "City": "Weehawken",
+    "State": "NJ",
+    "ZipCode": "07086",
+    "PhoneNumber": "2015151864",
+    "Latitude": 40.7698,
+    "Longitude": -74.0229,
+    "GoogleMapsUrl": "https://www.google.com/maps?q=40.7698,-74.0229",
+    "SupportedSpecimenTypes": [
+      "U",
+      "H"
+    ],
+    "Attributes": [
+      {
+        "AttributeName": "Walk In Drug Testing - No Appointment Required",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Handicap Access",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "DOT Certified Physician",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "After Hours Drug Screening",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Public Transportation",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Observed Collections",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Clinic Hours",
+        "AttributeValue": "MondayHoursOpen:08:00;MondayHoursClose:17:00;TuesdayHoursOpen:08:00;TuesdayHoursClose:17:00;WednesdayHoursOpen:08:00;WednesdayHoursClose:17:00;ThursdayHoursOpen:08:00;ThursdayHoursClose:17:00;FridayHoursOpen:08:00;FridayHoursClose:17:00;SaturdayHoursOpen:00:00;SaturdayHoursClose:00:00;SundayHoursOpen:00:00;SundayHoursClose:00:00"
+      }
+    ]
+  },
+  {
+    "EscreenSiteId": 20053,
+    "SiteName": "Concentra \u2013 Downtown",
+    "Address1": "778 Kennedy Blvd, Suite 200",
+    "City": "North Bergen",
+    "State": "NJ",
+    "ZipCode": "07047",
+    "PhoneNumber": "2016850542",
+    "Latitude": 40.7978,
+    "Longitude": -74.0117,
+    "GoogleMapsUrl": "https://www.google.com/maps?q=40.7978,-74.0117",
+    "SupportedSpecimenTypes": [
+      "U"
+    ],
+    "Attributes": [
+      {
+        "AttributeName": "Walk In Drug Testing - No Appointment Required",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Handicap Access",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "DOT Certified Physician",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "After Hours Drug Screening",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Public Transportation",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Observed Collections",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Clinic Hours",
+        "AttributeValue": "MondayHoursOpen:08:00;MondayHoursClose:17:00;TuesdayHoursOpen:08:00;TuesdayHoursClose:17:00;WednesdayHoursOpen:08:00;WednesdayHoursClose:17:00;ThursdayHoursOpen:08:00;ThursdayHoursClose:17:00;FridayHoursOpen:08:00;FridayHoursClose:17:00;SaturdayHoursOpen:08:00;SaturdayHoursClose:13:00;SundayHoursOpen:00:00;SundayHoursClose:00:00"
+      }
+    ]
+  },
+  {
+    "EscreenSiteId": 20054,
+    "SiteName": "AFC Urgent Care \u2013 Journal Square",
+    "Address1": "856 Observer Hwy, Suite 600",
+    "City": "Harrison",
+    "State": "NJ",
+    "ZipCode": "07029",
+    "PhoneNumber": "2017065379",
+    "Latitude": 40.7391,
+    "Longitude": -74.1541,
+    "GoogleMapsUrl": "https://www.google.com/maps?q=40.7391,-74.1541",
+    "SupportedSpecimenTypes": [
+      "U",
+      "H"
+    ],
+    "Attributes": [
+      {
+        "AttributeName": "Walk In Drug Testing - No Appointment Required",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Handicap Access",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "DOT Certified Physician",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "After Hours Drug Screening",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Public Transportation",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Observed Collections",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Clinic Hours",
+        "AttributeValue": "MondayHoursOpen:08:00;MondayHoursClose:17:00;TuesdayHoursOpen:08:00;TuesdayHoursClose:17:00;WednesdayHoursOpen:08:00;WednesdayHoursClose:17:00;ThursdayHoursOpen:08:00;ThursdayHoursClose:17:00;FridayHoursOpen:08:00;FridayHoursClose:17:00;SaturdayHoursOpen:00:00;SaturdayHoursClose:00:00;SundayHoursOpen:00:00;SundayHoursClose:00:00"
+      }
+    ]
+  },
+  {
+    "EscreenSiteId": 20055,
+    "SiteName": "Carbon Health \u2013 Hoboken Center",
+    "Address1": "551 Kennedy Blvd, Floor 7",
+    "City": "Kearny",
+    "State": "NJ",
+    "ZipCode": "07032",
+    "PhoneNumber": "2017581814",
+    "Latitude": 40.7617,
+    "Longitude": -74.1379,
+    "GoogleMapsUrl": "https://www.google.com/maps?q=40.7617,-74.1379",
+    "SupportedSpecimenTypes": [
+      "U",
+      "H",
+      "O"
+    ],
+    "Attributes": [
+      {
+        "AttributeName": "Walk In Drug Testing - No Appointment Required",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Handicap Access",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "DOT Certified Physician",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "After Hours Drug Screening",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Public Transportation",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Observed Collections",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Clinic Hours",
+        "AttributeValue": "MondayHoursOpen:08:00;MondayHoursClose:17:00;TuesdayHoursOpen:08:00;TuesdayHoursClose:17:00;WednesdayHoursOpen:08:00;WednesdayHoursClose:17:00;ThursdayHoursOpen:08:00;ThursdayHoursClose:17:00;FridayHoursOpen:08:00;FridayHoursClose:17:00;SaturdayHoursOpen:00:00;SaturdayHoursClose:00:00;SundayHoursOpen:00:00;SundayHoursClose:00:00"
+      }
+    ]
+  },
+  {
+    "EscreenSiteId": 20056,
+    "SiteName": "LabCorp \u2013 Heights",
+    "Address1": "127 Kennedy Blvd, Suite 700",
+    "City": "Kearny",
+    "State": "NJ",
+    "ZipCode": "07032",
+    "PhoneNumber": "5512204727",
+    "Latitude": 40.7653,
+    "Longitude": -74.1384,
+    "GoogleMapsUrl": "https://www.google.com/maps?q=40.7653,-74.1384",
+    "SupportedSpecimenTypes": [
+      "U",
+      "H",
+      "O",
+      "B"
+    ],
+    "Attributes": [
+      {
+        "AttributeName": "Walk In Drug Testing - No Appointment Required",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Handicap Access",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "DOT Certified Physician",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "After Hours Drug Screening",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Public Transportation",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Observed Collections",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Clinic Hours",
+        "AttributeValue": "MondayHoursOpen:08:00;MondayHoursClose:17:00;TuesdayHoursOpen:08:00;TuesdayHoursClose:17:00;WednesdayHoursOpen:08:00;WednesdayHoursClose:17:00;ThursdayHoursOpen:08:00;ThursdayHoursClose:17:00;FridayHoursOpen:08:00;FridayHoursClose:17:00;SaturdayHoursOpen:08:00;SaturdayHoursClose:13:00;SundayHoursOpen:00:00;SundayHoursClose:00:00"
+      }
+    ]
+  },
+  {
+    "EscreenSiteId": 20057,
+    "SiteName": "Northwell Health Labs \u2013 Powerhouse Arts District",
+    "Address1": "343 Washington Blvd, Suite 100",
+    "City": "Jersey City",
+    "State": "NJ",
+    "ZipCode": "07097",
+    "PhoneNumber": "2018932460",
+    "Latitude": 40.6906,
+    "Longitude": -74.0938,
+    "GoogleMapsUrl": "https://www.google.com/maps?q=40.6906,-74.0938",
+    "SupportedSpecimenTypes": [
+      "U",
+      "O"
+    ],
+    "Attributes": [
+      {
+        "AttributeName": "Walk In Drug Testing - No Appointment Required",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Handicap Access",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "DOT Certified Physician",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "After Hours Drug Screening",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Public Transportation",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Observed Collections",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Clinic Hours",
+        "AttributeValue": "MondayHoursOpen:08:00;MondayHoursClose:17:00;TuesdayHoursOpen:08:00;TuesdayHoursClose:17:00;WednesdayHoursOpen:08:00;WednesdayHoursClose:17:00;ThursdayHoursOpen:08:00;ThursdayHoursClose:17:00;FridayHoursOpen:08:00;FridayHoursClose:17:00;SaturdayHoursOpen:00:00;SaturdayHoursClose:00:00;SundayHoursOpen:00:00;SundayHoursClose:00:00"
+      }
+    ]
+  },
+  {
+    "EscreenSiteId": 20058,
+    "SiteName": "BioReference Laboratories \u2013 Newport",
+    "Address1": "905 Observer Hwy, Suite 100",
+    "City": "Jersey City",
+    "State": "NJ",
+    "ZipCode": "07097",
+    "PhoneNumber": "2015319520",
+    "Latitude": 40.6948,
+    "Longitude": -74.0956,
+    "GoogleMapsUrl": "https://www.google.com/maps?q=40.6948,-74.0956",
+    "SupportedSpecimenTypes": [
+      "U",
+      "H"
+    ],
+    "Attributes": [
+      {
+        "AttributeName": "Walk In Drug Testing - No Appointment Required",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Handicap Access",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "DOT Certified Physician",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "After Hours Drug Screening",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Public Transportation",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Observed Collections",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Clinic Hours",
+        "AttributeValue": "MondayHoursOpen:08:00;MondayHoursClose:17:00;TuesdayHoursOpen:08:00;TuesdayHoursClose:17:00;WednesdayHoursOpen:08:00;WednesdayHoursClose:17:00;ThursdayHoursOpen:08:00;ThursdayHoursClose:17:00;FridayHoursOpen:08:00;FridayHoursClose:17:00;SaturdayHoursOpen:00:00;SaturdayHoursClose:00:00;SundayHoursOpen:00:00;SundayHoursClose:00:00"
+      }
+    ]
+  },
+  {
+    "EscreenSiteId": 20059,
+    "SiteName": "Carbon Health \u2013 Bayfront",
+    "Address1": "894 Kennedy Blvd, Suite 500",
+    "City": "Kearny",
+    "State": "NJ",
+    "ZipCode": "07099",
+    "PhoneNumber": "5514034505",
+    "Latitude": 40.7725,
+    "Longitude": -74.1485,
+    "GoogleMapsUrl": "https://www.google.com/maps?q=40.7725,-74.1485",
+    "SupportedSpecimenTypes": [
+      "U",
+      "H"
+    ],
+    "Attributes": [
+      {
+        "AttributeName": "Walk In Drug Testing - No Appointment Required",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Handicap Access",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "DOT Certified Physician",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "After Hours Drug Screening",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Public Transportation",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Observed Collections",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Clinic Hours",
+        "AttributeValue": "MondayHoursOpen:08:00;MondayHoursClose:17:00;TuesdayHoursOpen:08:00;TuesdayHoursClose:17:00;WednesdayHoursOpen:08:00;WednesdayHoursClose:17:00;ThursdayHoursOpen:08:00;ThursdayHoursClose:17:00;FridayHoursOpen:08:00;FridayHoursClose:17:00;SaturdayHoursOpen:00:00;SaturdayHoursClose:00:00;SundayHoursOpen:00:00;SundayHoursClose:00:00"
+      }
+    ]
+  },
+  {
+    "EscreenSiteId": 20060,
+    "SiteName": "MedExpress \u2013 Downtown",
+    "Address1": "609 Washington Blvd, Suite 500",
+    "City": "Kearny",
+    "State": "NJ",
+    "ZipCode": "07099",
+    "PhoneNumber": "5511154479",
+    "Latitude": 40.7738,
+    "Longitude": -74.145,
+    "GoogleMapsUrl": "https://www.google.com/maps?q=40.7738,-74.145",
+    "SupportedSpecimenTypes": [
+      "U",
+      "O"
+    ],
+    "Attributes": [
+      {
+        "AttributeName": "Walk In Drug Testing - No Appointment Required",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Handicap Access",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "DOT Certified Physician",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "After Hours Drug Screening",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Public Transportation",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Observed Collections",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Clinic Hours",
+        "AttributeValue": "MondayHoursOpen:08:00;MondayHoursClose:17:00;TuesdayHoursOpen:08:00;TuesdayHoursClose:17:00;WednesdayHoursOpen:08:00;WednesdayHoursClose:17:00;ThursdayHoursOpen:08:00;ThursdayHoursClose:17:00;FridayHoursOpen:08:00;FridayHoursClose:17:00;SaturdayHoursOpen:00:00;SaturdayHoursClose:00:00;SundayHoursOpen:00:00;SundayHoursClose:00:00"
+      }
+    ]
+  },
+  {
+    "EscreenSiteId": 20061,
+    "SiteName": "Northwell Health Labs \u2013 Midtown",
+    "Address1": "158 Main St, Suite 700",
+    "City": "Yonkers",
+    "State": "NY",
+    "ZipCode": "10701",
+    "PhoneNumber": "3470213556",
+    "Latitude": 40.9294,
+    "Longitude": -73.895,
+    "GoogleMapsUrl": "https://www.google.com/maps?q=40.9294,-73.895",
+    "SupportedSpecimenTypes": [
+      "U",
+      "O",
+      "B"
+    ],
+    "Attributes": [
+      {
+        "AttributeName": "Walk In Drug Testing - No Appointment Required",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Handicap Access",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "DOT Certified Physician",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "After Hours Drug Screening",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Public Transportation",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Observed Collections",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Clinic Hours",
+        "AttributeValue": "MondayHoursOpen:08:00;MondayHoursClose:17:00;TuesdayHoursOpen:08:00;TuesdayHoursClose:17:00;WednesdayHoursOpen:08:00;WednesdayHoursClose:17:00;ThursdayHoursOpen:08:00;ThursdayHoursClose:17:00;FridayHoursOpen:08:00;FridayHoursClose:17:00;SaturdayHoursOpen:00:00;SaturdayHoursClose:00:00;SundayHoursOpen:00:00;SundayHoursClose:00:00"
+      }
+    ]
+  },
+  {
+    "EscreenSiteId": 20062,
+    "SiteName": "Carbon Health \u2013 Downtown",
+    "Address1": "507 Central Ave, Suite 500",
+    "City": "Yonkers",
+    "State": "NY",
+    "ZipCode": "10701",
+    "PhoneNumber": "3474739473",
+    "Latitude": 40.9318,
+    "Longitude": -73.8986,
+    "GoogleMapsUrl": "https://www.google.com/maps?q=40.9318,-73.8986",
+    "SupportedSpecimenTypes": [
+      "U",
+      "H"
+    ],
+    "Attributes": [
+      {
+        "AttributeName": "Walk In Drug Testing - No Appointment Required",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Handicap Access",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "DOT Certified Physician",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "After Hours Drug Screening",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Public Transportation",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Observed Collections",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Clinic Hours",
+        "AttributeValue": "MondayHoursOpen:08:00;MondayHoursClose:17:00;TuesdayHoursOpen:08:00;TuesdayHoursClose:17:00;WednesdayHoursOpen:08:00;WednesdayHoursClose:17:00;ThursdayHoursOpen:08:00;ThursdayHoursClose:17:00;FridayHoursOpen:08:00;FridayHoursClose:17:00;SaturdayHoursOpen:00:00;SaturdayHoursClose:00:00;SundayHoursOpen:00:00;SundayHoursClose:00:00"
+      }
+    ]
+  },
+  {
+    "EscreenSiteId": 20063,
+    "SiteName": "BioReference Laboratories \u2013 Business District",
+    "Address1": "397 Central Ave, Suite 300",
+    "City": "Yonkers",
+    "State": "NY",
+    "ZipCode": "10710",
+    "PhoneNumber": "9145895782",
+    "Latitude": 40.9627,
+    "Longitude": -73.8677,
+    "GoogleMapsUrl": "https://www.google.com/maps?q=40.9627,-73.8677",
+    "SupportedSpecimenTypes": [
+      "U",
+      "O"
+    ],
+    "Attributes": [
+      {
+        "AttributeName": "Walk In Drug Testing - No Appointment Required",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Handicap Access",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "DOT Certified Physician",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "After Hours Drug Screening",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Public Transportation",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Observed Collections",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Clinic Hours",
+        "AttributeValue": "MondayHoursOpen:08:00;MondayHoursClose:17:00;TuesdayHoursOpen:08:00;TuesdayHoursClose:17:00;WednesdayHoursOpen:08:00;WednesdayHoursClose:17:00;ThursdayHoursOpen:08:00;ThursdayHoursClose:17:00;FridayHoursOpen:08:00;FridayHoursClose:17:00;SaturdayHoursOpen:00:00;SaturdayHoursClose:00:00;SundayHoursOpen:00:00;SundayHoursClose:00:00"
+      }
+    ]
+  },
+  {
+    "EscreenSiteId": 20064,
+    "SiteName": "MedExpress \u2013 Medical Center",
+    "Address1": "757 Main St, Floor 8",
+    "City": "Mount Vernon",
+    "State": "NY",
+    "ZipCode": "10550",
+    "PhoneNumber": "9146801824",
+    "Latitude": 40.9092,
+    "Longitude": -73.8332,
+    "GoogleMapsUrl": "https://www.google.com/maps?q=40.9092,-73.8332",
+    "SupportedSpecimenTypes": [
+      "U",
+      "H"
+    ],
+    "Attributes": [
+      {
+        "AttributeName": "Walk In Drug Testing - No Appointment Required",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Handicap Access",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "DOT Certified Physician",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "After Hours Drug Screening",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Public Transportation",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Observed Collections",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Clinic Hours",
+        "AttributeValue": "MondayHoursOpen:08:00;MondayHoursClose:17:00;TuesdayHoursOpen:08:00;TuesdayHoursClose:17:00;WednesdayHoursOpen:08:00;WednesdayHoursClose:17:00;ThursdayHoursOpen:08:00;ThursdayHoursClose:17:00;FridayHoursOpen:08:00;FridayHoursClose:17:00;SaturdayHoursOpen:00:00;SaturdayHoursClose:00:00;SundayHoursOpen:00:00;SundayHoursClose:00:00"
+      }
+    ]
+  },
+  {
+    "EscreenSiteId": 20065,
+    "SiteName": "LabCorp \u2013 North End",
+    "Address1": "381 Mamaroneck Ave, Suite 500",
+    "City": "Mount Vernon",
+    "State": "NY",
+    "ZipCode": "10552",
+    "PhoneNumber": "3479001094",
+    "Latitude": 40.9199,
+    "Longitude": -73.8259,
+    "GoogleMapsUrl": "https://www.google.com/maps?q=40.9199,-73.8259",
+    "SupportedSpecimenTypes": [
+      "U"
+    ],
+    "Attributes": [
+      {
+        "AttributeName": "Walk In Drug Testing - No Appointment Required",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Handicap Access",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "DOT Certified Physician",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "After Hours Drug Screening",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Public Transportation",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Observed Collections",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Clinic Hours",
+        "AttributeValue": "MondayHoursOpen:08:00;MondayHoursClose:17:00;TuesdayHoursOpen:08:00;TuesdayHoursClose:17:00;WednesdayHoursOpen:08:00;WednesdayHoursClose:17:00;ThursdayHoursOpen:08:00;ThursdayHoursClose:17:00;FridayHoursOpen:08:00;FridayHoursClose:17:00;SaturdayHoursOpen:00:00;SaturdayHoursClose:00:00;SundayHoursOpen:00:00;SundayHoursClose:00:00"
+      }
+    ]
+  },
+  {
+    "EscreenSiteId": 20066,
+    "SiteName": "GoHealth Urgent Care \u2013 Central",
+    "Address1": "350 Tarrytown Rd, Floor 5",
+    "City": "Mount Vernon",
+    "State": "NY",
+    "ZipCode": "10552",
+    "PhoneNumber": "9145556258",
+    "Latitude": 40.9234,
+    "Longitude": -73.8312,
+    "GoogleMapsUrl": "https://www.google.com/maps?q=40.9234,-73.8312",
+    "SupportedSpecimenTypes": [
+      "U"
+    ],
+    "Attributes": [
+      {
+        "AttributeName": "Walk In Drug Testing - No Appointment Required",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Handicap Access",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "DOT Certified Physician",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "After Hours Drug Screening",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Public Transportation",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Observed Collections",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Clinic Hours",
+        "AttributeValue": "MondayHoursOpen:08:00;MondayHoursClose:17:00;TuesdayHoursOpen:08:00;TuesdayHoursClose:17:00;WednesdayHoursOpen:08:00;WednesdayHoursClose:17:00;ThursdayHoursOpen:08:00;ThursdayHoursClose:17:00;FridayHoursOpen:08:00;FridayHoursClose:17:00;SaturdayHoursOpen:08:00;SaturdayHoursClose:13:00;SundayHoursOpen:00:00;SundayHoursClose:00:00"
+      }
+    ]
+  },
+  {
+    "EscreenSiteId": 20067,
+    "SiteName": "AFC Urgent Care \u2013 Midtown",
+    "Address1": "986 Mamaroneck Ave, Floor 6",
+    "City": "White Plains",
+    "State": "NY",
+    "ZipCode": "10601",
+    "PhoneNumber": "9146873395",
+    "Latitude": 41.0369,
+    "Longitude": -73.7636,
+    "GoogleMapsUrl": "https://www.google.com/maps?q=41.0369,-73.7636",
+    "SupportedSpecimenTypes": [
+      "U",
+      "H"
+    ],
+    "Attributes": [
+      {
+        "AttributeName": "Walk In Drug Testing - No Appointment Required",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Handicap Access",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "DOT Certified Physician",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "After Hours Drug Screening",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Public Transportation",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Observed Collections",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Clinic Hours",
+        "AttributeValue": "MondayHoursOpen:08:00;MondayHoursClose:17:00;TuesdayHoursOpen:08:00;TuesdayHoursClose:17:00;WednesdayHoursOpen:08:00;WednesdayHoursClose:17:00;ThursdayHoursOpen:08:00;ThursdayHoursClose:17:00;FridayHoursOpen:08:00;FridayHoursClose:17:00;SaturdayHoursOpen:00:00;SaturdayHoursClose:00:00;SundayHoursOpen:00:00;SundayHoursClose:00:00"
+      }
+    ]
+  },
+  {
+    "EscreenSiteId": 20068,
+    "SiteName": "Quest Diagnostics \u2013 Downtown",
+    "Address1": "844 Central Ave, Floor 6",
+    "City": "White Plains",
+    "State": "NY",
+    "ZipCode": "10603",
+    "PhoneNumber": "3478499121",
+    "Latitude": 41.0499,
+    "Longitude": -73.7932,
+    "GoogleMapsUrl": "https://www.google.com/maps?q=41.0499,-73.7932",
+    "SupportedSpecimenTypes": [
+      "U",
+      "H"
+    ],
+    "Attributes": [
+      {
+        "AttributeName": "Walk In Drug Testing - No Appointment Required",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Handicap Access",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "DOT Certified Physician",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "After Hours Drug Screening",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Public Transportation",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Observed Collections",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Clinic Hours",
+        "AttributeValue": "MondayHoursOpen:08:00;MondayHoursClose:17:00;TuesdayHoursOpen:08:00;TuesdayHoursClose:17:00;WednesdayHoursOpen:08:00;WednesdayHoursClose:17:00;ThursdayHoursOpen:08:00;ThursdayHoursClose:17:00;FridayHoursOpen:08:00;FridayHoursClose:17:00;SaturdayHoursOpen:00:00;SaturdayHoursClose:00:00;SundayHoursOpen:00:00;SundayHoursClose:00:00"
+      }
+    ]
+  },
+  {
+    "EscreenSiteId": 20069,
+    "SiteName": "GoHealth Urgent Care \u2013 Medical Center",
+    "Address1": "240 Tarrytown Rd, Floor 8",
+    "City": "White Plains",
+    "State": "NY",
+    "ZipCode": "10605",
+    "PhoneNumber": "3479495888",
+    "Latitude": 41.0163,
+    "Longitude": -73.7748,
+    "GoogleMapsUrl": "https://www.google.com/maps?q=41.0163,-73.7748",
+    "SupportedSpecimenTypes": [
+      "U",
+      "H"
+    ],
+    "Attributes": [
+      {
+        "AttributeName": "Walk In Drug Testing - No Appointment Required",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Handicap Access",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "DOT Certified Physician",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "After Hours Drug Screening",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Public Transportation",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Observed Collections",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Clinic Hours",
+        "AttributeValue": "MondayHoursOpen:08:00;MondayHoursClose:17:00;TuesdayHoursOpen:08:00;TuesdayHoursClose:17:00;WednesdayHoursOpen:08:00;WednesdayHoursClose:17:00;ThursdayHoursOpen:08:00;ThursdayHoursClose:17:00;FridayHoursOpen:08:00;FridayHoursClose:17:00;SaturdayHoursOpen:08:00;SaturdayHoursClose:13:00;SundayHoursOpen:00:00;SundayHoursClose:00:00"
+      }
+    ]
+  },
+  {
+    "EscreenSiteId": 20070,
+    "SiteName": "MedExpress \u2013 Business District",
+    "Address1": "993 Tarrytown Rd, Suite 100",
+    "City": "Hartsdale",
+    "State": "NY",
+    "ZipCode": "10530",
+    "PhoneNumber": "9149728962",
+    "Latitude": 41.0203,
+    "Longitude": -73.7994,
+    "GoogleMapsUrl": "https://www.google.com/maps?q=41.0203,-73.7994",
+    "SupportedSpecimenTypes": [
+      "U",
+      "O"
+    ],
+    "Attributes": [
+      {
+        "AttributeName": "Walk In Drug Testing - No Appointment Required",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Handicap Access",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "DOT Certified Physician",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "After Hours Drug Screening",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Public Transportation",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Observed Collections",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Clinic Hours",
+        "AttributeValue": "MondayHoursOpen:08:00;MondayHoursClose:17:00;TuesdayHoursOpen:08:00;TuesdayHoursClose:17:00;WednesdayHoursOpen:08:00;WednesdayHoursClose:17:00;ThursdayHoursOpen:08:00;ThursdayHoursClose:17:00;FridayHoursOpen:08:00;FridayHoursClose:17:00;SaturdayHoursOpen:00:00;SaturdayHoursClose:00:00;SundayHoursOpen:00:00;SundayHoursClose:00:00"
+      }
+    ]
+  },
+  {
+    "EscreenSiteId": 20071,
+    "SiteName": "MedExpress \u2013 Central",
+    "Address1": "613 Post Rd, Floor 1",
+    "City": "Dobbs Ferry",
+    "State": "NY",
+    "ZipCode": "10522",
+    "PhoneNumber": "9147858549",
+    "Latitude": 41.0069,
+    "Longitude": -73.8744,
+    "GoogleMapsUrl": "https://www.google.com/maps?q=41.0069,-73.8744",
+    "SupportedSpecimenTypes": [
+      "U",
+      "H",
+      "B"
+    ],
+    "Attributes": [
+      {
+        "AttributeName": "Walk In Drug Testing - No Appointment Required",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Handicap Access",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "DOT Certified Physician",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "After Hours Drug Screening",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Public Transportation",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Observed Collections",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Clinic Hours",
+        "AttributeValue": "MondayHoursOpen:08:00;MondayHoursClose:17:00;TuesdayHoursOpen:08:00;TuesdayHoursClose:17:00;WednesdayHoursOpen:08:00;WednesdayHoursClose:17:00;ThursdayHoursOpen:08:00;ThursdayHoursClose:17:00;FridayHoursOpen:08:00;FridayHoursClose:17:00;SaturdayHoursOpen:08:00;SaturdayHoursClose:13:00;SundayHoursOpen:00:00;SundayHoursClose:00:00"
+      }
+    ]
+  },
+  {
+    "EscreenSiteId": 20072,
+    "SiteName": "AFC Urgent Care \u2013 North End",
+    "Address1": "591 Central Ave, Suite 500",
+    "City": "Elmsford",
+    "State": "NY",
+    "ZipCode": "10523",
+    "PhoneNumber": "9144041574",
+    "Latitude": 41.0563,
+    "Longitude": -73.8183,
+    "GoogleMapsUrl": "https://www.google.com/maps?q=41.0563,-73.8183",
+    "SupportedSpecimenTypes": [
+      "U",
+      "O"
+    ],
+    "Attributes": [
+      {
+        "AttributeName": "Walk In Drug Testing - No Appointment Required",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Handicap Access",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "DOT Certified Physician",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "After Hours Drug Screening",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Public Transportation",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Observed Collections",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Clinic Hours",
+        "AttributeValue": "MondayHoursOpen:08:00;MondayHoursClose:17:00;TuesdayHoursOpen:08:00;TuesdayHoursClose:17:00;WednesdayHoursOpen:08:00;WednesdayHoursClose:17:00;ThursdayHoursOpen:08:00;ThursdayHoursClose:17:00;FridayHoursOpen:08:00;FridayHoursClose:17:00;SaturdayHoursOpen:08:00;SaturdayHoursClose:13:00;SundayHoursOpen:00:00;SundayHoursClose:00:00"
+      }
+    ]
+  },
+  {
+    "EscreenSiteId": 20073,
+    "SiteName": "AFC Urgent Care \u2013 Central",
+    "Address1": "345 Mamaroneck Ave, Suite 900",
+    "City": "Elmsford",
+    "State": "NY",
+    "ZipCode": "10523",
+    "PhoneNumber": "9140826773",
+    "Latitude": 41.0517,
+    "Longitude": -73.8163,
+    "GoogleMapsUrl": "https://www.google.com/maps?q=41.0517,-73.8163",
+    "SupportedSpecimenTypes": [
+      "U",
+      "B"
+    ],
+    "Attributes": [
+      {
+        "AttributeName": "Walk In Drug Testing - No Appointment Required",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Handicap Access",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "DOT Certified Physician",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "After Hours Drug Screening",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Public Transportation",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Observed Collections",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Clinic Hours",
+        "AttributeValue": "MondayHoursOpen:08:00;MondayHoursClose:17:00;TuesdayHoursOpen:08:00;TuesdayHoursClose:17:00;WednesdayHoursOpen:08:00;WednesdayHoursClose:17:00;ThursdayHoursOpen:08:00;ThursdayHoursClose:17:00;FridayHoursOpen:08:00;FridayHoursClose:17:00;SaturdayHoursOpen:08:00;SaturdayHoursClose:13:00;SundayHoursOpen:00:00;SundayHoursClose:00:00"
+      }
+    ]
+  },
+  {
+    "EscreenSiteId": 20074,
+    "SiteName": "ClinPath \u2013 Business District",
+    "Address1": "138 Mamaroneck Ave, Floor 3",
+    "City": "Irvington",
+    "State": "NY",
+    "ZipCode": "10533",
+    "PhoneNumber": "3470049915",
+    "Latitude": 41.0409,
+    "Longitude": -73.8643,
+    "GoogleMapsUrl": "https://www.google.com/maps?q=41.0409,-73.8643",
+    "SupportedSpecimenTypes": [
+      "U",
+      "H"
+    ],
+    "Attributes": [
+      {
+        "AttributeName": "Walk In Drug Testing - No Appointment Required",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Handicap Access",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "DOT Certified Physician",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "After Hours Drug Screening",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Public Transportation",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Observed Collections",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Clinic Hours",
+        "AttributeValue": "MondayHoursOpen:08:00;MondayHoursClose:17:00;TuesdayHoursOpen:08:00;TuesdayHoursClose:17:00;WednesdayHoursOpen:08:00;WednesdayHoursClose:17:00;ThursdayHoursOpen:08:00;ThursdayHoursClose:17:00;FridayHoursOpen:08:00;FridayHoursClose:17:00;SaturdayHoursOpen:00:00;SaturdayHoursClose:00:00;SundayHoursOpen:00:00;SundayHoursClose:00:00"
+      }
+    ]
+  },
+  {
+    "EscreenSiteId": 20075,
+    "SiteName": "Carbon Health \u2013 North End",
+    "Address1": "266 Tarrytown Rd, Floor 5",
+    "City": "Tarrytown",
+    "State": "NY",
+    "ZipCode": "10591",
+    "PhoneNumber": "3476851612",
+    "Latitude": 41.0737,
+    "Longitude": -73.861,
+    "GoogleMapsUrl": "https://www.google.com/maps?q=41.0737,-73.861",
+    "SupportedSpecimenTypes": [
+      "U"
+    ],
+    "Attributes": [
+      {
+        "AttributeName": "Walk In Drug Testing - No Appointment Required",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Handicap Access",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "DOT Certified Physician",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "After Hours Drug Screening",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Public Transportation",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Observed Collections",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Clinic Hours",
+        "AttributeValue": "MondayHoursOpen:08:00;MondayHoursClose:17:00;TuesdayHoursOpen:08:00;TuesdayHoursClose:17:00;WednesdayHoursOpen:08:00;WednesdayHoursClose:17:00;ThursdayHoursOpen:08:00;ThursdayHoursClose:17:00;FridayHoursOpen:08:00;FridayHoursClose:17:00;SaturdayHoursOpen:08:00;SaturdayHoursClose:13:00;SundayHoursOpen:00:00;SundayHoursClose:00:00"
+      }
+    ]
+  },
+  {
+    "EscreenSiteId": 20076,
+    "SiteName": "Carbon Health \u2013 Midtown",
+    "Address1": "840 Post Rd, Suite 500",
+    "City": "Tarrytown",
+    "State": "NY",
+    "ZipCode": "10591",
+    "PhoneNumber": "3471459332",
+    "Latitude": 41.0798,
+    "Longitude": -73.8595,
+    "GoogleMapsUrl": "https://www.google.com/maps?q=41.0798,-73.8595",
+    "SupportedSpecimenTypes": [
+      "U",
+      "H"
+    ],
+    "Attributes": [
+      {
+        "AttributeName": "Walk In Drug Testing - No Appointment Required",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Handicap Access",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "DOT Certified Physician",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "After Hours Drug Screening",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Public Transportation",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Observed Collections",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Clinic Hours",
+        "AttributeValue": "MondayHoursOpen:08:00;MondayHoursClose:17:00;TuesdayHoursOpen:08:00;TuesdayHoursClose:17:00;WednesdayHoursOpen:08:00;WednesdayHoursClose:17:00;ThursdayHoursOpen:08:00;ThursdayHoursClose:17:00;FridayHoursOpen:08:00;FridayHoursClose:17:00;SaturdayHoursOpen:00:00;SaturdayHoursClose:00:00;SundayHoursOpen:00:00;SundayHoursClose:00:00"
+      }
+    ]
+  },
+  {
+    "EscreenSiteId": 20077,
+    "SiteName": "GoHealth Urgent Care \u2013 Medical Center",
+    "Address1": "796 Post Rd, Suite 900",
+    "City": "New Rochelle",
+    "State": "NY",
+    "ZipCode": "10801",
+    "PhoneNumber": "9149822587",
+    "Latitude": 40.9141,
+    "Longitude": -73.7805,
+    "GoogleMapsUrl": "https://www.google.com/maps?q=40.9141,-73.7805",
+    "SupportedSpecimenTypes": [
+      "U",
+      "H",
+      "O"
+    ],
+    "Attributes": [
+      {
+        "AttributeName": "Walk In Drug Testing - No Appointment Required",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Handicap Access",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "DOT Certified Physician",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "After Hours Drug Screening",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Public Transportation",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Observed Collections",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Clinic Hours",
+        "AttributeValue": "MondayHoursOpen:08:00;MondayHoursClose:17:00;TuesdayHoursOpen:08:00;TuesdayHoursClose:17:00;WednesdayHoursOpen:08:00;WednesdayHoursClose:17:00;ThursdayHoursOpen:08:00;ThursdayHoursClose:17:00;FridayHoursOpen:08:00;FridayHoursClose:17:00;SaturdayHoursOpen:08:00;SaturdayHoursClose:13:00;SundayHoursOpen:00:00;SundayHoursClose:00:00"
+      }
+    ]
+  },
+  {
+    "EscreenSiteId": 20078,
+    "SiteName": "Quest Diagnostics \u2013 Central",
+    "Address1": "677 Main St, Suite 800",
+    "City": "New Rochelle",
+    "State": "NY",
+    "ZipCode": "10801",
+    "PhoneNumber": "9140651801",
+    "Latitude": 40.9086,
+    "Longitude": -73.7833,
+    "GoogleMapsUrl": "https://www.google.com/maps?q=40.9086,-73.7833",
+    "SupportedSpecimenTypes": [
+      "U",
+      "B"
+    ],
+    "Attributes": [
+      {
+        "AttributeName": "Walk In Drug Testing - No Appointment Required",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Handicap Access",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "DOT Certified Physician",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "After Hours Drug Screening",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Public Transportation",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Observed Collections",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Clinic Hours",
+        "AttributeValue": "MondayHoursOpen:08:00;MondayHoursClose:17:00;TuesdayHoursOpen:08:00;TuesdayHoursClose:17:00;WednesdayHoursOpen:08:00;WednesdayHoursClose:17:00;ThursdayHoursOpen:08:00;ThursdayHoursClose:17:00;FridayHoursOpen:08:00;FridayHoursClose:17:00;SaturdayHoursOpen:08:00;SaturdayHoursClose:13:00;SundayHoursOpen:00:00;SundayHoursClose:00:00"
+      }
+    ]
+  },
+  {
+    "EscreenSiteId": 20079,
+    "SiteName": "MedExpress \u2013 Downtown",
+    "Address1": "990 White Plains Rd, Floor 2",
+    "City": "New Rochelle",
+    "State": "NY",
+    "ZipCode": "10804",
+    "PhoneNumber": "3478230047",
+    "Latitude": 40.9501,
+    "Longitude": -73.7793,
+    "GoogleMapsUrl": "https://www.google.com/maps?q=40.9501,-73.7793",
+    "SupportedSpecimenTypes": [
+      "U"
+    ],
+    "Attributes": [
+      {
+        "AttributeName": "Walk In Drug Testing - No Appointment Required",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Handicap Access",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "DOT Certified Physician",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "After Hours Drug Screening",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Public Transportation",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Observed Collections",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Clinic Hours",
+        "AttributeValue": "MondayHoursOpen:08:00;MondayHoursClose:17:00;TuesdayHoursOpen:08:00;TuesdayHoursClose:17:00;WednesdayHoursOpen:08:00;WednesdayHoursClose:17:00;ThursdayHoursOpen:08:00;ThursdayHoursClose:17:00;FridayHoursOpen:08:00;FridayHoursClose:17:00;SaturdayHoursOpen:00:00;SaturdayHoursClose:00:00;SundayHoursOpen:00:00;SundayHoursClose:00:00"
+      }
+    ]
+  },
+  {
+    "EscreenSiteId": 20080,
+    "SiteName": "AFC Urgent Care \u2013 Central",
+    "Address1": "215 Main St, Suite 700",
+    "City": "Ardsley",
+    "State": "NY",
+    "ZipCode": "10502",
+    "PhoneNumber": "3479030673",
+    "Latitude": 41.0186,
+    "Longitude": -73.8419,
+    "GoogleMapsUrl": "https://www.google.com/maps?q=41.0186,-73.8419",
+    "SupportedSpecimenTypes": [
+      "U",
+      "H"
+    ],
+    "Attributes": [
+      {
+        "AttributeName": "Walk In Drug Testing - No Appointment Required",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Handicap Access",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "DOT Certified Physician",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "After Hours Drug Screening",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Public Transportation",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Observed Collections",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Clinic Hours",
+        "AttributeValue": "MondayHoursOpen:08:00;MondayHoursClose:17:00;TuesdayHoursOpen:08:00;TuesdayHoursClose:17:00;WednesdayHoursOpen:08:00;WednesdayHoursClose:17:00;ThursdayHoursOpen:08:00;ThursdayHoursClose:17:00;FridayHoursOpen:08:00;FridayHoursClose:17:00;SaturdayHoursOpen:08:00;SaturdayHoursClose:13:00;SundayHoursOpen:00:00;SundayHoursClose:00:00"
+      }
+    ]
+  },
+  {
+    "EscreenSiteId": 20081,
+    "SiteName": "Northwell Health Labs \u2013 Midtown",
+    "Address1": "938 Central Ave, Suite 500",
+    "City": "Armonk",
+    "State": "NY",
+    "ZipCode": "10504",
+    "PhoneNumber": "9146870568",
+    "Latitude": 41.1274,
+    "Longitude": -73.7185,
+    "GoogleMapsUrl": "https://www.google.com/maps?q=41.1274,-73.7185",
+    "SupportedSpecimenTypes": [
+      "U",
+      "H",
+      "B"
+    ],
+    "Attributes": [
+      {
+        "AttributeName": "Walk In Drug Testing - No Appointment Required",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Handicap Access",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "DOT Certified Physician",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "After Hours Drug Screening",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Public Transportation",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Observed Collections",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Clinic Hours",
+        "AttributeValue": "MondayHoursOpen:08:00;MondayHoursClose:17:00;TuesdayHoursOpen:08:00;TuesdayHoursClose:17:00;WednesdayHoursOpen:08:00;WednesdayHoursClose:17:00;ThursdayHoursOpen:08:00;ThursdayHoursClose:17:00;FridayHoursOpen:08:00;FridayHoursClose:17:00;SaturdayHoursOpen:00:00;SaturdayHoursClose:00:00;SundayHoursOpen:00:00;SundayHoursClose:00:00"
+      }
+    ]
+  },
+  {
+    "EscreenSiteId": 20082,
+    "SiteName": "ClinPath \u2013 Business District",
+    "Address1": "574 Main St, Suite 700",
+    "City": "Briarcliff Manor",
+    "State": "NY",
+    "ZipCode": "10510",
+    "PhoneNumber": "3475183046",
+    "Latitude": 41.1622,
+    "Longitude": -73.8468,
+    "GoogleMapsUrl": "https://www.google.com/maps?q=41.1622,-73.8468",
+    "SupportedSpecimenTypes": [
+      "U"
+    ],
+    "Attributes": [
+      {
+        "AttributeName": "Walk In Drug Testing - No Appointment Required",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Handicap Access",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "DOT Certified Physician",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "After Hours Drug Screening",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Public Transportation",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Observed Collections",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Clinic Hours",
+        "AttributeValue": "MondayHoursOpen:08:00;MondayHoursClose:17:00;TuesdayHoursOpen:08:00;TuesdayHoursClose:17:00;WednesdayHoursOpen:08:00;WednesdayHoursClose:17:00;ThursdayHoursOpen:08:00;ThursdayHoursClose:17:00;FridayHoursOpen:08:00;FridayHoursClose:17:00;SaturdayHoursOpen:08:00;SaturdayHoursClose:13:00;SundayHoursOpen:00:00;SundayHoursClose:00:00"
+      }
+    ]
+  },
+  {
+    "EscreenSiteId": 20083,
+    "SiteName": "GoHealth Urgent Care \u2013 Downtown",
+    "Address1": "440 Central Ave, Suite 400",
+    "City": "Ossining",
+    "State": "NY",
+    "ZipCode": "10562",
+    "PhoneNumber": "9146385467",
+    "Latitude": 41.1627,
+    "Longitude": -73.8586,
+    "GoogleMapsUrl": "https://www.google.com/maps?q=41.1627,-73.8586",
+    "SupportedSpecimenTypes": [
+      "U",
+      "H",
+      "B"
+    ],
+    "Attributes": [
+      {
+        "AttributeName": "Walk In Drug Testing - No Appointment Required",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Handicap Access",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "DOT Certified Physician",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "After Hours Drug Screening",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Public Transportation",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Observed Collections",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Clinic Hours",
+        "AttributeValue": "MondayHoursOpen:08:00;MondayHoursClose:17:00;TuesdayHoursOpen:08:00;TuesdayHoursClose:17:00;WednesdayHoursOpen:08:00;WednesdayHoursClose:17:00;ThursdayHoursOpen:08:00;ThursdayHoursClose:17:00;FridayHoursOpen:08:00;FridayHoursClose:17:00;SaturdayHoursOpen:00:00;SaturdayHoursClose:00:00;SundayHoursOpen:00:00;SundayHoursClose:00:00"
+      }
+    ]
+  },
+  {
+    "EscreenSiteId": 20084,
+    "SiteName": "LabCorp \u2013 Medical Center",
+    "Address1": "308 Central Ave, Floor 7",
+    "City": "Ossining",
+    "State": "NY",
+    "ZipCode": "10562",
+    "PhoneNumber": "3474235369",
+    "Latitude": 41.165,
+    "Longitude": -73.863,
+    "GoogleMapsUrl": "https://www.google.com/maps?q=41.165,-73.863",
+    "SupportedSpecimenTypes": [
+      "U"
+    ],
+    "Attributes": [
+      {
+        "AttributeName": "Walk In Drug Testing - No Appointment Required",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Handicap Access",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "DOT Certified Physician",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "After Hours Drug Screening",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Public Transportation",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Observed Collections",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Clinic Hours",
+        "AttributeValue": "MondayHoursOpen:08:00;MondayHoursClose:17:00;TuesdayHoursOpen:08:00;TuesdayHoursClose:17:00;WednesdayHoursOpen:08:00;WednesdayHoursClose:17:00;ThursdayHoursOpen:08:00;ThursdayHoursClose:17:00;FridayHoursOpen:08:00;FridayHoursClose:17:00;SaturdayHoursOpen:00:00;SaturdayHoursClose:00:00;SundayHoursOpen:00:00;SundayHoursClose:00:00"
+      }
+    ]
+  }
+]
