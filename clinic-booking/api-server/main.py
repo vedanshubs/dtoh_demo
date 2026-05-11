@@ -1,5 +1,7 @@
 import logging
 import os
+import pymysql
+import pymysql.cursors
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -25,13 +27,34 @@ load_dotenv()
 mcp_manager = MCPClientManager()
 CLIENT_ID = os.getenv("ESCREEN_CLIENT_ACCOUNT", "142451")
 
-MOCK_DONORS = [
-    {"id": 1, "first_name": "James",   "last_name": "Harrington", "city": "New York",   "state": "NY", "zip": "10019", "role": "Analyst, Investment Banking"},
-    {"id": 2, "first_name": "Priya",   "last_name": "Mehta",      "city": "New York",   "state": "NY", "zip": "10020", "role": "Associate, Wealth Management"},
-    {"id": 3, "first_name": "Marcus",  "last_name": "Chen",       "city": "Hoboken",    "state": "NJ", "zip": "07030", "role": "VP, Technology"},
-    {"id": 4, "first_name": "Sofia",   "last_name": "Rossi",      "city": "New York",   "state": "NY", "zip": "10022", "role": "Director, Compliance"},
-    {"id": 5, "first_name": "Daniel",  "last_name": "Okafor",     "city": "Brooklyn",   "state": "NY", "zip": "11201", "role": "Analyst, Risk Management"},
-]
+def _get_db():
+    return pymysql.connect(
+        host=os.getenv("DB_HOST", "localhost"),
+        port=int(os.getenv("DB_PORT", 3306)),
+        user=os.getenv("DB_USER", "escreen"),
+        password=os.getenv("DB_PASSWORD", "escreen"),
+        database=os.getenv("DB_NAME", "escreen"),
+        cursorclass=pymysql.cursors.DictCursor,
+    )
+
+
+def _load_donors():
+    try:
+        conn = _get_db()
+        with conn.cursor() as cur:
+            cur.execute(
+                "SELECT id, first_name, last_name, city, state, zip FROM candidates ORDER BY id"
+            )
+            return cur.fetchall()
+    except Exception as e:
+        log.warning("DB unavailable, falling back to mock donors: %s", e)
+        return [
+            {"id": 1, "first_name": "James",  "last_name": "Harrington", "city": "New York", "state": "NY", "zip": "10019"},
+            {"id": 2, "first_name": "Priya",  "last_name": "Mehta",      "city": "New York", "state": "NY", "zip": "10020"},
+            {"id": 3, "first_name": "Marcus", "last_name": "Chen",       "city": "Hoboken",  "state": "NJ", "zip": "07030"},
+            {"id": 4, "first_name": "Sofia",  "last_name": "Rossi",      "city": "New York", "state": "NY", "zip": "10022"},
+            {"id": 5, "first_name": "Daniel", "last_name": "Okafor",     "city": "Brooklyn", "state": "NY", "zip": "11201"},
+        ]
 
 MOCK_TEST_TYPES = [
     {"name": "5-Panel Urine (DOT)",      "service_identifier": "5PANEL_U",   "default_reason": "PE"},
@@ -72,12 +95,13 @@ register_action_routes(app, mcp_manager)
 
 @app.get("/api/donors")
 async def list_donors():
-    return MOCK_DONORS
+    return _load_donors()
 
 
 @app.post("/api/chat")
 async def chat(req: ChatRequest):
-    donor = next((d for d in MOCK_DONORS if d["id"] == req.donor_id), MOCK_DONORS[0])
+    donors = _load_donors()
+    donor = next((d for d in donors if d["id"] == req.donor_id), donors[0])
     log.info("Chat request | donor=%s %s | message=%r", donor["first_name"], donor["last_name"], req.user_message[:80])
     system_prompt = build_system_prompt(donor, MOCK_TEST_TYPES)
     messages = list(req.messages) + [{"role": "user", "content": req.user_message}]

@@ -18,6 +18,7 @@ Your job:
 1. Help the user find a drug test collection clinic near a location.
 2. Use search_clinics to retrieve clinic options. Pass the zip code from the user's message,
    or default to the donor's zip code ({donor.get('zip', '')}) if none is given.
+   Always use radius=5 unless the user specifies a different distance.
 3. Present clinics clearly with name, address, distance, and walk-in status.
 4. When the user selects a clinic, call place_order immediately with:
    - clinic_id: the EscreenSiteId of the selected clinic

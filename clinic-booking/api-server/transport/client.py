@@ -43,7 +43,7 @@ class MCPClientManager:
     async def call_tool(self, name: str, arguments: dict):
         result = await self._session.call_tool(name, arguments)
         if not result.content:
-            raise RuntimeError(f"MCP tool '{name}' returned empty content")
+            return []
         text = result.content[0].text
         # If the MCP server flagged an error, surface it clearly
         if getattr(result, 'isError', False):

@@ -22,7 +22,8 @@ log = logging.getLogger(__name__)
 
 mcp = FastMCP("ubs-escreen")
 CLIENT_ID = os.getenv("ESCREEN_CLIENT_ACCOUNT", "DEMO_CLIENT")
-log.info("Server starting (CLIENT_ID=%s, mock-only mode)", CLIENT_ID)
+USE_MOCK = os.getenv("USE_MOCK", "true").lower() != "false"
+log.info("Server starting (CLIENT_ID=%s, use_mock=%s)", CLIENT_ID, USE_MOCK)
 
 
 # ── Clinic Booking Tools ──────────────────────────────────────────────────────
@@ -65,7 +66,7 @@ async def get_results_summary(
     """Get completed drug test result counts grouped by disposition.
     date_range examples: 'last 30 days', 'last 90 days', 'last quarter', 'current year'."""
     log.info("get_results_summary(date_range=%s, disposition=%s)", date_range, disposition)
-    result = await handle_get_results_summary(CLIENT_ID, date_range, disposition, reason_for_test, specimen_type, regulation)
+    result = await handle_get_results_summary(CLIENT_ID, date_range, disposition, reason_for_test, specimen_type, regulation, use_mock=USE_MOCK)
     log.info("get_results_summary → total=%s", result.get("total"))
     return result
 
@@ -79,7 +80,7 @@ async def get_pipeline_status(
 ) -> dict:
     """Get counts of drug tests currently in progress, grouped by pipeline stage."""
     log.info("get_pipeline_status(date_range=%s, status=%s)", date_range, status)
-    result = await handle_get_pipeline_status(CLIENT_ID, date_range, status, reason_for_test, specimen_type)
+    result = await handle_get_pipeline_status(CLIENT_ID, date_range, status, reason_for_test, specimen_type, use_mock=USE_MOCK)
     log.info("get_pipeline_status → total_in_progress=%s", result.get("total_in_progress"))
     return result
 
@@ -92,7 +93,7 @@ async def get_analyte_breakdown(
 ) -> dict:
     """Get per-substance positive/negative counts from analyte records."""
     log.info("get_analyte_breakdown(date_range=%s, analyte=%s)", date_range, analyte_name)
-    result = await handle_get_analyte_breakdown(CLIENT_ID, date_range, analyte_name, disposition)
+    result = await handle_get_analyte_breakdown(CLIENT_ID, date_range, analyte_name, disposition, use_mock=USE_MOCK)
     log.info("get_analyte_breakdown → %d analytes", len(result.get("analytes", [])))
     return result
 
@@ -106,7 +107,7 @@ async def get_turnaround_stats(
 ) -> dict:
     """Get average turnaround time statistics across all lifecycle stages."""
     log.info("get_turnaround_stats(date_range=%s)", date_range)
-    result = await handle_get_turnaround_stats(CLIENT_ID, date_range, reason_for_test, specimen_type, regulation)
+    result = await handle_get_turnaround_stats(CLIENT_ID, date_range, reason_for_test, specimen_type, regulation, use_mock=USE_MOCK)
     log.info("get_turnaround_stats → avg_end_to_end=%s days", result.get("avg_end_to_end_days"))
     return result
 
