@@ -1,83 +1,262 @@
 import { useState } from 'react'
 import CandidateSelector from './components/CandidateSelector'
-import Chat from './components/Chat'
+import BookingChat from './components/Chat'
+import AnalyticsChat from './components/AnalyticsChat'
 
+/* ── Icons (inline SVG, no deps) ─────────────────────────────────────── */
+const IconCalendar = ({ size = 16, color = 'currentColor' }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <rect x="3" y="4" width="18" height="18" rx="2" /><line x1="16" y1="2" x2="16" y2="6" /><line x1="8" y1="2" x2="8" y2="6" /><line x1="3" y1="10" x2="21" y2="10" />
+  </svg>
+)
+const IconChart = ({ size = 16, color = 'currentColor' }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <line x1="18" y1="20" x2="18" y2="10" /><line x1="12" y1="20" x2="12" y2="4" /><line x1="6" y1="20" x2="6" y2="14" />
+  </svg>
+)
+const IconShield = ({ size = 14, color = 'currentColor' }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+  </svg>
+)
+
+const VIEWS = [
+  { id: 'booking',   label: 'Book a Test',  Icon: IconCalendar,  desc: 'Schedule employee drug tests' },
+  { id: 'analytics', label: 'Analytics',    Icon: IconChart,     desc: 'Program insights & metrics'   },
+]
+
+/* ── Global baseline styles ──────────────────────────────────────────── */
+function GlobalStyles() {
+  return (
+    <style>{`
+      *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+      body { overflow: hidden; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
+      ::-webkit-scrollbar { width: 5px; height: 5px; }
+      ::-webkit-scrollbar-track { background: transparent; }
+      ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+      ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+      button { font-family: inherit; }
+      input  { font-family: inherit; }
+      textarea { font-family: inherit; }
+      @keyframes fadeSlideIn {
+        from { opacity: 0; transform: translateY(8px); }
+        to   { opacity: 1; transform: translateY(0); }
+      }
+      @keyframes pulse-dot {
+        0%, 100% { opacity: 1; }
+        50%       { opacity: 0.4; }
+      }
+    `}</style>
+  )
+}
+
+/* ── Sidebar ─────────────────────────────────────────────────────────── */
+function Sidebar({ view, onViewChange }) {
+  return (
+    <aside style={{
+      width: 228,
+      flexShrink: 0,
+      background: '#0f172a',
+      display: 'flex',
+      flexDirection: 'column',
+      borderRight: '1px solid rgba(255,255,255,0.05)',
+    }}>
+      {/* Brand */}
+      <div style={{ padding: '22px 20px 18px', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 11 }}>
+          <div style={{
+            width: 40, height: 40,
+            background: 'linear-gradient(145deg, #c8102e 0%, #8b0000 100%)',
+            borderRadius: 12,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontSize: 18, fontWeight: 800, color: '#fff',
+            boxShadow: '0 4px 20px rgba(200,16,46,0.5)',
+            letterSpacing: '-0.02em', flexShrink: 0,
+          }}>U</div>
+          <div>
+            <div style={{ fontSize: 15, fontWeight: 700, color: '#f8fafc', letterSpacing: '0.02em' }}>UBS Group</div>
+            <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.3)', letterSpacing: '0.1em', textTransform: 'uppercase', marginTop: 1 }}>Health Portal</div>
+          </div>
+        </div>
+      </div>
+
+      {/* Nav */}
+      <nav style={{ flex: 1, padding: '14px 10px' }}>
+        <p style={{
+          fontSize: 10, fontWeight: 600, color: 'rgba(255,255,255,0.22)',
+          letterSpacing: '0.1em', textTransform: 'uppercase',
+          padding: '2px 10px 10px',
+        }}>Applications</p>
+
+        {VIEWS.map(({ id, label, Icon }) => {
+          const active = view === id
+          return (
+            <button
+              key={id}
+              onClick={() => onViewChange(id)}
+              style={{
+                display: 'flex', alignItems: 'center', gap: 10,
+                width: '100%', padding: '10px 12px',
+                borderRadius: 8, border: 'none', cursor: 'pointer',
+                marginBottom: 3,
+                background: active ? 'rgba(200,16,46,0.16)' : 'transparent',
+                color: active ? '#fca5a5' : 'rgba(255,255,255,0.42)',
+                fontSize: 13.5, fontWeight: active ? 600 : 400,
+                textAlign: 'left',
+                transition: 'background 0.15s, color 0.15s',
+                borderLeft: `3px solid ${active ? '#c8102e' : 'transparent'}`,
+                paddingLeft: active ? 9 : 12,
+              }}
+            >
+              <Icon color={active ? '#fca5a5' : 'rgba(255,255,255,0.42)'} />
+              {label}
+            </button>
+          )
+        })}
+      </nav>
+
+      {/* Status footer */}
+      <div style={{ padding: '14px 18px', borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginBottom: 8 }}>
+          <div style={{
+            width: 7, height: 7, borderRadius: '50%', background: '#34d399', flexShrink: 0,
+            boxShadow: '0 0 0 2px rgba(52,211,153,0.25)',
+            animation: 'pulse-dot 2s ease-in-out infinite',
+          }} />
+          <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.38)', fontWeight: 500 }}>MCP Server Online</span>
+        </div>
+        <div style={{
+          display: 'inline-flex', alignItems: 'center', gap: 5,
+          background: 'rgba(234,179,8,0.1)', border: '1px solid rgba(234,179,8,0.18)',
+          borderRadius: 6, padding: '3px 8px',
+        }}>
+          <div style={{ width: 5, height: 5, borderRadius: '50%', background: '#eab308' }} />
+          <span style={{ fontSize: 10, color: '#ca8a04', fontWeight: 600, letterSpacing: '0.04em' }}>MOCK MODE</span>
+        </div>
+      </div>
+    </aside>
+  )
+}
+
+/* ── Top Header ──────────────────────────────────────────────────────── */
+function AppHeader({ view, donor }) {
+  const meta = {
+    booking:   { title: 'Drug Test Booking',      sub: 'Schedule and manage employee occupational health tests' },
+    analytics: { title: 'Analytics Dashboard',    sub: 'Program-wide insights, trends, and compliance metrics' },
+  }
+  const { title, sub } = meta[view]
+
+  return (
+    <header style={{
+      height: 60, background: '#ffffff',
+      borderBottom: '1px solid #e2e8f0',
+      display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+      padding: '0 24px', flexShrink: 0,
+      boxShadow: '0 1px 0 #e2e8f0',
+    }}>
+      <div>
+        <h1 style={{ fontSize: 15, fontWeight: 700, color: '#0f172a', lineHeight: 1.3 }}>{title}</h1>
+        <p  style={{ fontSize: 11.5, color: '#94a3b8', lineHeight: 1, marginTop: 2 }}>{sub}</p>
+      </div>
+
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+        {donor && view === 'booking' && <DonorBadge donor={donor} />}
+        <div style={{
+          display: 'flex', alignItems: 'center', gap: 5,
+          fontSize: 11, fontWeight: 600, color: '#92400e',
+          background: '#fffbeb', border: '1px solid #fde68a',
+          padding: '4px 10px', borderRadius: 20,
+        }}>
+          <IconShield size={12} color="#92400e" />Demo Mode
+        </div>
+      </div>
+    </header>
+  )
+}
+
+function DonorBadge({ donor }) {
+  const initials = `${donor.first_name[0]}${donor.last_name[0]}`
+  return (
+    <div style={{
+      display: 'flex', alignItems: 'center', gap: 8,
+      background: '#fef2f2', border: '1px solid #fecaca',
+      borderRadius: 24, padding: '5px 12px 5px 6px',
+    }}>
+      <div style={{
+        width: 26, height: 26, borderRadius: '50%',
+        background: 'linear-gradient(135deg, #c8102e, #8b0000)',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        fontSize: 10, fontWeight: 700, color: '#fff', flexShrink: 0,
+      }}>{initials}</div>
+      <div>
+        <div style={{ fontSize: 12, fontWeight: 600, color: '#991b1b', lineHeight: 1.2 }}>
+          {donor.first_name} {donor.last_name}
+        </div>
+        <div style={{ fontSize: 10, color: '#b91c1c', lineHeight: 1, marginTop: 1 }}>{donor.role}</div>
+      </div>
+    </div>
+  )
+}
+
+/* ── Layout views ────────────────────────────────────────────────────── */
+function BookingLayout({ donorId, donor, onSelectDonor }) {
+  return (
+    <div style={{ display: 'flex', width: '100%', height: '100%', overflow: 'hidden' }}>
+      {/* Candidate panel */}
+      <div style={{
+        width: 272, flexShrink: 0,
+        background: '#ffffff',
+        borderRight: '1px solid #e2e8f0',
+        overflowY: 'auto',
+      }}>
+        <CandidateSelector onSelect={onSelectDonor} selectedId={donorId} />
+      </div>
+      {/* Chat panel */}
+      <div style={{ flex: 1, overflow: 'hidden', padding: '16px', background: '#f8fafc' }}>
+        <BookingChat donorId={donorId} />
+      </div>
+    </div>
+  )
+}
+
+function AnalyticsLayout() {
+  return (
+    <div style={{ flex: 1, overflow: 'hidden', padding: '16px', background: '#f8fafc' }}>
+      <AnalyticsChat />
+    </div>
+  )
+}
+
+/* ── Root App ────────────────────────────────────────────────────────── */
 export default function App() {
+  const [view, setView]       = useState('booking')
   const [donorId, setDonorId] = useState(null)
-  const [donorName, setDonorName] = useState(null)
+  const [donor, setDonor]     = useState(null)
 
-  const handleSelect = (id, name) => {
-    setDonorId(id)
-    setDonorName(name)
+  const handleSelectDonor = (d) => {
+    setDonorId(d.id)
+    setDonor(d)
   }
 
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: '#f1f5f9' }}>
-      {/* Header */}
-      <header style={{
-        background: 'linear-gradient(135deg, #c8102e 0%, #8b0000 100%)',
-        padding: '0 28px',
-        height: 64,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        boxShadow: '0 4px 20px rgba(200,16,46,0.3)',
-        flexShrink: 0,
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <div style={{
-            width: 38, height: 38, borderRadius: 10,
-            background: 'rgba(255,255,255,0.15)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontSize: 20,
-          }}>🏥</div>
-          <div>
-            <div style={{ fontSize: 17, fontWeight: 700, color: '#fff', letterSpacing: '-0.01em' }}>
-              Clinic Booking Assistant
-            </div>
-            <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.65)', letterSpacing: '0.04em' }}>
-              Powered by OpenAI · MCP
-            </div>
-          </div>
-        </div>
-        {donorName && (
-          <div style={{
-            display: 'flex', alignItems: 'center', gap: 8,
-            background: 'rgba(255,255,255,0.15)',
-            borderRadius: 24, padding: '6px 14px 6px 8px',
-            backdropFilter: 'blur(4px)',
-          }}>
-            <div style={{
-              width: 28, height: 28, borderRadius: '50%',
-              background: 'rgba(255,255,255,0.25)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontSize: 11, fontWeight: 700, color: '#fff',
-            }}>
-              {donorName.split(' ').map(n => n[0]).join('')}
-            </div>
-            <span style={{ color: '#fff', fontSize: 13, fontWeight: 500 }}>{donorName}</span>
-          </div>
-        )}
-      </header>
+    <div style={{
+      display: 'flex', height: '100vh', overflow: 'hidden',
+      background: '#f1f5f9',
+    }}>
+      <GlobalStyles />
+      <Sidebar view={view} onViewChange={setView} />
 
-      {/* Main layout */}
-      <main style={{
-        flex: 1,
-        display: 'flex',
-        maxWidth: 1040,
-        margin: '0 auto',
-        width: '100%',
-        padding: '24px 20px',
-        gap: 20,
-        alignItems: 'flex-start',
-      }}>
-        <div style={{ width: 260, flexShrink: 0, position: 'sticky', top: 24 }}>
-          <CandidateSelector onSelect={handleSelect} selectedId={donorId} />
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+        <AppHeader view={view} donor={donor} />
+
+        <div style={{ flex: 1, overflow: 'hidden', display: 'flex' }}>
+          {view === 'booking' ? (
+            <BookingLayout donorId={donorId} donor={donor} onSelectDonor={handleSelectDonor} />
+          ) : (
+            <AnalyticsLayout />
+          )}
         </div>
-        <div style={{ flex: 1, minWidth: 0 }}>
-          <Chat donorId={donorId} setInput={undefined} />
-        </div>
-      </main>
+      </div>
     </div>
   )
 }

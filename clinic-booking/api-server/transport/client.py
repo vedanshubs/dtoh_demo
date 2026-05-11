@@ -42,4 +42,13 @@ class MCPClientManager:
 
     async def call_tool(self, name: str, arguments: dict):
         result = await self._session.call_tool(name, arguments)
-        return json.loads(result.content[0].text)
+        if not result.content:
+            raise RuntimeError(f"MCP tool '{name}' returned empty content")
+        text = result.content[0].text
+        # If the MCP server flagged an error, surface it clearly
+        if getattr(result, 'isError', False):
+            raise RuntimeError(f"MCP tool '{name}' error: {text}")
+        try:
+            return json.loads(text)
+        except json.JSONDecodeError:
+            raise RuntimeError(f"MCP tool '{name}' returned non-JSON: {text[:300]}")

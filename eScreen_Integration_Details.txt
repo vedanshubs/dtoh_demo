@@ -1,0 +1,200 @@
+eScreen Integration – Configuration & Mapping Details
+
+============================================================
+2. CLIENT ACCOUNT CONFIGURATION
+============================================================
+
+Field                          Value
+------------------------------------------------------------
+eScreenClientAccount           142451
+eScreenClientSubAccount        209
+ElectronicClientID Format      UB-{AccountNumber}
+Example IDs                    UB-016118, UB-100050
+LabAccount (Alere Format)      E142451209
+
+
+============================================================
+3. SERVICE IDENTIFIER CODES
+============================================================
+
+ServiceIdentifier              Maps To                     Notes
+------------------------------------------------------------
+3                              eScreen VendorId = 3        Used in clinic search
+Integer from VendorToService   Specific Service Type       Resolved dynamically per service
+
+
+Resolution Logic:
+------------------------------------------------------------
+VendorToService.MapValue
+WHERE VendorId = 3 (eScreen)
+
+
+============================================================
+4. SCHEDULING RULES
+============================================================
+
+Field                      Purpose
+------------------------------------------------------------
+EventExpireationDate       Defines when the order expires
+NoExpirationOnPassport     true = No expiration
+AllowSevenDays             Enables 7-day scheduling window
+StartDate                  Order start date
+
+
+============================================================
+5. REQUIRED DONOR FIELDS
+============================================================
+
+Field           Required    Notes
+------------------------------------------------------------
+FirstName       Yes
+LastName        Yes
+SSN             Yes
+DOB             Yes
+PhoneNumber     Yes
+TestReason      Yes         Example: PE (Pre-Employment)
+Email           Optional
+Address         Optional
+
+
+============================================================
+7. DATABASE SCHEMA MAPPING
+============================================================
+
+DTOH.DrugReport (SpecimenResult)
+------------------------------------------------------------
+
+DrugReportId                  int
+TestReportId                  int (FK → TestReport)
+Disposition                   nvarchar
+SampleType                    nvarchar (U/B/H)
+SpecimenType                  nvarchar
+LabName                       nvarchar
+LabAccount                    nvarchar
+AccessionNum                  nvarchar
+ChainOfCustody                nvarchar
+CollectionDateTime            datetime
+LabReceivedDate               datetime
+LabReportDateTime             datetime
+VerificationDate              datetime
+Dilute                        nvarchar
+CollectionSiteInNetwork       int
+EcupCollection                bit
+ClientName                    nvarchar
+LocationInfo                  nvarchar
+CollectionSitePhoneNumber     nvarchar
+
+
+DTOH.PanelResult (Panel Inside SpecimenResult)
+------------------------------------------------------------
+
+PanelResultId                 int
+DrugReportId                  int (FK → DrugReport)
+PanelId                       nvarchar
+PanelName                     nvarchar
+PanelResultStatus             nvarchar
+ResultTypeId                  int
+LabPanelId                    int
+
+
+DTOH.SubstanceResult (Analyte)
+------------------------------------------------------------
+
+SubstanceResultId             int
+PanelResultId                 int (FK → PanelResult)
+PanelId                       nvarchar
+AnalyteId                     nvarchar
+AnalyteName                   nvarchar
+Disposition                   nvarchar (Single-char value)
+SpecimenType                  nvarchar
+ScreeningCutoffValue          nvarchar
+ScreeningCutoffUnit           nvarchar
+ScreeningResultValue          nvarchar
+ConfirmationCutoffValue       nvarchar
+ConfirmationCutoffUnit        nvarchar
+ConfirmationResultValue       nvarchar
+Quantity                      nvarchar
+ResultTypeId                  int
+SampleTypeId                  int
+SubstanceId                   int
+
+
+DTOH.TestReport (Specimen Status)
+------------------------------------------------------------
+
+EScreenStatusCode             nvarchar
+EScreenStatusDescription      nvarchar
+StatusId                      int
+
+
+============================================================
+8. POC DEMO ACCOUNT CONFIGURATION
+============================================================
+
+Field                          Value
+------------------------------------------------------------
+eScreenClientAccount           142451
+eScreenClientSubAccount        209
+LabAccount                     E142451209
+ElectronicClientID             UB-016118
+
+
+Test Account Example:
+------------------------------------------------------------
+Account Number: 100050
+ElectronicClientID: UB-100050
+
+
+============================================================
+9. DISPOSITION & STATUS MAPPING
+============================================================
+
+Drug Specimen Disposition
+Stored In: DrugReport.Disposition
+
+eScreen Code       Stored Value
+------------------------------------------------------------
+1                  Negative
+2                  Positive
+3                  Canceled
+4                  Adulterated
+9                  Refusal to Test
+10                 Substituted
+16                 No Show
+
+
+Analyte Disposition
+Stored In: SubstanceResult.Disposition
+
+Char               Meaning
+------------------------------------------------------------
+N                  Negative
+P                  Positive
+X                  Canceled
+
+
+Specimen Status
+Stored In: TestReport.EScreenStatusCode
+
+eScreen Code       Stored String
+------------------------------------------------------------
+1                  Sent to Lab
+2                  Received at Lab
+3                  In MRO Review
+4                  Pending CCF
+5                  Expired
+11                 Reported
+13                 Cancelled
+
+
+OccHealth Overall Status
+Stored In: OccHealthReport.OverallStatusDescription
+
+Possible Values:
+------------------------------------------------------------
+Scheduled
+Complete
+Partial
+Canceled
+No Show
+Pending Fax

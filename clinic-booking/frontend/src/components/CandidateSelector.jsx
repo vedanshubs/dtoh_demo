@@ -77,7 +77,7 @@ export default function CandidateSelector({ onSelect, selectedId }) {
             return (
               <button
                 key={d.id}
-                onClick={() => onSelect(d.id, `${d.first_name} ${d.last_name}`)}
+                onClick={() => onSelect(d)}
                 style={{
                   width: '100%', display: 'flex', alignItems: 'center', gap: 10,
                   padding: '9px 11px', borderRadius: 10, border: 'none',

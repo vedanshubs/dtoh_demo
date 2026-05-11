@@ -1,4 +1,7 @@
+import logging
 from mocks.clinics import MOCK_CLINICS
+
+log = logging.getLogger(__name__)
 
 
 async def handle_search_clinics(
@@ -9,6 +12,9 @@ async def handle_search_clinics(
 ) -> list[dict]:
     if use_mock:
         return MOCK_CLINICS
-    # Phase 3: replace with SOAP call
     from soap.get_collection_sites import get_collection_sites
-    return await get_collection_sites(zipcode, radius, service_identifier)
+    try:
+        return await get_collection_sites(zipcode, radius, service_identifier)
+    except Exception as exc:
+        log.error("GetCollectionSites failed: %s", exc)
+        return [{"error": True, "message": str(exc)}]
