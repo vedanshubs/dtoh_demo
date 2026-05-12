@@ -20,10 +20,47 @@ const darkTooltipStyle = {
 
 const axisStyle = { fill: '#94a3b8', fontSize: 11 }
 
+const SKIP_KEYS = new Set(['client_id', 'date_range', 'total', 'total_tests', 'total_in_progress'])
+
+function flatToArray(data) {
+  return Object.entries(data)
+    .filter(([k, v]) => typeof v === 'number' && !SKIP_KEYS.has(k))
+    .map(([k, v]) => ({ label: k.replace(/_/g, ' '), value: v }))
+}
+
+const chartContainer = (content) => (
+  <div style={{
+    background: '#fff', borderRadius: 10,
+    padding: '16px', border: '1px solid #e2e8f0',
+  }}>
+    {content}
+  </div>
+)
+
+const SKIP_STAT_KEYS = new Set(['client_id', 'date_range', 'total_tests', 'total_in_progress'])
+
+function fmtNumber(v) {
+  if (!Number.isFinite(v)) return v
+  return Number.isInteger(v) ? v.toLocaleString() : v % 1 < 0.05 ? Math.round(v).toLocaleString() : v.toFixed(1)
+}
+
+function coerce(rows) {
+  return rows.map(row => {
+    const out = {}
+    for (const [k, v] of Object.entries(row)) {
+      out[k] = (typeof v === 'string' && v.trim() !== '' && !isNaN(Number(v))) ? Number(v) : v
+    }
+    return out
+  })
+}
+
 export default function ChartRenderer({ visualization, data }) {
   if (visualization === 'stat') {
-    const entries = Object.entries(data).filter(([k]) => !['client_id', 'date_range'].includes(k))
-    return (
+    const entries = Object.entries(data).filter(
+      ([k, v]) => typeof v === 'number' && !SKIP_STAT_KEYS.has(k)
+    )
+    if (!entries.length) return null
+    return chartContainer(
       <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
         {entries.map(([k, v], i) => (
           <div key={k} style={{
@@ -33,11 +70,8 @@ export default function ChartRenderer({ visualization, data }) {
             borderRadius: 10, padding: '16px 14px', textAlign: 'center',
             borderTop: `3px solid ${COLORS[i % COLORS.length]}`,
           }}>
-            <div style={{
-              fontSize: 26, fontWeight: 700, color: '#1e293b',
-              marginBottom: 4,
-            }}>
-              {typeof v === 'number' ? v.toFixed(1) : v}
+            <div style={{ fontSize: 26, fontWeight: 700, color: '#1e293b', marginBottom: 4 }}>
+              {fmtNumber(v)}
             </div>
             <div style={{ color: '#94a3b8', fontSize: 11, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
               {k.replace(/_/g, ' ')}
@@ -49,29 +83,34 @@ export default function ChartRenderer({ visualization, data }) {
   }
 
   if (visualization === 'bar_chart') {
-    const chartData = data.breakdown || data.analytes || []
+    const chartData = coerce(data.breakdown || data.analytes || (!Array.isArray(data) ? flatToArray(data) : []))
     if (!chartData.length) return null
-    const dataKey = Object.keys(chartData[0]).find(k => typeof chartData[0][k] === 'number') || 'count'
     const nameKey = Object.keys(chartData[0]).find(k => typeof chartData[0][k] === 'string') || 'label'
-    return (
+    const numericKeys = Object.keys(chartData[0]).filter(k => typeof chartData[0][k] === 'number')
+    return chartContainer(
       <ResponsiveContainer width="100%" height={280}>
         <BarChart data={chartData} margin={{ top: 4, right: 8, bottom: 4, left: -10 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.06)" />
           <XAxis dataKey={nameKey} tick={axisStyle} axisLine={false} tickLine={false} />
           <YAxis tick={axisStyle} axisLine={false} tickLine={false} />
           <Tooltip {...darkTooltipStyle} />
-          <Bar dataKey={dataKey} fill="#c8102e" radius={[4, 4, 0, 0]} />
+          {numericKeys.length > 1 && (
+            <Legend formatter={v => <span style={{ color: '#64748b', fontSize: 11 }}>{v}</span>} />
+          )}
+          {numericKeys.map((key, i) => (
+            <Bar key={key} dataKey={key} fill={COLORS[i % COLORS.length]} radius={[4, 4, 0, 0]} />
+          ))}
         </BarChart>
       </ResponsiveContainer>
     )
   }
 
   if (visualization === 'pie_chart') {
-    const chartData = data.breakdown || []
+    const chartData = coerce(data.breakdown || (!Array.isArray(data) ? flatToArray(data) : []))
     if (!chartData.length) return null
     const nameKey = Object.keys(chartData[0]).find(k => typeof chartData[0][k] === 'string') || 'label'
     const valueKey = Object.keys(chartData[0]).find(k => typeof chartData[0][k] === 'number') || 'count'
-    return (
+    return chartContainer(
       <ResponsiveContainer width="100%" height={280}>
         <PieChart>
           <Pie
@@ -90,9 +129,7 @@ export default function ChartRenderer({ visualization, data }) {
             ))}
           </Pie>
           <Tooltip {...darkTooltipStyle} />
-          <Legend
-            formatter={(v) => <span style={{ color: '#64748b', fontSize: 11 }}>{v}</span>}
-          />
+          <Legend formatter={(v) => <span style={{ color: '#64748b', fontSize: 11 }}>{v}</span>} />
         </PieChart>
       </ResponsiveContainer>
     )
@@ -103,7 +140,7 @@ export default function ChartRenderer({ visualization, data }) {
     if (!chartData.length) return null
     const xKey = Object.keys(chartData[0]).find(k => typeof chartData[0][k] === 'string') || 'period'
     const yKey = Object.keys(chartData[0]).find(k => typeof chartData[0][k] === 'number') || 'value'
-    return (
+    return chartContainer(
       <ResponsiveContainer width="100%" height={280}>
         <LineChart data={chartData} margin={{ top: 4, right: 8, bottom: 4, left: -10 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.06)" />
@@ -125,7 +162,7 @@ export default function ChartRenderer({ visualization, data }) {
     const rows = Array.isArray(data) ? data : data.breakdown || data.analytes || []
     if (!rows.length) return null
     const cols = Object.keys(rows[0])
-    return (
+    return chartContainer(
       <div style={{ overflowX: 'auto' }}>
         <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12 }}>
           <thead>

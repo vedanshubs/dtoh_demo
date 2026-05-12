@@ -14,8 +14,8 @@ logging.basicConfig(
 log = logging.getLogger(__name__)
 
 from transport.client import MCPClientManager
-from claude.conversation import run_turn
-from claude.prompts.system_prompt import build_system_prompt
+from ai.conversation import run_turn
+from ai.prompts.system_prompt import build_system_prompt
 from rest_actions import register_action_routes
 
 load_dotenv()

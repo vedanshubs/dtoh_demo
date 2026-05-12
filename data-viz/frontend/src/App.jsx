@@ -1,10 +1,10 @@
 import Chat from './components/Chat'
 
 const QUICK_QUERIES = [
-  { icon: '📊', label: 'Results summary', query: 'Show me the overall results summary' },
-  { icon: '🧪', label: 'Analyte breakdown', query: 'What is the analyte breakdown?' },
-  { icon: '⏱️', label: 'Turnaround stats', query: 'Show turnaround time statistics' },
-  { icon: '🔄', label: 'Pipeline status', query: 'What is the current pipeline status?' },
+  { icon: '📊', label: 'Positive rate', query: "What's our positive rate for pre-employment tests this quarter?" },
+  { icon: '🧪', label: 'Analyte breakdown', query: 'Which substances showed the most positives in the last 90 days?' },
+  { icon: '⏱️', label: 'SLA compliance', query: 'Are we meeting our 5-day turnaround SLA?' },
+  { icon: '🔄', label: 'Pipeline status', query: 'How many tests are currently waiting for MRO review?' },
 ]
 
 export default function App() {
@@ -34,7 +34,7 @@ export default function App() {
               Drug Testing Analytics
             </div>
             <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.65)', letterSpacing: '0.04em' }}>
-              Powered by Claude AI · MCP
+              AI-powered · MCP
             </div>
           </div>
         </div>

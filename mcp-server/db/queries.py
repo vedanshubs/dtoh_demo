@@ -87,8 +87,8 @@ async def query_analyte_breakdown(client_id, date_range, analyte_name=None, disp
             sql = """
                 SELECT
                     sr.AnalyteName AS analyte,
-                    SUM(CASE WHEN sr.Disposition = 'Pos' THEN 1 ELSE 0 END) AS positive,
-                    SUM(CASE WHEN sr.Disposition = 'Neg' THEN 1 ELSE 0 END) AS negative
+                    CAST(SUM(CASE WHEN sr.Disposition = 'Pos' THEN 1 ELSE 0 END) AS SIGNED) AS positive,
+                    CAST(SUM(CASE WHEN sr.Disposition = 'Neg' THEN 1 ELSE 0 END) AS SIGNED) AS negative
                 FROM CollectionOrder  co
                 JOIN TestReport       tr ON tr.CollectionOrderId = co.CollectionOrderId
                 JOIN DrugReport       dr ON dr.TestReportId      = tr.TestReportId

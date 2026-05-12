@@ -28,11 +28,19 @@ const TypingIndicator = () => (
   </div>
 )
 
+function boldNumbers(text) {
+  const html = text.replace(
+    /(\d+\.?\d*%|\d+\.?\d+\s*days?|\b\d+\b)/g,
+    '<strong style="color:#1e293b;font-weight:700">$1</strong>'
+  )
+  return { __html: html }
+}
+
 const EMPTY_SUGGESTIONS = [
-  'Show me the overall results summary',
-  'What is the analyte breakdown for this month?',
-  'How is the pipeline performing?',
-  'Show turnaround time trends',
+  "What's our positive rate for pre-employment tests this quarter?",
+  'How many tests are currently waiting for MRO review?',
+  'Which substances showed the most positives in the last 90 days?',
+  'Are we meeting our 5-day turnaround SLA?',
 ]
 
 export default function Chat() {
@@ -42,6 +50,7 @@ export default function Chat() {
   const [loading, setLoading] = useState(false)
   const bottomRef = useRef(null)
   const inputRef = useRef(null)
+  const abortRef = useRef(null)
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -51,11 +60,15 @@ export default function Chat() {
     const handler = (e) => send(e.detail)
     window.addEventListener('quick-query', handler)
     return () => window.removeEventListener('quick-query', handler)
-  }, [history])
+  }, [history, loading])
 
   const send = async (text) => {
     const msg = text ?? input
-    if (!msg.trim()) return
+    if (!msg.trim() || loading) return
+
+    const controller = new AbortController()
+    abortRef.current = controller
+
     setMessages(prev => [...prev, { role: 'user', text: msg }])
     setInput('')
     setLoading(true)
@@ -65,19 +78,26 @@ export default function Chat() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ messages: history, user_message: msg }),
+        signal: controller.signal,
       })
       const data = await res.json()
       setHistory(data.messages)
       setMessages(prev => [...prev, { role: 'assistant', reply: data.reply }])
-    } catch {
+    } catch (err) {
+      if (err.name === 'AbortError') return
       setMessages(prev => [...prev, {
         role: 'assistant',
         reply: { summary: 'Something went wrong. Please try again.', error: true },
       }])
     } finally {
+      abortRef.current = null
       setLoading(false)
       inputRef.current?.focus()
     }
+  }
+
+  const stop = () => {
+    if (abortRef.current) abortRef.current.abort()
   }
 
   const isEmpty = messages.length === 0 && !loading
@@ -106,7 +126,7 @@ export default function Chat() {
               width: 6, height: 6, borderRadius: '50%', background: '#10b981',
               display: 'inline-block', boxShadow: '0 0 0 2px rgba(16,185,129,0.2)',
             }} />
-            Online · Claude AI
+            Online
           </div>
         </div>
         {messages.length > 0 && (
@@ -135,10 +155,10 @@ export default function Chat() {
             <div style={{ fontSize: 18, fontWeight: 700, color: '#1e293b', marginBottom: 6 }}>
               What would you like to analyze?
             </div>
-            <div style={{ fontSize: 13, color: '#94a3b8', maxWidth: 340, margin: '0 auto 28px', lineHeight: 1.65 }}>
-              Ask me about results summaries, analyte breakdowns, turnaround times, or pipeline status.
+            <div style={{ fontSize: 13, color: '#94a3b8', maxWidth: 360, margin: '0 auto 28px', lineHeight: 1.65 }}>
+              Ask me about positive rates, SLA compliance, pipeline backlogs, or substance-level breakdowns.
             </div>
-            <div style={{ display: 'flex', gap: 8, justifyContent: 'center', flexWrap: 'wrap', maxWidth: 480, margin: '0 auto' }}>
+            <div style={{ display: 'flex', gap: 8, justifyContent: 'center', flexWrap: 'wrap', maxWidth: 520, margin: '0 auto' }}>
               {EMPTY_SUGGESTIONS.map(s => (
                 <button
                   key={s}
@@ -200,20 +220,44 @@ export default function Chat() {
               ) : (
                 <div style={{ padding: '14px 16px' }}>
                   {m.reply?.summary && (
-                    <p style={{
-                      fontSize: 13.5, lineHeight: 1.65, color: '#475569',
-                      margin: m.reply?.visualization ? '0 0 14px' : '0',
-                      whiteSpace: 'pre-wrap',
-                    }}>{m.reply.summary}</p>
+                    <p
+                      dangerouslySetInnerHTML={boldNumbers(m.reply.summary)}
+                      style={{
+                        fontSize: 13.5, lineHeight: 1.65, color: '#64748b',
+                        fontWeight: 500,
+                        margin: m.reply?.visualization ? '0 0 14px' : '0',
+                      }}
+                    />
                   )}
                   {m.reply?.visualization && m.reply?.data && (
-                    <div style={{
-                      background: '#fff',
-                      borderRadius: 10,
-                      padding: '16px',
-                      border: '1px solid #e2e8f0',
-                    }}>
-                      <ChartRenderer visualization={m.reply.visualization} data={m.reply.data} />
+                    <ChartRenderer visualization={m.reply.visualization} data={m.reply.data} />
+                  )}
+                  {i === messages.length - 1 && !loading && m.reply?.suggestions?.length > 0 && (
+                    <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginTop: 14 }}>
+                      <div style={{ width: '100%', fontSize: 10.5, fontWeight: 600, color: '#94a3b8', letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: 4 }}>
+                        Suggested follow-ups
+                      </div>
+                      {m.reply.suggestions.map((s, si) => (
+                        <button
+                          key={si}
+                          onClick={() => send(s)}
+                          style={{
+                            padding: '6px 13px', borderRadius: 20,
+                            border: '1px solid #bfdbfe',
+                            background: '#eff6ff',
+                            fontSize: 11.5, color: '#1d4ed8', cursor: 'pointer',
+                            fontWeight: 500, transition: 'all 0.15s',
+                          }}
+                          onMouseEnter={e => {
+                            e.currentTarget.style.background = '#dbeafe'
+                            e.currentTarget.style.borderColor = '#93c5fd'
+                          }}
+                          onMouseLeave={e => {
+                            e.currentTarget.style.background = '#eff6ff'
+                            e.currentTarget.style.borderColor = '#bfdbfe'
+                          }}
+                        >{s}</button>
+                      ))}
                     </div>
                   )}
                 </div>
@@ -252,30 +296,45 @@ export default function Chat() {
             value={input}
             onChange={e => setInput(e.target.value)}
             onKeyDown={e => e.key === 'Enter' && !e.shiftKey && send()}
-            placeholder="Ask about your drug testing data…"
+            placeholder="Ask about compliance, SLAs, test outcomes…"
             style={{
               flex: 1, border: 'none', background: 'transparent',
               fontSize: 13.5, color: '#1e293b', outline: 'none',
             }}
           />
-          <button
-            onClick={() => send()}
-            disabled={loading || !input.trim()}
-            style={{
-              width: 36, height: 36, borderRadius: '50%', border: 'none',
-              background: (loading || !input.trim())
-                ? '#e2e8f0'
-                : 'linear-gradient(135deg, #c8102e, #8b0000)',
-              color: (loading || !input.trim()) ? '#94a3b8' : '#fff',
-              cursor: (loading || !input.trim()) ? 'default' : 'pointer',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              flexShrink: 0, transition: 'all 0.2s', fontSize: 15,
-              boxShadow: (loading || !input.trim()) ? 'none' : '0 2px 8px rgba(200,16,46,0.4)',
-            }}
-          >➤</button>
+          {loading ? (
+            <button
+              onClick={stop}
+              style={{
+                width: 36, height: 36, borderRadius: '50%', border: 'none',
+                background: '#ef4444',
+                color: '#fff', cursor: 'pointer',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                flexShrink: 0, fontSize: 13,
+                boxShadow: '0 2px 8px rgba(239,68,68,0.35)',
+                transition: 'all 0.2s',
+              }}
+            >⏹</button>
+          ) : (
+            <button
+              onClick={() => send()}
+              disabled={!input.trim()}
+              style={{
+                width: 36, height: 36, borderRadius: '50%', border: 'none',
+                background: !input.trim()
+                  ? '#e2e8f0'
+                  : 'linear-gradient(135deg, #c8102e, #8b0000)',
+                color: !input.trim() ? '#94a3b8' : '#fff',
+                cursor: !input.trim() ? 'default' : 'pointer',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                flexShrink: 0, transition: 'all 0.2s', fontSize: 15,
+                boxShadow: !input.trim() ? 'none' : '0 2px 8px rgba(200,16,46,0.4)',
+              }}
+            >➤</button>
+          )}
         </div>
         <div style={{ fontSize: 10.5, color: '#cbd5e1', textAlign: 'center', marginTop: 7 }}>
-          Enter to send · Claude AI · MCP-powered
+          Enter to send · MCP-powered
         </div>
       </div>
     </div>

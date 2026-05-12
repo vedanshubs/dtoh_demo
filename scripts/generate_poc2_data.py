@@ -17,7 +17,7 @@ OUTPUT = Path(__file__).parent.parent / "db" / "seed_poc2_data.sql"
 CLIENT_ACCOUNT = "UBS001"
 MONTHLY_BASE = 100
 
-OFFICES = [("NY-HQ", 0.40), ("NJ-Weehawken", 0.25), ("CT-Stamford", 0.20), ("IL-Chicago", 0.15)]
+OFFICES = [("NY-HQ", 0.40), ("NJ-Weehawken", 0.25), ("CT-Stamford", 0.20), ("NY-Midtown", 0.15)]
 REASONS = [("Pre-Employment", 0.65), ("Random", 0.25), ("For Cause", 0.07), ("Post-Accident", 0.02), ("Return to Duty", 0.01)]
 SPECIMENS = [("Urine", 0.80), ("Hair", 0.12), ("Oral Fluid", 0.05), ("Breath", 0.03)]
 
@@ -52,7 +52,7 @@ TA = {
     "CT-Stamford":  {"c2l": (0.7, 1.3), "l2r": (1.4, 2.0), "r2m": (0.4, 0.8), "m2v": (0.3, 0.6)},
     "NY-HQ":        {"c2l": (0.9, 1.4), "l2r": (1.6, 2.3), "r2m": (0.5, 1.0), "m2v": (0.4, 0.7)},
     "NJ-Weehawken": {"c2l": (1.0, 1.6), "l2r": (1.7, 2.5), "r2m": (0.6, 1.0), "m2v": (0.4, 0.8)},
-    "IL-Chicago":   {"c2l": (1.5, 2.8), "l2r": (2.3, 3.8), "r2m": (0.7, 1.3), "m2v": (0.5, 1.0)},
+    "NY-Midtown":   {"c2l": (0.8, 1.3), "l2r": (1.5, 2.2), "r2m": (0.5, 0.9), "m2v": (0.3, 0.6)},
 }
 
 LAB_NAMES = ["Quest Diagnostics", "LabCorp"]
@@ -204,7 +204,7 @@ def generate():
             )
 
             if not in_pipeline:
-                sla_miss_prob = 0.35 if office == "IL-Chicago" else 0.08
+                sla_miss_prob = 0.08
                 sla_miss = random.random() < sla_miss_prob
                 lab_recv, lab_rep, mro_recv, verified = build_milestones(office, col_dt, sla_miss)
                 lab_name = random.choice(LAB_NAMES)
