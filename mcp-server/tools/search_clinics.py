@@ -1,5 +1,8 @@
+import logging
 from mocks.clinics import load_clinics
 from utils.geo import haversine_miles, centroid_for_zip
+
+log = logging.getLogger(__name__)
 
 _SPECIMEN_MAP: dict = {
     "5PANEL_U":  "U",
