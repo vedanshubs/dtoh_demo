@@ -9,6 +9,12 @@ echo "  UBS eScreen MCP Demo - Starting Services"
 echo "================================================"
 echo ""
 
+# --- Kill any stale processes on our ports ---
+for port in 8005 8006 8010; do
+    pids=$(lsof -ti :$port 2>/dev/null || true)
+    [ -n "$pids" ] && kill -9 $pids 2>/dev/null && echo "      Cleared stale process on port $port" || true
+done
+
 # --- MySQL Docker container ---
 echo "[1/5] Ensuring MySQL container is running..."
 if ! sudo docker ps --format "{{.Names}}" | grep -q "^escreen-db$"; then
@@ -32,14 +38,14 @@ echo "[3/5] Starting Clinic-Booking API server (port 8005)..."
 cd "$ROOT/clinic-booking/api-server"
 if [ -d ".venv" ]; then
     source .venv/bin/activate
-    uvicorn main:app --port 8005 --reload &
+    PYTHONUNBUFFERED=1 uvicorn main:app --port 8005 --log-level info &
     deactivate 2>/dev/null || true
 elif [ -d "venv" ]; then
     source venv/bin/activate
-    uvicorn main:app --port 8005 --reload &
+    PYTHONUNBUFFERED=1 uvicorn main:app --port 8005 --log-level info &
     deactivate 2>/dev/null || true
 else
-    python3 -m uvicorn main:app --port 8005 --reload &
+    PYTHONUNBUFFERED=1 python3 -m uvicorn main:app --port 8005 --log-level info &
 fi
 CLINIC_API_PID=$!
 
@@ -64,14 +70,14 @@ echo "[5/5] Starting Data-Viz API server (port 8006)..."
 cd "$ROOT/data-viz/api-server"
 if [ -d ".venv" ]; then
     source .venv/bin/activate
-    uvicorn main:app --port 8006 &
+    PYTHONUNBUFFERED=1 uvicorn main:app --port 8006 --log-level info &
     deactivate 2>/dev/null || true
 elif [ -d "venv" ]; then
     source venv/bin/activate
-    uvicorn main:app --port 8006 &
+    PYTHONUNBUFFERED=1 uvicorn main:app --port 8006 --log-level info &
     deactivate 2>/dev/null || true
 else
-    python3 -m uvicorn main:app --port 8006 &
+    PYTHONUNBUFFERED=1 python3 -m uvicorn main:app --port 8006 --log-level info &
 fi
 DATAVIZ_API_PID=$!
 

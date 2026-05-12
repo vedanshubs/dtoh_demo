@@ -4,6 +4,7 @@ import ProgressStepper from './ProgressStepper'
 import BookingSummary from './BookingSummary'
 import BookingPassport from './BookingPassport'
 import McpActivityPanel from './McpActivityPanel'
+import InlineDatePicker from './InlineDatePicker'
 
 /* Markdown helpers */
 function renderInline(text) {
@@ -388,6 +389,7 @@ export default function Chat({ donorId, donorName }) {
   const [passport,          setPassport]          = useState(null)
   const [passportOpen,      setPassportOpen]      = useState(false)
   const [mcpCalls,          setMcpCalls]          = useState([])
+  const [pendingClinic,     setPendingClinic]     = useState(null)   // clinic awaiting date selection
 
   // Session memory cleared on donor change
   const [session, setSession] = useState({
@@ -405,7 +407,8 @@ export default function Chat({ donorId, donorName }) {
   useEffect(() => {
     setMessages([]); setHistory([]); setHasStarted(false); setHasClinics(false); setLastClinics([])
     setLastBookingSummary(null); setPassport(null); setPassportOpen(false); setMcpCalls([])
-    setSession({ testType: null, reasonForTest: null, selectedClinic: null, clinicSelected: false, bookingConfirmed: false, isDOT: false })
+    setPendingClinic(null)
+    setSession({ testType: null, reasonForTest: null, selectedClinic: null, clinicSelected: false, bookingConfirmed: false, isDOT: false, preferredDate: null })
   }, [donorId])
 
   // Derive stepper step — step 2 requires both test type AND reason
@@ -496,7 +499,15 @@ export default function Chat({ donorId, donorName }) {
       const returnedClinics = data.clinics?.length ? data.clinics : null
       if (returnedClinics) { setHasClinics(true); setLastClinics(returnedClinics) }
 
-      if (data.booking_summary) { setSession(s => ({ ...s, clinicSelected: true })); setLastBookingSummary(data.booking_summary) }
+      if (data.booking_summary) {
+        // Ensure the date is present even if AI omitted it from the summary block
+        const bs = data.booking_summary
+        if (!bs['Preferred Date'] && session.preferredDate) {
+          bs['Preferred Date'] = session.preferredDate
+        }
+        setSession(s => ({ ...s, clinicSelected: true }))
+        setLastBookingSummary(bs)
+      }
 
       const regMatch = data.reply.match(/(?:Registration ID:|registration_id:)\s*([A-Z0-9-]+)/i)
       const isBookingConfirmed = !!regMatch
@@ -506,31 +517,37 @@ export default function Chat({ donorId, donorName }) {
         const summary = lastBookingSummary || data.booking_summary || {}
         const passportData = {
           registrationId: regMatch[1],
-          candidate:  summary['Candidate']  || donorName || '',
-          testType:   summary['Test Type']  || '',
-          reason:     summary['Reason']     || '',
-          clinic:     summary['Clinic']     || '',
-          address:    summary['Address']    || '',
-          zip:        summary['ZIP']        || summary['ZIP Code'] || '',
-          issuedAt:   new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
+          candidate:     summary['Candidate']      || donorName || '',
+          testType:      summary['Test Type']      || '',
+          reason:        summary['Reason']         || '',
+          preferredDate: summary['Preferred Date'] || session.preferredDate || '',
+          clinic:        summary['Clinic']         || '',
+          address:       summary['Address']        || '',
+          zip:           summary['ZIP']            || summary['ZIP Code'] || '',
+          issuedAt:      new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
         }
         setPassport(passportData)
         setPassportOpen(true)
         fetch('/api/bookings', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ donor_id: donorId, ...passportData }),
+          body: JSON.stringify({ donor_id: donorId, ...passportData, preferredDate: passportData.preferredDate }),
         }).catch(() => {})
       }
 
       // Only show clinic cards when search_clinics fired this turn (returnedClinics is fresh)
       const showClinics = returnedClinics && !data.booking_summary && !isBookingConfirmed ? returnedClinics : null
 
+      const summaryForMsg = data.booking_summary
+        ? (!data.booking_summary['Preferred Date'] && session.preferredDate
+            ? { ...data.booking_summary, 'Preferred Date': session.preferredDate }
+            : data.booking_summary)
+        : null
       setMessages(prev => [...prev, {
         role: 'assistant',
         text: data.reply,
         clinics: showClinics,
-        booking_summary: data.booking_summary ?? null,
+        booking_summary: summaryForMsg,
         showPassport: isBookingConfirmed,
       }])
     } catch (err) {
@@ -542,14 +559,33 @@ export default function Chat({ donorId, donorName }) {
   }
 
   const handleBook = (clinic) => {
-    setSession(s => ({ ...s, selectedClinic: clinic }))
-    const id = clinic.EscreenSiteId ?? clinic.CollectionSiteId
+    // Pause booking — inject a local date-picker message, don't call API yet
+    setPendingClinic(clinic)
+    setMessages(prev => [...prev, {
+      role: 'assistant',
+      text: '',
+      datePicker: true,
+      clinicName: clinic.SiteName,
+    }])
+  }
+
+  const handleDateSelect = (dateStr) => {
+    const clinic = pendingClinic
+    if (!clinic) return
+    setPendingClinic(null)
+    // Replace the date-picker message with the confirmed date display
+    setMessages(prev => prev.map(m =>
+      m.datePicker ? { ...m, datePicker: false, text: `📅 Preferred date: **${dateStr}**` } : m
+    ))
+    setSession(s => ({ ...s, selectedClinic: clinic, preferredDate: dateStr }))
+    const id   = clinic.EscreenSiteId ?? clinic.CollectionSiteId
     const addr = [clinic.Address1, clinic.City, clinic.State, clinic.ZipCode].filter(Boolean).join(', ')
     const dist = clinic.Distance != null ? ` (${clinic.Distance} mi)` : ''
     const walkin = clinic.Attributes?.find(a => a.AttributeName === 'Walk In Drug Testing - No Appointment Required')?.AttributeValue === 'Yes' ? ', walk-in' : ''
-    const dot = clinic.Attributes?.find(a => a.AttributeName === 'DOT Certified Physician')?.AttributeValue === 'Yes' ? ', DOT certified' : ''
-    send(`I'd like to book at ${clinic.SiteName}${dist}. Address: ${addr}. Site ID: ${id}${walkin}${dot}.`)
+    const dot    = clinic.Attributes?.find(a => a.AttributeName === 'DOT Certified Physician')?.AttributeValue === 'Yes' ? ', DOT certified' : ''
+    send(`I'd like to book at ${clinic.SiteName}${dist}. Address: ${addr}. Site ID: ${id}${walkin}${dot}. Preferred date: ${dateStr}.`)
   }
+
   const handleConfirm = () => send('Confirm')
   const handleEdit    = () => send('Edit details')
   const handleKey     = (e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send() } }
@@ -640,11 +676,11 @@ export default function Chat({ donorId, donorName }) {
             {(() => {
               const chips = m.chips || []
               const hasChips = chips.length > 0
-              const quickReplies = !hasChips && m.role === 'assistant' && !m.clinics && !m.booking_summary ? parseQuickReplies(m.text) : []
+              const quickReplies = !hasChips && m.role === 'assistant' && !m.clinics && !m.booking_summary && !m.datePicker ? parseQuickReplies(m.text) : []
               const hasQuickReplies = quickReplies.length > 0
-              const displayText = (m.clinics || hasQuickReplies || hasChips || m.booking_summary) ? stripList(m.text) : m.text
+              const displayText = (m.clinics || hasQuickReplies || hasChips || m.booking_summary || m.datePicker) ? stripList(m.text) : m.text
               return (
-                <div style={{ maxWidth: (m.clinics || m.booking_summary) ? '92%' : '76%', minWidth: 0 }}>
+                <div style={{ maxWidth: (m.clinics || m.booking_summary || m.datePicker) ? '92%' : '76%', minWidth: 0 }}>
                   {displayText && (
                     <div style={{
                       padding: '10px 14px',
@@ -681,6 +717,9 @@ export default function Chat({ donorId, donorName }) {
                   {hasQuickReplies && <QuickReplies items={quickReplies} onSend={send} />}
                   {m.clinics?.length > 0 && (
                     <ClinicCards clinics={m.clinics} onBook={handleBook} isDOT={session.isDOT} />
+                  )}
+                  {m.datePicker && (
+                    <InlineDatePicker clinicName={m.clinicName} onSelect={handleDateSelect} />
                   )}
                   {m.booking_summary && (
                     <BookingSummary summary={m.booking_summary} onConfirm={handleConfirm} onEdit={handleEdit} />

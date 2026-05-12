@@ -62,6 +62,7 @@ export default function BookingPassport({ data, onClose }) {
       <div class="field"><div class="field-label">Date Issued</div><div class="field-value">${data.issuedAt || '—'}</div></div>
       <div class="field"><div class="field-label">Test Type</div><div class="field-value">${data.testType || '—'}</div></div>
       <div class="field"><div class="field-label">Reason</div><div class="field-value">${data.reason || '—'}</div></div>
+      ${data.preferredDate ? `<div class="field wide"><div class="field-label">Preferred Date</div><div class="field-value">${data.preferredDate}</div></div>` : ''}
       <div class="field wide"><div class="field-label">Clinic</div><div class="field-value">${data.clinic || '—'}</div></div>
       <div class="field wide"><div class="field-label">Address</div><div class="field-value">${data.address || '—'}</div></div>
       <div class="field"><div class="field-label">ZIP Code</div><div class="field-value">${data.zip || '—'}</div></div>
@@ -123,13 +124,14 @@ export default function BookingPassport({ data, onClose }) {
         {/* Body */}
         <div style={{ padding: '22px 28px 0' }}>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0 24px' }}>
-            <Field label="Candidate"   value={data.candidate} />
-            <Field label="Date Issued" value={data.issuedAt} />
-            <Field label="Test Type"   value={data.testType} />
-            <Field label="Reason"      value={data.reason} />
-            <Field label="Clinic"      value={data.clinic}   wide />
-            <Field label="Address"     value={data.address}  wide />
-            <Field label="ZIP Code"    value={data.zip} />
+            <Field label="Candidate"      value={data.candidate} />
+            <Field label="Date Issued"    value={data.issuedAt} />
+            <Field label="Test Type"      value={data.testType} />
+            <Field label="Reason"         value={data.reason} />
+            {data.preferredDate && <Field label="Preferred Date" value={data.preferredDate} wide />}
+            <Field label="Clinic"         value={data.clinic}   wide />
+            <Field label="Address"        value={data.address}  wide />
+            <Field label="ZIP Code"       value={data.zip} />
           </div>
         </div>
 

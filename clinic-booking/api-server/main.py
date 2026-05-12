@@ -145,6 +145,7 @@ def _ensure_bookings_table():
                     candidate       VARCHAR(128),
                     test_type       VARCHAR(128),
                     reason          VARCHAR(64),
+                    preferred_date  VARCHAR(128),
                     clinic          VARCHAR(256),
                     address         VARCHAR(256),
                     zip             VARCHAR(16),
@@ -236,6 +237,7 @@ class BookingAuditRequest(BaseModel):
     candidate:       str | None = None
     testType:        str | None = None
     reason:          str | None = None
+    preferredDate:   str | None = None
     clinic:          str | None = None
     address:         str | None = None
     zip:             str | None = None
@@ -248,10 +250,10 @@ async def record_booking(req: BookingAuditRequest):
         with conn.cursor() as cur:
             cur.execute(
                 """INSERT INTO bookings
-                   (registration_id, donor_id, candidate, test_type, reason, clinic, address, zip)
-                   VALUES (%s, %s, %s, %s, %s, %s, %s, %s)""",
+                   (registration_id, donor_id, candidate, test_type, reason, preferred_date, clinic, address, zip)
+                   VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)""",
                 (req.registrationId, req.donor_id, req.candidate, req.testType,
-                 req.reason, req.clinic, req.address, req.zip),
+                 req.reason, req.preferredDate, req.clinic, req.address, req.zip),
             )
         conn.commit()
         conn.close()

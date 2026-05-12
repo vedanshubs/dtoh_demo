@@ -5,12 +5,13 @@ export default function BookingSummary({ summary, onConfirm, onEdit }) {
   if (!summary) return null
 
   const rows = [
-    { icon: '👤', label: 'Candidate', value: summary['Candidate'] },
-    { icon: '🧪', label: 'Test Type', value: summary['Test Type'] },
-    { icon: '📋', label: 'Reason',    value: summary['Reason']    },
-    { icon: '🏥', label: 'Clinic',    value: summary['Clinic']    },
-    { icon: '📍', label: 'Address',   value: summary['Address']   },
-    { icon: '📮', label: 'ZIP Code',  value: summary['ZIP']       },
+    { icon: '👤', label: 'Candidate',      value: summary['Candidate']       },
+    { icon: '🧪', label: 'Test Type',      value: summary['Test Type']       },
+    { icon: '📋', label: 'Reason',         value: summary['Reason']          },
+    { icon: '📅', label: 'Preferred Date', value: summary['Preferred Date']  },
+    { icon: '🏥', label: 'Clinic',         value: summary['Clinic']          },
+    { icon: '📍', label: 'Address',        value: summary['Address']         },
+    { icon: '📮', label: 'ZIP Code',       value: summary['ZIP']             },
   ].filter(r => r.value)
 
   return (
