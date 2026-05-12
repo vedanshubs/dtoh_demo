@@ -531,6 +531,7 @@ export default function Chat({ donorId, donorName }) {
         text: data.reply,
         clinics: showClinics,
         booking_summary: data.booking_summary ?? null,
+        showPassport: isBookingConfirmed,
       }])
     } catch (err) {
       setMessages(prev => [...prev, { role: 'assistant', text: `${err.message || 'Something went wrong.'}`, error: true }])
@@ -571,7 +572,7 @@ export default function Chat({ donorId, donorName }) {
       }}>
         <BotAvatar />
         <div style={{ flex: 1 }}>
-          <div style={{ fontSize: 13.5, fontWeight: 600, color: '#0f172a' }}>Booking Assistant</div>
+          <div style={{ fontSize: 14.5, fontWeight: 600, color: '#0f172a' }}>Booking Assistant</div>
           <div style={{ fontSize: 11, color: '#10b981', display: 'flex', alignItems: 'center', gap: 5, marginTop: 1 }}>
             <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#10b981', display: 'inline-block' }} />
             AI-powered MCP tools active
@@ -652,7 +653,7 @@ export default function Chat({ donorId, donorName }) {
                         ? 'linear-gradient(135deg, #c8102e 0%, #9b0f23 100%)'
                         : m.error ? '#fef2f2' : '#f1f5f9',
                       color: m.role === 'user' ? '#fff' : m.error ? '#dc2626' : '#0f172a',
-                      fontSize: 13.5, lineHeight: 1.7,
+                      fontSize: 14.5, lineHeight: 1.72,
                       whiteSpace: m.role === 'user' ? 'pre-wrap' : 'normal',
                       wordBreak: 'break-word',
                       boxShadow: m.role === 'user' ? '0 3px 12px rgba(200,16,46,0.3)' : '0 1px 3px rgba(0,0,0,0.05)',
@@ -684,6 +685,21 @@ export default function Chat({ donorId, donorName }) {
                   {m.booking_summary && (
                     <BookingSummary summary={m.booking_summary} onConfirm={handleConfirm} onEdit={handleEdit} />
                   )}
+                  {m.showPassport && passport && (
+                    <button
+                      onClick={() => setPassportOpen(true)}
+                      style={{
+                        display: 'inline-flex', alignItems: 'center', gap: 8,
+                        marginTop: 10,
+                        background: 'linear-gradient(135deg, #c8102e, #8b0000)',
+                        color: '#fff', border: 'none', borderRadius: 20,
+                        padding: '8px 20px', fontSize: 12.5, fontWeight: 700,
+                        cursor: 'pointer', boxShadow: '0 2px 8px rgba(200,16,46,0.3)',
+                      }}
+                    >
+                      📋 View Booking Passport
+                    </button>
+                  )}
                 </div>
               )
             })()}
@@ -706,23 +722,6 @@ export default function Chat({ donorId, donorName }) {
         <ContextualActions session={session} hasClinics={hasClinics} onSend={send} />
       )}
 
-      {/* Persistent passport button after booking confirmed */}
-      {session.bookingConfirmed && passport && (
-        <div style={{ padding: '8px 16px 4px', display: 'flex', justifyContent: 'center' }}>
-          <button
-            onClick={() => setPassportOpen(true)}
-            style={{
-              display: 'flex', alignItems: 'center', gap: 8,
-              background: 'linear-gradient(135deg, #c8102e, #8b0000)',
-              color: '#fff', border: 'none', borderRadius: 20,
-              padding: '8px 20px', fontSize: 12.5, fontWeight: 700,
-              cursor: 'pointer', boxShadow: '0 2px 8px rgba(200,16,46,0.3)',
-            }}
-          >
-            📋 View Booking Passport
-          </button>
-        </div>
-      )}
 
       {/* Input bar */}
       <div style={{ padding: '12px 16px', borderTop: '1px solid #f1f5f9', background: '#fff', flexShrink: 0, paddingTop: donorId && hasStarted ? 8 : 12 }}>
@@ -751,7 +750,7 @@ export default function Chat({ donorId, donorName }) {
             style={{
               flex: 1, border: 'none', background: 'transparent',
               resize: 'none', outline: 'none',
-              fontSize: 13.5, color: '#0f172a',
+              fontSize: 14.5, color: '#0f172a',
               lineHeight: 1.5, maxHeight: 120, overflow: 'auto',
             }}
             onInput={e => {

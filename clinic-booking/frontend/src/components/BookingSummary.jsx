@@ -1,8 +1,7 @@
-/**
- * BookingSummary — renders a pre-confirmation card when the assistant
- * outputs a [BOOKING_SUMMARY] block. Exposes Confirm and Edit callbacks.
- */
+import { useState } from 'react'
+
 export default function BookingSummary({ summary, onConfirm, onEdit }) {
+  const [confirmed, setConfirmed] = useState(false)
   if (!summary) return null
 
   const rows = [
@@ -63,17 +62,21 @@ export default function BookingSummary({ summary, onConfirm, onEdit }) {
       {/* Action buttons */}
       <div style={{ display: 'flex', gap: 8, padding: '12px 16px', borderTop: '1px solid #f1f5f9' }}>
         <button
-          onClick={onConfirm}
+          onClick={() => { setConfirmed(true); onConfirm() }}
+          disabled={confirmed}
           style={{
             flex: 1, padding: '9px 0', borderRadius: 8,
-            background: 'linear-gradient(135deg, #c8102e, #9b0f23)',
-            color: '#fff', fontSize: 13, fontWeight: 700,
-            border: 'none', cursor: 'pointer',
-            boxShadow: '0 2px 8px rgba(200,16,46,0.3)',
-            transition: 'opacity 0.15s',
+            background: confirmed
+              ? '#e2e8f0'
+              : 'linear-gradient(135deg, #c8102e, #9b0f23)',
+            color: confirmed ? '#94a3b8' : '#fff',
+            fontSize: 13, fontWeight: 700,
+            border: 'none', cursor: confirmed ? 'default' : 'pointer',
+            boxShadow: confirmed ? 'none' : '0 2px 8px rgba(200,16,46,0.3)',
+            transition: 'all 0.2s',
           }}
-          onMouseEnter={e => e.currentTarget.style.opacity = '0.88'}
-          onMouseLeave={e => e.currentTarget.style.opacity = '1'}
+          onMouseEnter={e => { if (!confirmed) e.currentTarget.style.opacity = '0.88' }}
+          onMouseLeave={e => { if (!confirmed) e.currentTarget.style.opacity = '1' }}
         >
           ✅ Confirm Booking
         </button>

@@ -120,7 +120,7 @@ export default function Chat() {
       }}>
         <BotAvatar />
         <div>
-          <div style={{ fontSize: 14, fontWeight: 600, color: '#1e293b' }}>Analytics Assistant</div>
+          <div style={{ fontSize: 15, fontWeight: 600, color: '#1e293b' }}>Analytics Assistant</div>
           <div style={{ fontSize: 11, color: '#10b981', display: 'flex', alignItems: 'center', gap: 4 }}>
             <span style={{
               width: 6, height: 6, borderRadius: '50%', background: '#10b981',
@@ -205,7 +205,7 @@ export default function Chat() {
                 borderRadius: '18px 18px 4px 18px',
                 background: 'linear-gradient(135deg, #c8102e, #8b0000)',
                 color: '#fff',
-                fontSize: 13.5, lineHeight: 1.6,
+                fontSize: 14.5, lineHeight: 1.6,
                 boxShadow: '0 3px 10px rgba(200,16,46,0.3)',
               } : {
                 width: '100%',
@@ -223,8 +223,8 @@ export default function Chat() {
                     <p
                       dangerouslySetInnerHTML={boldNumbers(m.reply.summary)}
                       style={{
-                        fontSize: 13.5, lineHeight: 1.65, color: '#64748b',
-                        fontWeight: 500,
+                        fontSize: 14.5, lineHeight: 1.7, color: '#1e293b',
+                        fontWeight: 400,
                         margin: m.reply?.visualization ? '0 0 14px' : '0',
                       }}
                     />
@@ -299,7 +299,7 @@ export default function Chat() {
             placeholder="Ask about compliance, SLAs, test outcomes…"
             style={{
               flex: 1, border: 'none', background: 'transparent',
-              fontSize: 13.5, color: '#1e293b', outline: 'none',
+              fontSize: 14.5, color: '#1e293b', outline: 'none',
             }}
           />
           {loading ? (

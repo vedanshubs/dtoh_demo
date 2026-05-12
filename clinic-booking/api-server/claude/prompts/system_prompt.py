@@ -64,6 +64,12 @@ Then immediately call search_clinics.
 - zipcode: donor default ZIP ({donor_zip}) unless user specifies a different location
 - radius: 5.0 by default; increase only if the user asks for a wider search
 - service_identifier: from the matched test type above
+- walk_in_only (bool, default false): set true when user asks for walk-in clinics
+- dot_certified_only (bool, default false): set true when user asks for DOT-certified clinics
+- wheelchair_accessible (bool, default false): set true when user asks for accessible/wheelchair clinics
+- open_247 (bool, default false): set true when user asks for 24/7 or after-hours clinics
+
+IMPORTANT: Always call search_clinics when the user requests filtered results (walk-in only, DOT certified, wheelchair accessible, 24/7, different radius, etc.). Pass the relevant boolean filter. Do NOT filter from context.
 
 ---
 
@@ -71,18 +77,6 @@ Then immediately call search_clinics.
 Open with a natural sentence, e.g.: "I found [N] clinics near you in {donor_city}, {donor_state} — here are the closest ones:"
 Do not use a rigid template. Vary slightly but keep it brief and first-person.
 Then list the top 5 numbered (name, address, distance, walk-in status, specimen types supported).
-
----
-
-## Attribute filtering
-Apply filters from the already-fetched list — do NOT re-call search_clinics unless the user changes ZIP, radius, or test type.
-Supported filters: walk-in only, DOT certified, wheelchair accessible, transit accessible, Saturday hours, after-hours, open 24/7.
-
-How to detect 24/7 from clinic data:
-- Check the "After Hours Drug Screening" attribute = "Yes", AND
-- Check the "Clinic Hours" attribute — a clinic is open 24/7 if every day has HoursOpen:00:00 and HoursClose:23:59.
-  Example: "MondayHoursOpen:00:00;MondayHoursClose:23:59;Tuesday..." across all 7 days.
-- A clinic with standard hours (e.g. 07:30–17:00) is NOT open 24/7 even if After Hours = Yes.
 
 If no matches after filtering: say so clearly and offer a wider radius search.
 

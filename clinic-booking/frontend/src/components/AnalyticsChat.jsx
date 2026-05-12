@@ -76,7 +76,7 @@ function AnalyticsMessage({ msg, onSuggestionClick }) {
           maxWidth: '72%', padding: '10px 14px',
           borderRadius: '16px 16px 4px 16px',
           background: 'linear-gradient(135deg, #1e40af 0%, #1e3a8a 100%)',
-          color: '#fff', fontSize: 13.5, lineHeight: 1.65,
+          color: '#fff', fontSize: 14.5, lineHeight: 1.65,
           boxShadow: '0 3px 12px rgba(30,64,175,0.3)',
         }}>
           {msg.text}
@@ -99,7 +99,7 @@ function AnalyticsMessage({ msg, onSuggestionClick }) {
         <div
           style={{
             background: '#f1f5f9', borderRadius: '4px 16px 16px 16px',
-            padding: '10px 14px', fontSize: 13.5, color: '#0f172a', lineHeight: 1.7,
+            padding: '10px 14px', fontSize: 14.5, color: '#0f172a', lineHeight: 1.72,
             marginBottom: (reply?.visualization && reply?.data) || suggestions.length ? 10 : 0,
             boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
             whiteSpace: 'pre-wrap', wordBreak: 'break-word',
@@ -225,7 +225,7 @@ export default function AnalyticsChat() {
       }}>
         <BotAvatar />
         <div style={{ flex: 1 }}>
-          <div style={{ fontSize: 13.5, fontWeight: 600, color: '#0f172a' }}>Analytics Assistant</div>
+          <div style={{ fontSize: 14.5, fontWeight: 600, color: '#0f172a' }}>Analytics Assistant</div>
           <div style={{ fontSize: 11, color: '#10b981', display: 'flex', alignItems: 'center', gap: 5, marginTop: 1 }}>
             <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#10b981', display: 'inline-block' }} />
             Online · MCP-powered

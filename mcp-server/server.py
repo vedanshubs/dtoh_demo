@@ -29,11 +29,30 @@ log.info("Server starting (CLIENT_ID=%s, use_mock=%s)", CLIENT_ID, USE_MOCK)
 # ── Clinic Booking Tools ──────────────────────────────────────────────────────
 
 @mcp.tool()
-async def search_clinics(zipcode: str, radius: float, service_identifier: str) -> list[dict]:
+async def search_clinics(
+    zipcode: str,
+    radius: float,
+    service_identifier: str,
+    walk_in_only: bool = False,
+    dot_certified_only: bool = False,
+    wheelchair_accessible: bool = False,
+    open_247: bool = False,
+) -> list[dict]:
     """Search for drug test collection clinics near a zip code.
+    Optional filters: walk_in_only, dot_certified_only, wheelchair_accessible, open_247.
     Returns a list of clinic objects with address, distance, attributes, and Google Maps URL."""
-    log.info("search_clinics(zipcode=%s, radius=%s, service=%s)", zipcode, radius, service_identifier)
-    result = await handle_search_clinics(zipcode, radius, service_identifier)
+    log.info(
+        "search_clinics(zipcode=%s, radius=%s, service=%s, walk_in=%s, dot=%s, wheelchair=%s, 247=%s)",
+        zipcode, radius, service_identifier, walk_in_only, dot_certified_only, wheelchair_accessible, open_247,
+    )
+    result = await handle_search_clinics(
+        zipcode, radius, service_identifier,
+        walk_in_only=walk_in_only,
+        dot_certified_only=dot_certified_only,
+        wheelchair_accessible=wheelchair_accessible,
+        open_247=open_247,
+        use_mock=USE_MOCK,
+    )
     log.info("search_clinics returned %d clinics", len(result))
     return result
 

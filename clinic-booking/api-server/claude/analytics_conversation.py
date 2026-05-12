@@ -60,7 +60,7 @@ async def run_analytics_turn(messages: list[dict], system_prompt: str, mcp: MCPC
             try:
                 parsed = json.loads(text)
             except json.JSONDecodeError:
-                parsed = {"summary": text, "visualization": "stat", "data": {}}
+                parsed = {"summary": text, "visualization": None}
             log.info("Analytics reply: %s", text[:120])
             return {"reply": parsed, "messages": current_messages[1:]}
 
@@ -93,6 +93,6 @@ async def run_analytics_turn(messages: list[dict], system_prompt: str, mcp: MCPC
                 })
 
     return {
-        "reply": {"summary": "Maximum iterations reached.", "visualization": "stat", "data": {}},
+        "reply": {"summary": "Maximum iterations reached.", "visualization": None},
         "messages": current_messages[1:],
     }
