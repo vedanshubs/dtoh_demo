@@ -1,5 +1,6 @@
 import json
 import logging
+import re
 from claude.client import get_client
 from transport.client import MCPClientManager
 
@@ -8,6 +9,20 @@ log = logging.getLogger(__name__)
 MODEL = "gpt-4.1-mini"
 MAX_ITERATIONS = 10
 MAX_CLINICS_TO_LLM = 5
+
+_SUMMARY_RE = re.compile(r'\[BOOKING_SUMMARY\](.*?)\[/BOOKING_SUMMARY\]', re.DOTALL)
+
+def _extract_booking_summary(text: str) -> dict | None:
+    """Parse [BOOKING_SUMMARY]...[/BOOKING_SUMMARY] block from Claude's reply."""
+    m = _SUMMARY_RE.search(text)
+    if not m:
+        return None
+    summary = {}
+    for line in m.group(1).strip().splitlines():
+        if ':' in line:
+            key, _, val = line.partition(':')
+            summary[key.strip()] = val.strip()
+    return summary if summary else None
 
 
 async def run_turn(
@@ -50,6 +65,11 @@ async def run_turn(
             response_payload = {"reply": text, "messages": current_messages[1:]}
             if last_clinics:
                 response_payload["clinics"] = last_clinics
+            # Detect booking summary block — signals pre-confirmation state
+            booking_summary = _extract_booking_summary(text)
+            if booking_summary:
+                response_payload["booking_summary"] = booking_summary
+                log.info("Booking summary detected: %s", booking_summary)
             return response_payload
 
         if choice.finish_reason == "tool_calls":
