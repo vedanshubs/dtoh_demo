@@ -10,8 +10,12 @@ _SPECIMEN_MAP: dict = {
     "DOT5_U":    "U",
     "5PANEL_H":  "H",
     "5PANEL_O":  "O",
+    "5PANEL_OF": "O",   # FIX BUG-01: main.py sends "5PANEL_OF" for Oral Fluid
     "BAT":       "B",
 }
+
+# Service identifiers that require a DOT-certified collection site
+_DOT_SERVICE_IDS = {"DOT5_U", "5PANEL_U"}
 
 
 def _attr(clinic: dict, name: str):
@@ -38,7 +42,6 @@ def _mock_search(zipcode: str, radius: float, service_identifier: str) -> list:
         return []
 
     specimen = _SPECIMEN_MAP.get(service_identifier)
-    is_dot = service_identifier.startswith("DOT")
 
     results = []
     for clinic in load_clinics():
@@ -49,8 +52,6 @@ def _mock_search(zipcode: str, radius: float, service_identifier: str) -> list:
         if dist > radius:
             continue
         if specimen and specimen not in clinic.get("SupportedSpecimenTypes", []):
-            continue
-        if is_dot and _attr(clinic, "DOT Certified Physician") != "Yes":
             continue
         results.append({**clinic, "Distance": round(dist, 1)})
 
@@ -88,6 +89,12 @@ async def handle_search_clinics(
     open_247: bool = False,
     use_mock: bool = True,
 ) -> list:
+    # FIX BUG-02: DOT test types must always use DOT-certified sites regardless of
+    # whether the LLM explicitly passed dot_certified_only=True.
+    if service_identifier in _DOT_SERVICE_IDS:
+        dot_certified_only = True
+        log.debug("Auto-enabling dot_certified_only for service_identifier=%s", service_identifier)
+
     if use_mock:
         results = _mock_search(zipcode, radius, service_identifier)
     else:

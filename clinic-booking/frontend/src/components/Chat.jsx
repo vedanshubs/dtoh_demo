@@ -399,6 +399,8 @@ export default function Chat({ donorId, donorName }) {
 
   const bottomRef = useRef(null)
   const inputRef  = useRef(null)
+  const lastActivityRef      = useRef(Date.now())
+  const [showTimeoutWarning, setShowTimeoutWarning] = useState(false)
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -407,9 +409,18 @@ export default function Chat({ donorId, donorName }) {
   useEffect(() => {
     setMessages([]); setHistory([]); setHasStarted(false); setHasClinics(false); setLastClinics([])
     setLastBookingSummary(null); setPassport(null); setPassportOpen(false); setMcpCalls([])
-    setPendingClinic(null)
+    setPendingClinic(null); setShowTimeoutWarning(false); lastActivityRef.current = Date.now()
     setSession({ testType: null, reasonForTest: null, selectedClinic: null, clinicSelected: false, bookingConfirmed: false, isDOT: false, preferredDate: null })
   }, [donorId])
+
+  // Session timeout: warn after 30 min of inactivity
+  useEffect(() => {
+    if (!donorId || !hasStarted) return
+    const iv = setInterval(() => {
+      if (Date.now() - lastActivityRef.current >= 30 * 60 * 1000) setShowTimeoutWarning(true)
+    }, 60_000)
+    return () => clearInterval(iv)
+  }, [donorId, hasStarted])
 
   // Derive stepper step — step 2 requires both test type AND reason
   const stepperStep = session.bookingConfirmed ? 4
@@ -439,6 +450,8 @@ export default function Chat({ donorId, donorName }) {
   const send = async (text) => {
     const msg = (text ?? input).trim()
     if (!msg || !donorId || loading) return
+    lastActivityRef.current = Date.now()
+    setShowTimeoutWarning(false)
     setMessages(prev => [...prev, { role: 'user', text: msg }])
     setInput('')
     setHasStarted(true)
@@ -495,6 +508,7 @@ export default function Chat({ donorId, donorName }) {
         const ts = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' })
         setMcpCalls(prev => [...prev, ...data.tool_calls.map(tc => ({ ...tc, ts }))])
       }
+      const scheduledTime = data.tool_calls?.find(tc => tc.tool === 'place_order')?.scheduled_time || ''
 
       const returnedClinics = data.clinics?.length ? data.clinics : null
       if (returnedClinics) { setHasClinics(true); setLastClinics(returnedClinics) }
@@ -524,6 +538,7 @@ export default function Chat({ donorId, donorName }) {
           clinic:        summary['Clinic']         || '',
           address:       summary['Address']        || '',
           zip:           summary['ZIP']            || summary['ZIP Code'] || '',
+          appointmentWindow: scheduledTime,
           issuedAt:      new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
         }
         setPassport(passportData)
@@ -753,6 +768,27 @@ export default function Chat({ donorId, donorName }) {
             </div>
           </div>
         )}
+        {showTimeoutWarning && (
+          <div style={{
+            position: 'sticky', bottom: 0,
+            background: '#fffbeb', border: '1px solid #fde68a',
+            borderRadius: 10, padding: '10px 14px', marginBottom: 10,
+            display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10,
+            animation: 'fadeSlideIn 0.3s ease',
+          }}>
+            <div style={{ fontSize: 12.5, color: '#92400e', lineHeight: 1.4 }}>
+              ⏰ Your session has been inactive for 30 minutes. Please resume or start a new booking.
+            </div>
+            <button
+              onClick={() => { setShowTimeoutWarning(false); lastActivityRef.current = Date.now() }}
+              style={{
+                flexShrink: 0, padding: '4px 10px', borderRadius: 6,
+                border: '1px solid #fde68a', background: '#fff',
+                fontSize: 11.5, fontWeight: 600, color: '#92400e', cursor: 'pointer',
+              }}
+            >Dismiss</button>
+          </div>
+        )}
         <div ref={bottomRef} />
       </div>
 
@@ -819,7 +855,7 @@ export default function Chat({ donorId, donorName }) {
         </p>
       </div>
     </div>
-    <McpActivityPanel calls={mcpCalls} />
+    <McpActivityPanel calls={mcpCalls} loading={loading} />
     </div>
     </>
   )

@@ -95,7 +95,7 @@ function ToolCallEntry({ call, index }) {
   )
 }
 
-export default function McpActivityPanel({ calls }) {
+export default function McpActivityPanel({ calls, loading }) {
   const [open, setOpen] = useState(false)
 
   return (
@@ -157,12 +157,21 @@ export default function McpActivityPanel({ calls }) {
             {calls.length}
           </span>
         )}
+        {!open && loading && (
+          <span style={{
+            position: 'absolute',
+            width: 8, height: 8, borderRadius: '50%',
+            background: '#2563eb',
+            bottom: 6, right: 3,
+            animation: 'mcp-dot-pulse 1s ease-in-out infinite',
+          }} />
+        )}
       </button>
 
       {/* Calls list */}
       {open && (
         <div style={{ flex: 1, overflowY: 'auto', padding: calls.length ? '12px 10px' : 0 }}>
-          {calls.length === 0 ? (
+          {calls.length === 0 && !loading ? (
             <div style={{
               padding: '32px 16px', textAlign: 'center',
               color: '#cbd5e1', fontSize: 11.5, lineHeight: 1.6,
@@ -171,9 +180,31 @@ export default function McpActivityPanel({ calls }) {
               MCP tool calls will appear here as the assistant works
             </div>
           ) : (
-            calls.map((call, i) => (
-              <ToolCallEntry key={i} call={call} index={i} />
-            ))
+            <>
+              {calls.map((call, i) => (
+                <ToolCallEntry key={i} call={call} index={i} />
+              ))}
+              {loading && (
+                <div style={{
+                  display: 'flex', alignItems: 'center', gap: 8,
+                  padding: '9px 12px', border: '1px solid #dbeafe',
+                  borderRadius: 8, background: '#eff6ff', marginBottom: 8,
+                }}>
+                  <span style={{
+                    fontSize: 10, padding: '2px 7px', borderRadius: 4, fontWeight: 700,
+                    background: '#2563eb', color: '#fff', letterSpacing: '0.02em',
+                  }}>⚙️ calling...</span>
+                  <div style={{ display: 'flex', gap: 3 }}>
+                    {[0, 1, 2].map(j => (
+                      <div key={j} style={{
+                        width: 5, height: 5, borderRadius: '50%', background: '#2563eb',
+                        animation: `mcp-dot-pulse 1.2s ${j * 0.2}s ease-in-out infinite`,
+                      }} />
+                    ))}
+                  </div>
+                </div>
+              )}
+            </>
           )}
         </div>
       )}

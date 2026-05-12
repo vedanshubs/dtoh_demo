@@ -120,11 +120,16 @@ async def run_turn(
                 else:
                     result_summary = str(result)[:80] if result else "OK"
 
-                tool_calls_log.append({
+                tc_log = {
                     "tool": tc.function.name,
                     "args": safe_args,
                     "result": result_summary,
-                })
+                }
+                if tc.function.name == "place_order" and isinstance(result, dict):
+                    sched_time = result.get("scheduled_time", "")
+                    if sched_time:
+                        tc_log["scheduled_time"] = sched_time
+                tool_calls_log.append(tc_log)
                 current_messages.append({
                     "role": "tool",
                     "tool_call_id": tc.id,

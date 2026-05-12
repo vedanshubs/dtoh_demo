@@ -12,6 +12,7 @@ def mock_booking_response(clinic_id: int) -> dict:
         "confirmation_code": f"ES{suffix}",
         "clinic_id": clinic_id,
         "scheduled_date": datetime.now().strftime("%Y-%m-%d"),
+        "scheduled_time": "8:00 AM – 5:00 PM",
         "instructions": (
             "Please arrive 10 minutes early. Bring a valid photo ID. "
             "Do not urinate for at least 2 hours before your appointment. "

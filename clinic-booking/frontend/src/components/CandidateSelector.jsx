@@ -46,8 +46,26 @@ export default function CandidateSelector({ onSelect, selectedId }) {
       </div>
 
       {loading && (
-        <div style={{ padding: '24px 18px', textAlign: 'center' }}>
-          <div style={{ fontSize: 13, color: '#94a3b8' }}>Loading candidates…</div>
+        <div style={{ padding: '8px' }}>
+          {[...Array(6)].map((_, i) => (
+            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '9px 11px', borderRadius: 10 }}>
+              <div style={{
+                width: 34, height: 34, borderRadius: '50%', flexShrink: 0,
+                background: '#f1f5f9', animation: `skel-pulse 1.4s ${i * 0.12}s ease-in-out infinite`,
+              }} />
+              <div>
+                <div style={{
+                  width: 110 + (i % 3) * 22, height: 10, borderRadius: 4,
+                  background: '#f1f5f9', animation: `skel-pulse 1.4s ${i * 0.12}s ease-in-out infinite`,
+                  marginBottom: 7,
+                }} />
+                <div style={{
+                  width: 52, height: 8, borderRadius: 4,
+                  background: '#f1f5f9', animation: `skel-pulse 1.4s ${i * 0.12 + 0.07}s ease-in-out infinite`,
+                }} />
+              </div>
+            </div>
+          ))}
         </div>
       )}
 

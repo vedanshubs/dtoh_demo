@@ -63,6 +63,7 @@ export default function BookingPassport({ data, onClose }) {
       <div class="field"><div class="field-label">Test Type</div><div class="field-value">${data.testType || '—'}</div></div>
       <div class="field"><div class="field-label">Reason</div><div class="field-value">${data.reason || '—'}</div></div>
       ${data.preferredDate ? `<div class="field wide"><div class="field-label">Preferred Date</div><div class="field-value">${data.preferredDate}</div></div>` : ''}
+      ${data.appointmentWindow ? `<div class="field wide"><div class="field-label">Appointment Window</div><div class="field-value">${data.appointmentWindow}</div></div>` : ''}
       <div class="field wide"><div class="field-label">Clinic</div><div class="field-value">${data.clinic || '—'}</div></div>
       <div class="field wide"><div class="field-label">Address</div><div class="field-value">${data.address || '—'}</div></div>
       <div class="field"><div class="field-label">ZIP Code</div><div class="field-value">${data.zip || '—'}</div></div>
@@ -129,6 +130,7 @@ export default function BookingPassport({ data, onClose }) {
             <Field label="Test Type"      value={data.testType} />
             <Field label="Reason"         value={data.reason} />
             {data.preferredDate && <Field label="Preferred Date" value={data.preferredDate} wide />}
+            {data.appointmentWindow && <Field label="Appointment Window" value={data.appointmentWindow} wide />}
             <Field label="Clinic"         value={data.clinic}   wide />
             <Field label="Address"        value={data.address}  wide />
             <Field label="ZIP Code"       value={data.zip} />

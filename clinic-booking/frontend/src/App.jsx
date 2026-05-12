@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import CandidateSelector from './components/CandidateSelector'
 import BookingChat from './components/Chat'
 import AnalyticsChat from './components/AnalyticsChat'
@@ -25,6 +25,16 @@ const VIEWS = [
   { id: 'analytics', label: 'Analytics',    Icon: IconChart,     desc: 'Program insights & metrics'   },
 ]
 
+function useIsMobile(bp = 768) {
+  const [mobile, setMobile] = useState(window.innerWidth <= bp)
+  useEffect(() => {
+    const h = () => setMobile(window.innerWidth <= bp)
+    window.addEventListener('resize', h)
+    return () => window.removeEventListener('resize', h)
+  }, [bp])
+  return mobile
+}
+
 /* ── Global baseline styles ──────────────────────────────────────────── */
 function GlobalStyles() {
   return (
@@ -46,12 +56,21 @@ function GlobalStyles() {
         0%, 100% { opacity: 1; }
         50%       { opacity: 0.4; }
       }
+      @keyframes skel-pulse {
+        0%, 100% { opacity: 1; }
+        50%       { opacity: 0.4; }
+      }
+      @keyframes mcp-dot-pulse {
+        0%, 80%, 100% { opacity: 0.3; transform: scale(0.8); }
+        40% { opacity: 1; transform: scale(1); }
+      }
     `}</style>
   )
 }
 
 /* ── Sidebar ─────────────────────────────────────────────────────────── */
-function Sidebar({ view, onViewChange }) {
+function Sidebar({ view, onViewChange, isMobile }) {
+  if (isMobile) return null
   return (
     <aside style={{
       width: 228,
@@ -139,7 +158,7 @@ function Sidebar({ view, onViewChange }) {
 }
 
 /* ── Top Header ──────────────────────────────────────────────────────── */
-function AppHeader({ view, donor }) {
+function AppHeader({ view, donor, isMobile, onViewChange }) {
   const meta = {
     booking:   { title: 'Drug Test Booking',      sub: 'Schedule and manage employee occupational health tests' },
     analytics: { title: 'Analytics Dashboard',    sub: 'Program-wide insights, trends, and compliance metrics' },
@@ -160,7 +179,23 @@ function AppHeader({ view, donor }) {
       </div>
 
       <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-        {donor && view === 'booking' && <DonorBadge donor={donor} />}
+        {isMobile && (
+          <div style={{ display: 'flex', gap: 4 }}>
+            {VIEWS.map(({ id, label }) => (
+              <button
+                key={id}
+                onClick={() => onViewChange(id)}
+                style={{
+                  padding: '5px 10px', borderRadius: 8,
+                  border: 'none', cursor: 'pointer', fontSize: 11.5, fontWeight: 600,
+                  background: view === id ? '#fef2f2' : '#f1f5f9',
+                  color: view === id ? '#c8102e' : '#475569',
+                }}
+              >{label}</button>
+            ))}
+          </div>
+        )}
+        {!isMobile && donor && view === 'booking' && <DonorBadge donor={donor} />}
         <div style={{
           display: 'flex', alignItems: 'center', gap: 5,
           fontSize: 11, fontWeight: 600, color: '#92400e',
@@ -199,20 +234,46 @@ function DonorBadge({ donor }) {
 }
 
 /* ── Layout views ────────────────────────────────────────────────────── */
-function BookingLayout({ donorId, donor, onSelectDonor }) {
+function BookingLayout({ donorId, donor, onSelectDonor, isMobile }) {
+  const [showPanel, setShowPanel] = useState(false)
   return (
-    <div style={{ display: 'flex', width: '100%', height: '100%', overflow: 'hidden' }}>
-      {/* Candidate panel */}
-      <div style={{
-        width: 272, flexShrink: 0,
-        background: '#ffffff',
-        borderRight: '1px solid #e2e8f0',
-        overflowY: 'auto',
-      }}>
-        <CandidateSelector onSelect={onSelectDonor} selectedId={donorId} />
-      </div>
-      {/* Chat panel */}
-      <div style={{ flex: 1, overflow: 'hidden', padding: '16px', background: '#f8fafc' }}>
+    <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', width: '100%', height: '100%', overflow: 'hidden' }}>
+      {isMobile && (
+        <div style={{
+          flexShrink: 0, background: '#fff', borderBottom: '1px solid #e2e8f0',
+          padding: '8px 12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        }}>
+          <span style={{ fontSize: 12.5, fontWeight: 600, color: '#475569' }}>
+            {donor ? `${donor.first_name} ${donor.last_name}` : 'No candidate selected'}
+          </span>
+          <button
+            onClick={() => setShowPanel(p => !p)}
+            style={{
+              padding: '5px 12px', borderRadius: 8,
+              border: '1px solid #e2e8f0',
+              background: showPanel ? '#fef2f2' : '#f8fafc',
+              fontSize: 11.5, fontWeight: 600,
+              color: showPanel ? '#c8102e' : '#475569', cursor: 'pointer',
+            }}
+          >{showPanel ? 'Hide ▲' : 'Select Candidate ▼'}</button>
+        </div>
+      )}
+      {(!isMobile || showPanel) && (
+        <div style={{
+          width: isMobile ? '100%' : 272,
+          maxHeight: isMobile ? 260 : undefined,
+          flexShrink: 0, background: '#ffffff',
+          borderRight: isMobile ? 'none' : '1px solid #e2e8f0',
+          borderBottom: isMobile && showPanel ? '1px solid #e2e8f0' : 'none',
+          overflowY: 'auto',
+        }}>
+          <CandidateSelector
+            onSelect={(d) => { onSelectDonor(d); if (isMobile) setShowPanel(false) }}
+            selectedId={donorId}
+          />
+        </div>
+      )}
+      <div style={{ flex: 1, overflow: 'hidden', padding: '16px', background: '#f8fafc', minHeight: 0 }}>
         <BookingChat donorId={donorId} donorName={donor ? donor.first_name : null} />
       </div>
     </div>
@@ -232,6 +293,7 @@ export default function App() {
   const [view, setView]       = useState('booking')
   const [donorId, setDonorId] = useState(null)
   const [donor, setDonor]     = useState(null)
+  const isMobile               = useIsMobile()
 
   const handleSelectDonor = (d) => {
     setDonorId(d.id)
@@ -244,14 +306,14 @@ export default function App() {
       background: '#f1f5f9',
     }}>
       <GlobalStyles />
-      <Sidebar view={view} onViewChange={setView} />
+      <Sidebar view={view} onViewChange={setView} isMobile={isMobile} />
 
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-        <AppHeader view={view} donor={donor} />
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', minWidth: 0 }}>
+        <AppHeader view={view} donor={donor} isMobile={isMobile} onViewChange={setView} />
 
-        <div style={{ flex: 1, overflow: 'hidden', display: 'flex' }}>
+        <div style={{ flex: 1, overflow: 'hidden', display: 'flex', minHeight: 0 }}>
           {view === 'booking' ? (
-            <BookingLayout donorId={donorId} donor={donor} onSelectDonor={handleSelectDonor} />
+            <BookingLayout donorId={donorId} donor={donor} onSelectDonor={handleSelectDonor} isMobile={isMobile} />
           ) : (
             <AnalyticsLayout />
           )}
