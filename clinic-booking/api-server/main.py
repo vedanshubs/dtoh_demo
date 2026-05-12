@@ -99,12 +99,71 @@ MOCK_TEST_TYPES = [
     {"name": "Breath Alcohol Test",      "service_identifier": "BAT",        "default_reason": "FC"},
 ]
 
+# service_identifier override map — DB rows use generic codes; booking needs specific ones
+_SERVICE_ID_OVERRIDE = {
+    "5PANEL_U":  "5PANEL_U",
+    "10PANEL_U": "10PANEL_U",
+    "5PANEL_H":  "5PANEL_H",
+    "5PANEL_O":  "5PANEL_OF",
+    "BAT":       "BAT",
+}
+
+def _load_test_types() -> list[dict]:
+    """Load test types from DB; falls back to MOCK_TEST_TYPES if DB unavailable."""
+    try:
+        conn = _get_db()
+        with conn.cursor() as cur:
+            cur.execute(
+                "SELECT name, service_identifier, default_reason FROM test_types ORDER BY id"
+            )
+            rows = cur.fetchall()
+            if rows:
+                return [
+                    {
+                        "name": r["name"],
+                        "service_identifier": _SERVICE_ID_OVERRIDE.get(
+                            r["service_identifier"], r["service_identifier"]
+                        ),
+                        "default_reason": r["default_reason"],
+                    }
+                    for r in rows
+                ]
+    except Exception as e:
+        log.warning("DB unavailable for test types, using mock: %s", e)
+    return MOCK_TEST_TYPES
+
+
+def _ensure_bookings_table():
+    try:
+        conn = _get_db()
+        with conn.cursor() as cur:
+            cur.execute("""
+                CREATE TABLE IF NOT EXISTS bookings (
+                    id              INT AUTO_INCREMENT PRIMARY KEY,
+                    registration_id VARCHAR(64)  NOT NULL,
+                    donor_id        INT,
+                    candidate       VARCHAR(128),
+                    test_type       VARCHAR(128),
+                    reason          VARCHAR(64),
+                    clinic          VARCHAR(256),
+                    address         VARCHAR(256),
+                    zip             VARCHAR(16),
+                    booked_at       DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP
+                )
+            """)
+        conn.commit()
+        conn.close()
+        log.info("bookings table ready")
+    except Exception as e:
+        log.warning("Could not ensure bookings table: %s", e)
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     log.info("Starting MCP server subprocess...")
     await mcp_manager.start()
     log.info("MCP server ready")
+    _ensure_bookings_table()
     yield
     log.info("Shutting down MCP server...")
     await mcp_manager.stop()
@@ -123,6 +182,7 @@ class ChatRequest(BaseModel):
     donor_id: int
     messages: list[dict]
     user_message: str
+    clinics: list[dict] = []
 
 
 register_action_routes(app, mcp_manager)
@@ -144,12 +204,15 @@ async def get_donor(donor_id: int):
 
 @app.post("/api/chat")
 async def chat(req: ChatRequest):
-    donors = _load_donors()
-    donor = next((d for d in donors if d["id"] == req.donor_id), donors[0])
+    donor = _load_donor_full(req.donor_id)
+    if not donor:
+        donors = _load_donors()
+        donor = next((d for d in donors if d["id"] == req.donor_id), donors[0])
     log.info("Chat request | donor=%s %s | message=%r", donor["first_name"], donor["last_name"], req.user_message[:80])
-    system_prompt = build_system_prompt(donor, MOCK_TEST_TYPES)
+    test_types = _load_test_types()
+    system_prompt = build_system_prompt(donor, test_types)
     messages = list(req.messages) + [{"role": "user", "content": req.user_message}]
-    result = await run_turn(messages, system_prompt, req.donor_id, mcp_manager)
+    result = await run_turn(messages, system_prompt, req.donor_id, mcp_manager, existing_clinics=req.clinics)
     return result
 
 
@@ -165,3 +228,34 @@ async def analytics_chat(req: AnalyticsChatRequest):
     messages = list(req.messages) + [{"role": "user", "content": req.user_message}]
     result = await run_analytics_turn(messages, system_prompt, mcp_manager)
     return result
+
+
+class BookingAuditRequest(BaseModel):
+    donor_id:        int | None = None
+    registrationId:  str
+    candidate:       str | None = None
+    testType:        str | None = None
+    reason:          str | None = None
+    clinic:          str | None = None
+    address:         str | None = None
+    zip:             str | None = None
+
+
+@app.post("/api/bookings")
+async def record_booking(req: BookingAuditRequest):
+    try:
+        conn = _get_db()
+        with conn.cursor() as cur:
+            cur.execute(
+                """INSERT INTO bookings
+                   (registration_id, donor_id, candidate, test_type, reason, clinic, address, zip)
+                   VALUES (%s, %s, %s, %s, %s, %s, %s, %s)""",
+                (req.registrationId, req.donor_id, req.candidate, req.testType,
+                 req.reason, req.clinic, req.address, req.zip),
+            )
+        conn.commit()
+        conn.close()
+        log.info("Booking audit saved: %s", req.registrationId)
+    except Exception as e:
+        log.warning("Failed to save booking audit: %s", e)
+    return {"ok": True}

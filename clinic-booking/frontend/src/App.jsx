@@ -213,7 +213,7 @@ function BookingLayout({ donorId, donor, onSelectDonor }) {
       </div>
       {/* Chat panel */}
       <div style={{ flex: 1, overflow: 'hidden', padding: '16px', background: '#f8fafc' }}>
-        <BookingChat donorId={donorId} />
+        <BookingChat donorId={donorId} donorName={donor ? donor.first_name : null} />
       </div>
     </div>
   )

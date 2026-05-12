@@ -1,8 +1,8 @@
 const STEPS = [
-  { id: 1, label: 'Candidate Selected', short: 'Candidate' },
-  { id: 2, label: 'Test Type Chosen',   short: 'Test Type' },
-  { id: 3, label: 'Clinic Selected',    short: 'Clinic'    },
-  { id: 4, label: 'Booking Confirmed',  short: 'Confirmed' },
+  { id: 1, label: 'Candidate Selected',    short: 'Candidate' },
+  { id: 2, label: 'Test & Reason Chosen',  short: 'Test + Reason' },
+  { id: 3, label: 'Clinic Selected',       short: 'Clinic'    },
+  { id: 4, label: 'Booking Confirmed',     short: 'Confirmed' },
 ]
 
 export default function ProgressStepper({ activeStep }) {

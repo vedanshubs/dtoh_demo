@@ -30,8 +30,10 @@ async def run_turn(
     system_prompt: str,
     donor_id: int,
     mcp: MCPClientManager,
+    existing_clinics: list = [],
 ) -> dict:
-    last_clinics: list = []  # captured from search_clinics tool result
+    last_clinics: list = []   # only populated when search_clinics fires this turn
+    tool_calls_log: list = [] # MCP tool calls this turn
     tools = await mcp.list_tools()
     openai_tools = [
         {
@@ -65,7 +67,8 @@ async def run_turn(
             response_payload = {"reply": text, "messages": current_messages[1:]}
             if last_clinics:
                 response_payload["clinics"] = last_clinics
-            # Detect booking summary block — signals pre-confirmation state
+            if tool_calls_log:
+                response_payload["tool_calls"] = tool_calls_log
             booking_summary = _extract_booking_summary(text)
             if booking_summary:
                 response_payload["booking_summary"] = booking_summary
@@ -96,12 +99,32 @@ async def run_turn(
                 log.info("Tool call → %s(%s)", tc.function.name, json.dumps(args))
                 result = await mcp.call_tool(tc.function.name, args)
                 log.info("Tool result ← %s: %s", tc.function.name, str(result)[:200])
-                if tc.function.name == "search_clinics" and isinstance(result, list):
+
+                # Build MCP activity log entry
+                safe_args = {k: v for k, v in args.items() if k not in ("donor_id",)}
+                if tc.function.name == "search_clinics":
+                    # Normalise: transport returns a bare dict when exactly 1 clinic found
+                    if isinstance(result, dict):
+                        result = [result]
+                    if not isinstance(result, list):
+                        result = []
                     valid = [c for c in result if isinstance(c, dict) and not c.get("error")]
+                    result_summary = f"{len(valid)} clinics returned"
                     if valid:
-                        last_clinics = valid          # all clinics → frontend pagination
-                    result = valid[:MAX_CLINICS_TO_LLM]   # top 5 → LLM context
+                        last_clinics = valid
+                    result = valid[:MAX_CLINICS_TO_LLM]
                     log.info("search_clinics: %d total, %d sent to LLM", len(valid), len(result))
+                elif tc.function.name == "place_order":
+                    reg_id = result.get("registration_id") or result.get("registrationId") or "" if isinstance(result, dict) else ""
+                    result_summary = f"Registration ID: {reg_id}" if reg_id else "Order placed"
+                else:
+                    result_summary = str(result)[:80] if result else "OK"
+
+                tool_calls_log.append({
+                    "tool": tc.function.name,
+                    "args": safe_args,
+                    "result": result_summary,
+                })
                 current_messages.append({
                     "role": "tool",
                     "tool_call_id": tc.id,

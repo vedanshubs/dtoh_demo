@@ -20,16 +20,24 @@ def parse_date_range(date_range: str) -> tuple[str, str]:
     today = date.today()
     dr = date_range.lower().strip()
 
-    # last N days / weeks / months
-    m = re.match(r'last\s+(\d+)\s*(day|days|week|weeks|month|months)', dr)
+    # yesterday
+    if re.search(r'\byesterday\b', dr):
+        yesterday = today - timedelta(days=1)
+        return yesterday.isoformat(), yesterday.isoformat()
+
+    # last N / past N days / weeks / months
+    m = re.match(r'(?:last|past)\s+(\d+)\s*(day|days|week|weeks|month|months)', dr)
     if m:
         n, unit = int(m.group(1)), m.group(2)
         days = n * 30 if 'month' in unit else n * 7 if 'week' in unit else n
         return (today - timedelta(days=days)).isoformat(), today.isoformat()
 
-    # last week / past week (7 days)
-    if re.search(r'\blast\s+week\b|\bpast\s+week\b', dr):
-        return (today - timedelta(days=7)).isoformat(), today.isoformat()
+    # last week / past week / previous week (Mon–Sun of previous calendar week)
+    if re.search(r'\blast\s+week\b|\bpast\s+week\b|\bprevious\s+week\b', dr):
+        start_of_this_week = today - timedelta(days=today.weekday())
+        end_of_last_week   = start_of_this_week - timedelta(days=1)
+        start_of_last_week = start_of_this_week - timedelta(days=7)
+        return start_of_last_week.isoformat(), end_of_last_week.isoformat()
 
     # this week (Monday → today)
     if re.search(r'\bthis\s+week\b', dr):
@@ -87,13 +95,25 @@ def parse_date_range(date_range: str) -> tuple[str, str]:
             end = min(_end_of_month(year, num), today)
             return date(year, num, 1).isoformat(), end.isoformat()
 
-    # ISO date range: "2026-01-01 to 2026-03-31"
-    m = re.match(r'(\d{4}-\d{2}-\d{2})\s*(?:to|through|until|[-–])\s*(\d{4}-\d{2}-\d{2})', dr)
+    # month name only, no year: "april", "march" → most recent occurrence
+    for name, num in MONTH_NAMES.items():
+        if re.search(rf'\b{name}\b', dr):
+            year = today.year if num <= today.month else today.year - 1
+            end = min(_end_of_month(year, num), today)
+            return date(year, num, 1).isoformat(), end.isoformat()
+
+    # ISO date range: "2026-01-01 to 2026-03-31" or "between 2026-01-01 and 2026-03-31"
+    m = re.search(r'(\d{4}-\d{2}-\d{2})\s*(?:to|through|until|and|[-–])\s*(\d{4}-\d{2}-\d{2})', dr)
     if m:
         return m.group(1), m.group(2)
 
+    # single ISO date: "2026-04-15" → that one day
+    m = re.match(r'^(\d{4}-\d{2}-\d{2})$', dr)
+    if m:
+        return m.group(1), m.group(1)
+
     # last 30 / last 90 (no unit — treat as days, legacy support)
-    m = re.match(r'last\s+(\d+)', dr)
+    m = re.match(r'(?:last|past)\s+(\d+)', dr)
     if m:
         return (today - timedelta(days=int(m.group(1)))).isoformat(), today.isoformat()
 

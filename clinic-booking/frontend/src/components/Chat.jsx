@@ -2,6 +2,8 @@ import { useState, useRef, useEffect } from 'react'
 import CandidateProfile from './CandidateProfile'
 import ProgressStepper from './ProgressStepper'
 import BookingSummary from './BookingSummary'
+import BookingPassport from './BookingPassport'
+import McpActivityPanel from './McpActivityPanel'
 
 /* Markdown helpers */
 function renderInline(text) {
@@ -52,7 +54,7 @@ function parseQuickReplies(text) {
   for (const line of cleaned.split('\n')) {
     const m = line.match(/^\s*(:[-*]|\d+[.)]) (.+)$/)
     if (m) {
-      const clean = m[1].replace(/\*\*(.*)\*\*/g, '$1').replace(/\*(.*)\*/g, '$1').replace(/`(.*)`/g, '$1').trim()
+      const clean = m[2].replace(/\*\*(.*)\*\*/g, '$1').replace(/\*(.*)\*/g, '$1').replace(/`(.*)`/g, '$1').trim()
       if (clean.length > 0 && clean.length < 120) items.push(clean)
     }
   }
@@ -67,14 +69,14 @@ function QuickReplies({ items, onSend }) {
           key={i}
           onClick={() => onSend(item)}
           style={{
-            padding: '6px 14px', borderRadius: 20,
+            padding: '8px 16px', borderRadius: 20,
             border: '1.5px solid #e2e8f0', background: '#fff',
-            fontSize: 12, color: '#1e40af', fontWeight: 500,
+            fontSize: 12.5, color: '#0f172a', fontWeight: 600,
             cursor: 'pointer', transition: 'all 0.15s',
-            boxShadow: '0 1px 3px rgba(0,0,0,0.06)',
+            boxShadow: '0 1px 4px rgba(0,0,0,0.07)',
           }}
-          onMouseEnter={e => { e.currentTarget.style.background = '#eff6ff'; e.currentTarget.style.borderColor = '#bfdbfe'; e.currentTarget.style.color = '#1d4ed8' }}
-          onMouseLeave={e => { e.currentTarget.style.background = '#fff'; e.currentTarget.style.borderColor = '#e2e8f0'; e.currentTarget.style.color = '#1e40af' }}
+          onMouseEnter={e => { e.currentTarget.style.background = '#fef2f2'; e.currentTarget.style.borderColor = '#fecaca'; e.currentTarget.style.color = '#c8102e' }}
+          onMouseLeave={e => { e.currentTarget.style.background = '#fff'; e.currentTarget.style.borderColor = '#e2e8f0'; e.currentTarget.style.color = '#0f172a' }}
         >{item}</button>
       ))}
     </div>
@@ -374,13 +376,18 @@ function ClinicCards({ clinics, onBook, isDOT }) {
 }
 
 /* Main component */
-export default function Chat({ donorId }) {
-  const [messages,   setMessages]   = useState([])
-  const [history,    setHistory]    = useState([])
-  const [input,      setInput]      = useState('')
-  const [loading,    setLoading]    = useState(false)
-  const [hasStarted, setHasStarted] = useState(false)
-  const [hasClinics, setHasClinics] = useState(false)
+export default function Chat({ donorId, donorName }) {
+  const [messages,          setMessages]          = useState([])
+  const [history,           setHistory]           = useState([])
+  const [input,             setInput]             = useState('')
+  const [loading,           setLoading]           = useState(false)
+  const [hasStarted,        setHasStarted]        = useState(false)
+  const [hasClinics,        setHasClinics]        = useState(false)
+  const [lastClinics,       setLastClinics]       = useState([])
+  const [lastBookingSummary,setLastBookingSummary] = useState(null)
+  const [passport,          setPassport]          = useState(null)
+  const [passportOpen,      setPassportOpen]      = useState(false)
+  const [mcpCalls,          setMcpCalls]          = useState([])
 
   // Session memory cleared on donor change
   const [session, setSession] = useState({
@@ -396,14 +403,15 @@ export default function Chat({ donorId }) {
   }, [messages, loading])
 
   useEffect(() => {
-    setMessages([]); setHistory([]); setHasStarted(false); setHasClinics(false)
+    setMessages([]); setHistory([]); setHasStarted(false); setHasClinics(false); setLastClinics([])
+    setLastBookingSummary(null); setPassport(null); setPassportOpen(false); setMcpCalls([])
     setSession({ testType: null, reasonForTest: null, selectedClinic: null, clinicSelected: false, bookingConfirmed: false, isDOT: false })
   }, [donorId])
 
-  // Derive stepper step
+  // Derive stepper step — step 2 requires both test type AND reason
   const stepperStep = session.bookingConfirmed ? 4
     : session.clinicSelected ? 3
-    : session.testType ? 2
+    : (session.testType && session.reasonForTest) ? 2
     : donorId ? 1 : 0
 
   const TEST_TYPE_OPTIONS = [
@@ -420,7 +428,7 @@ export default function Chat({ donorId }) {
     setHasStarted(true)
     setMessages([{
       role: 'assistant',
-      text: 'Which drug test is needed? Select a test type to begin:',
+      text: `What test do you need?\n\nYou can describe the full request — for example: "pre-employment DOT urine, nearest walk-in" — or select a test type below:`,
       chips: TEST_TYPE_OPTIONS.map(t => t.label),
     }])
   }
@@ -433,42 +441,95 @@ export default function Chat({ donorId }) {
     setHasStarted(true)
     setLoading(true)
 
-    // Detect test type from user message
+    // Detect test type and reason from user message
     const lc = msg.toLowerCase()
     const TEST_TYPE_KEYS = [
-      ['5-panel urine (dot)', '5-Panel Urine (DOT)', true],
-      ['dot',                 '5-Panel Urine (DOT)', true],
-      ['10-panel urine',      '10-Panel Urine (Non-DOT)', false],
-      ['10-panel',            '10-Panel Urine (Non-DOT)', false],
-      ['hair follicle',       'Hair Follicle 5-Panel', false],
-      ['oral fluid',          'Oral Fluid 5-Panel', false],
-      ['breath alcohol',      'Breath Alcohol Test', false],
-      ['bat',                 'Breath Alcohol Test', false],
+      [/5.panel urine/i,    '5-Panel Urine (DOT)',        true],
+      [/\bdot\b/,           '5-Panel Urine (DOT)',        true],
+      [/10.panel urine/i,   '10-Panel Urine (Non-DOT)',   false],
+      [/10.panel/i,         '10-Panel Urine (Non-DOT)',   false],
+      [/hair follicle/i,    'Hair Follicle 5-Panel',      false],
+      [/oral fluid/i,       'Oral Fluid 5-Panel',         false],
+      [/breath alcohol/i,   'Breath Alcohol Test',        false],
+      [/\bbat\b/i,          'Breath Alcohol Test',        false],
     ]
-    for (const [key, label, isDOT] of TEST_TYPE_KEYS) {
-      if (lc.includes(key)) { setSession(s => ({ ...s, testType: label, isDOT })); break }
+    for (const [re, label, isDOT] of TEST_TYPE_KEYS) {
+      if (re.test(lc)) { setSession(s => ({ ...s, testType: label, isDOT })); break }
+    }
+
+    // Detect reason for test from user message (covers typed text and chip clicks)
+    const REASON_KEYS = [
+      ['pre-employment', 'Pre-Employment'],
+      ['pre employment', 'Pre-Employment'],
+      ['1.',             'Pre-Employment'],
+      ['random',         'Random'],
+      ['2.',             'Random'],
+      ['for cause',      'For Cause'],
+      ['for-cause',      'For Cause'],
+      ['3.',             'For Cause'],
+      ['post-accident',  'Post-Accident'],
+      ['post accident',  'Post-Accident'],
+      ['4.',             'Post-Accident'],
+      ['return to duty', 'Return to Duty'],
+      ['return-to-duty', 'Return to Duty'],
+      ['5.',             'Return to Duty'],
+    ]
+    for (const [key, label] of REASON_KEYS) {
+      if (lc.includes(key)) { setSession(s => ({ ...s, reasonForTest: label })); break }
     }
 
     try {
       const res = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ donor_id: donorId, messages: history, user_message: msg }),
+        body: JSON.stringify({ donor_id: donorId, messages: history, user_message: msg, clinics: lastClinics }),
       })
       if (!res.ok) throw new Error(`Server error ${res.status}`)
       const data = await res.json()
       setHistory(data.messages)
 
-      if (data.clinics?.length) setHasClinics(true)
-      if (data.booking_summary) setSession(s => ({ ...s, clinicSelected: true }))
-      if (data.reply.includes('Registration ID') || data.reply.includes('registration_id') || data.reply.includes('UBS-')) {
-        setSession(s => ({ ...s, bookingConfirmed: true }))
+      if (data.tool_calls?.length) {
+        const ts = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' })
+        setMcpCalls(prev => [...prev, ...data.tool_calls.map(tc => ({ ...tc, ts }))])
       }
+
+      const returnedClinics = data.clinics?.length ? data.clinics : null
+      if (returnedClinics) { setHasClinics(true); setLastClinics(returnedClinics) }
+
+      if (data.booking_summary) { setSession(s => ({ ...s, clinicSelected: true })); setLastBookingSummary(data.booking_summary) }
+
+      const regMatch = data.reply.match(/(?:Registration ID:|registration_id:)\s*([A-Z0-9-]+)/i)
+      const isBookingConfirmed = !!regMatch
+      if (isBookingConfirmed) {
+        setSession(s => ({ ...s, bookingConfirmed: true }))
+        setLastClinics([])
+        const summary = lastBookingSummary || data.booking_summary || {}
+        const passportData = {
+          registrationId: regMatch[1],
+          candidate:  summary['Candidate']  || donorName || '',
+          testType:   summary['Test Type']  || '',
+          reason:     summary['Reason']     || '',
+          clinic:     summary['Clinic']     || '',
+          address:    summary['Address']    || '',
+          zip:        summary['ZIP']        || summary['ZIP Code'] || '',
+          issuedAt:   new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
+        }
+        setPassport(passportData)
+        setPassportOpen(true)
+        fetch('/api/bookings', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ donor_id: donorId, ...passportData }),
+        }).catch(() => {})
+      }
+
+      // Only show clinic cards when search_clinics fired this turn (returnedClinics is fresh)
+      const showClinics = returnedClinics && !data.booking_summary && !isBookingConfirmed ? returnedClinics : null
 
       setMessages(prev => [...prev, {
         role: 'assistant',
         text: data.reply,
-        clinics: data.clinics ?? null,
+        clinics: showClinics,
         booking_summary: data.booking_summary ?? null,
       }])
     } catch (err) {
@@ -479,9 +540,14 @@ export default function Chat({ donorId }) {
     }
   }
 
-  const handleBook    = (clinic) => {
+  const handleBook = (clinic) => {
     setSession(s => ({ ...s, selectedClinic: clinic }))
-    send(`Book ${clinic.SiteName} (Site ID ${clinic.EscreenSiteId ?? clinic.CollectionSiteId})`)
+    const id = clinic.EscreenSiteId ?? clinic.CollectionSiteId
+    const addr = [clinic.Address1, clinic.City, clinic.State, clinic.ZipCode].filter(Boolean).join(', ')
+    const dist = clinic.Distance != null ? ` (${clinic.Distance} mi)` : ''
+    const walkin = clinic.Attributes?.find(a => a.AttributeName === 'Walk In Drug Testing - No Appointment Required')?.AttributeValue === 'Yes' ? ', walk-in' : ''
+    const dot = clinic.Attributes?.find(a => a.AttributeName === 'DOT Certified Physician')?.AttributeValue === 'Yes' ? ', DOT certified' : ''
+    send(`I'd like to book at ${clinic.SiteName}${dist}. Address: ${addr}. Site ID: ${id}${walkin}${dot}.`)
   }
   const handleConfirm = () => send('Confirm')
   const handleEdit    = () => send('Edit details')
@@ -490,11 +556,13 @@ export default function Chat({ donorId }) {
   const isEmpty = messages.length === 0 && !loading
 
   return (
+    <>
+    {passport && passportOpen && <BookingPassport data={passport} onClose={() => setPassportOpen(false)} />}
+    <div style={{ display: 'flex', height: '100%', gap: 0, borderRadius: 14, overflow: 'hidden', boxShadow: '0 1px 6px rgba(0,0,0,0.06)', border: '1px solid #e2e8f0' }}>
     <div style={{
-      background: '#ffffff', borderRadius: 14,
-      border: '1px solid #e2e8f0', boxShadow: '0 1px 6px rgba(0,0,0,0.06)',
+      background: '#ffffff',
       display: 'flex', flexDirection: 'column',
-      height: '100%', overflow: 'hidden',
+      flex: 1, overflow: 'hidden',
     }}>
       {/* Header */}
       <div style={{
@@ -638,6 +706,24 @@ export default function Chat({ donorId }) {
         <ContextualActions session={session} hasClinics={hasClinics} onSend={send} />
       )}
 
+      {/* Persistent passport button after booking confirmed */}
+      {session.bookingConfirmed && passport && (
+        <div style={{ padding: '8px 16px 4px', display: 'flex', justifyContent: 'center' }}>
+          <button
+            onClick={() => setPassportOpen(true)}
+            style={{
+              display: 'flex', alignItems: 'center', gap: 8,
+              background: 'linear-gradient(135deg, #c8102e, #8b0000)',
+              color: '#fff', border: 'none', borderRadius: 20,
+              padding: '8px 20px', fontSize: 12.5, fontWeight: 700,
+              cursor: 'pointer', boxShadow: '0 2px 8px rgba(200,16,46,0.3)',
+            }}
+          >
+            📋 View Booking Passport
+          </button>
+        </div>
+      )}
+
       {/* Input bar */}
       <div style={{ padding: '12px 16px', borderTop: '1px solid #f1f5f9', background: '#fff', flexShrink: 0, paddingTop: donorId && hasStarted ? 8 : 12 }}>
         {!donorId && (
@@ -695,6 +781,9 @@ export default function Chat({ donorId }) {
         </p>
       </div>
     </div>
+    <McpActivityPanel calls={mcpCalls} />
+    </div>
+    </>
   )
 }
 

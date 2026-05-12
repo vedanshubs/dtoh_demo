@@ -3869,5 +3869,191 @@
         "AttributeValue": "MondayHoursOpen:08:00;MondayHoursClose:17:00;TuesdayHoursOpen:08:00;TuesdayHoursClose:17:00;WednesdayHoursOpen:08:00;WednesdayHoursClose:17:00;ThursdayHoursOpen:08:00;ThursdayHoursClose:17:00;FridayHoursOpen:08:00;FridayHoursClose:17:00;SaturdayHoursOpen:00:00;SaturdayHoursClose:00:00;SundayHoursOpen:00:00;SundayHoursClose:00:00"
       }
     ]
+  },
+  {
+    "EscreenSiteId": 20085,
+    "SiteName": "CityMD Urgent Care \u2013 Midtown 24/7",
+    "Address1": "575 Lexington Ave",
+    "City": "New York",
+    "State": "NY",
+    "ZipCode": "10022",
+    "PhoneNumber": "2124211888",
+    "Latitude": 40.7571,
+    "Longitude": -73.9718,
+    "GoogleMapsUrl": "https://www.google.com/maps?q=40.7571,-73.9718",
+    "SupportedSpecimenTypes": [
+      "U",
+      "O",
+      "H"
+    ],
+    "Attributes": [
+      {
+        "AttributeName": "Walk In Drug Testing - No Appointment Required",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Handicap Access",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "DOT Certified Physician",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "After Hours Drug Screening",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Public Transportation",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Observed Collections",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Clinic Hours",
+        "AttributeValue": "MondayHoursOpen:00:00;MondayHoursClose:23:59;TuesdayHoursOpen:00:00;TuesdayHoursClose:23:59;WednesdayHoursOpen:00:00;WednesdayHoursClose:23:59;ThursdayHoursOpen:00:00;ThursdayHoursClose:23:59;FridayHoursOpen:00:00;FridayHoursClose:23:59;SaturdayHoursOpen:00:00;SaturdayHoursClose:23:59;SundayHoursOpen:00:00;SundayHoursClose:23:59"
+      }
+    ]
+  },
+  {
+    "EscreenSiteId": 20086,
+    "SiteName": "GoHealth Urgent Care \u2013 Jersey City 24/7",
+    "Address1": "110 Hudson St, Floor 2",
+    "City": "Jersey City",
+    "State": "NJ",
+    "ZipCode": "07302",
+    "PhoneNumber": "2015553021",
+    "Latitude": 40.7195,
+    "Longitude": -74.0382,
+    "GoogleMapsUrl": "https://www.google.com/maps?q=40.7195,-74.0382",
+    "SupportedSpecimenTypes": [
+      "U",
+      "O"
+    ],
+    "Attributes": [
+      {
+        "AttributeName": "Walk In Drug Testing - No Appointment Required",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Handicap Access",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "DOT Certified Physician",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "After Hours Drug Screening",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Public Transportation",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Observed Collections",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Clinic Hours",
+        "AttributeValue": "MondayHoursOpen:00:00;MondayHoursClose:23:59;TuesdayHoursOpen:00:00;TuesdayHoursClose:23:59;WednesdayHoursOpen:00:00;WednesdayHoursClose:23:59;ThursdayHoursOpen:00:00;ThursdayHoursClose:23:59;FridayHoursOpen:00:00;FridayHoursClose:23:59;SaturdayHoursOpen:00:00;SaturdayHoursClose:23:59;SundayHoursOpen:00:00;SundayHoursClose:23:59"
+      }
+    ]
+  },
+  {
+    "EscreenSiteId": 20087,
+    "SiteName": "Concentra Urgent Care \u2013 White Plains 24/7",
+    "Address1": "200 Hamilton Ave, Suite 101",
+    "City": "White Plains",
+    "State": "NY",
+    "ZipCode": "10601",
+    "PhoneNumber": "9145554401",
+    "Latitude": 41.0337,
+    "Longitude": -73.7647,
+    "GoogleMapsUrl": "https://www.google.com/maps?q=41.0337,-73.7647",
+    "SupportedSpecimenTypes": [
+      "U",
+      "O",
+      "H"
+    ],
+    "Attributes": [
+      {
+        "AttributeName": "Walk In Drug Testing - No Appointment Required",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Handicap Access",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "DOT Certified Physician",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "After Hours Drug Screening",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Public Transportation",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Observed Collections",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Clinic Hours",
+        "AttributeValue": "MondayHoursOpen:00:00;MondayHoursClose:23:59;TuesdayHoursOpen:00:00;TuesdayHoursClose:23:59;WednesdayHoursOpen:00:00;WednesdayHoursClose:23:59;ThursdayHoursOpen:00:00;ThursdayHoursClose:23:59;FridayHoursOpen:00:00;FridayHoursClose:23:59;SaturdayHoursOpen:00:00;SaturdayHoursClose:23:59;SundayHoursOpen:00:00;SundayHoursClose:23:59"
+      }
+    ]
+  },
+  {
+    "EscreenSiteId": 20088,
+    "SiteName": "MedExpress Urgent Care \u2013 Hoboken 24/7",
+    "Address1": "221 River St, Suite 300",
+    "City": "Hoboken",
+    "State": "NJ",
+    "ZipCode": "07030",
+    "PhoneNumber": "2015553070",
+    "Latitude": 40.7399,
+    "Longitude": -74.0268,
+    "GoogleMapsUrl": "https://www.google.com/maps?q=40.7399,-74.0268",
+    "SupportedSpecimenTypes": [
+      "U",
+      "O"
+    ],
+    "Attributes": [
+      {
+        "AttributeName": "Walk In Drug Testing - No Appointment Required",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Handicap Access",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "DOT Certified Physician",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "After Hours Drug Screening",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Public Transportation",
+        "AttributeValue": "Yes"
+      },
+      {
+        "AttributeName": "Observed Collections",
+        "AttributeValue": "No"
+      },
+      {
+        "AttributeName": "Clinic Hours",
+        "AttributeValue": "MondayHoursOpen:00:00;MondayHoursClose:23:59;TuesdayHoursOpen:00:00;TuesdayHoursClose:23:59;WednesdayHoursOpen:00:00;WednesdayHoursClose:23:59;ThursdayHoursOpen:00:00;ThursdayHoursClose:23:59;FridayHoursOpen:00:00;FridayHoursClose:23:59;SaturdayHoursOpen:00:00;SaturdayHoursClose:23:59;SundayHoursOpen:00:00;SundayHoursClose:23:59"
+      }
+    ]
   }
 ]
