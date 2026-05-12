@@ -21,7 +21,7 @@ const IconBot = () => (
 const QUICK_QUERIES = [
   { label: 'Results Summary',   query: 'Show me a results summary for the last 30 days' },
   { label: 'Positive Rate',     query: 'What is the positive rate this quarter? How does it compare to the industry benchmark?' },
-  { label: 'Analyte Breakdown', query: 'Show analyte breakdown for the last 90 days' },
+  { label: 'Analyte Breakdown', query: 'Show analyte breakdown for the last 90 days for positive tests only' },
   { label: 'SLA Compliance',    query: 'What are the turnaround time statistics and SLA compliance for the current year?' },
   { label: 'Pipeline Status',   query: 'What is the current pipeline status? Any backlogs to be aware of?' },
 ]
@@ -35,6 +35,40 @@ const EMPTY_SUGGESTIONS = [
 function boldNumbers(text) {
   const html = text.replace(/(\d[\d,]*\.?\d*\s*%?)/g, '<strong>$1</strong>')
   return { __html: html }
+}
+
+const TOOL_COLORS = {
+  get_results_summary:   { bg: '#eff6ff', border: '#bfdbfe', text: '#1d4ed8', dot: '#3b82f6' },
+  get_pipeline_status:   { bg: '#f0fdf4', border: '#bbf7d0', text: '#15803d', dot: '#22c55e' },
+  get_analyte_breakdown: { bg: '#fdf4ff', border: '#e9d5ff', text: '#7e22ce', dot: '#a855f7' },
+  get_turnaround_stats:  { bg: '#fff7ed', border: '#fed7aa', text: '#c2410c', dot: '#f97316' },
+}
+
+function McpTrace({ calls }) {
+  if (!calls?.length) return null
+  return (
+    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5, marginTop: 8 }}>
+      {calls.map((c, i) => {
+        const col = TOOL_COLORS[c.tool] || { bg: '#f8fafc', border: '#e2e8f0', text: '#475569', dot: '#94a3b8' }
+        const argStr = Object.entries(c.args || {}).map(([k, v]) => `${k}: ${v}`).join(' · ')
+        return (
+          <div key={i} style={{
+            display: 'inline-flex', alignItems: 'center', gap: 6,
+            background: col.bg, border: `1px solid ${col.border}`,
+            borderRadius: 20, padding: '3px 10px 3px 7px',
+            fontSize: 11, fontWeight: 500,
+          }}>
+            <span style={{ width: 6, height: 6, borderRadius: '50%', background: col.dot, flexShrink: 0 }} />
+            <span style={{ fontWeight: 700, color: col.text }}>{c.tool}</span>
+            {argStr && <span style={{ color: '#94a3b8' }}>·</span>}
+            {argStr && <span style={{ color: '#64748b' }}>{argStr}</span>}
+            {c.result && <span style={{ color: '#94a3b8' }}>→</span>}
+            {c.result && <span style={{ color: col.text, fontWeight: 600 }}>{c.result}</span>}
+          </div>
+        )
+      })}
+    </div>
+  )
 }
 
 function TypingDots() {
@@ -66,6 +100,7 @@ function BotAvatar() {
 
 function AnalyticsMessage({ msg, onSuggestionClick }) {
   const isUser = msg.role === 'user'
+  const toolCalls = msg.tool_calls || []
   if (isUser) {
     return (
       <div style={{
@@ -109,14 +144,17 @@ function AnalyticsMessage({ msg, onSuggestionClick }) {
 
         {/* Chart */}
         {reply?.visualization && reply?.data && (
-          <div style={{ marginBottom: suggestions.length ? 10 : 0 }}>
+          <div style={{ marginBottom: (toolCalls.length || suggestions.length) ? 10 : 0 }}>
             <ChartRenderer visualization={reply.visualization} data={reply.data} />
           </div>
         )}
 
+        {/* MCP tool trace */}
+        <McpTrace calls={toolCalls} />
+
         {/* Suggestion chips */}
         {suggestions.length > 0 && (
-          <div>
+          <div style={{ marginTop: toolCalls.length ? 12 : 0 }}>
             <div style={{ fontSize: 10, fontWeight: 700, color: '#94a3b8', letterSpacing: '0.06em', marginBottom: 6, textTransform: 'uppercase' }}>
               Suggested Follow-ups
             </div>
@@ -182,7 +220,7 @@ export default function AnalyticsChat() {
       setHistory(data.messages)
       const reply = data.reply
       const summaryText = typeof reply === 'object' ? (reply.summary || JSON.stringify(reply)) : reply
-      setMessages(prev => [...prev, { role: 'assistant', text: summaryText, reply }])
+      setMessages(prev => [...prev, { role: 'assistant', text: summaryText, reply, tool_calls: data.tool_calls || [] }])
     } catch (err) {
       if (err.name === 'AbortError') return
       setMessages(prev => [...prev, {

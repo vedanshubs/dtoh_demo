@@ -20,6 +20,7 @@ def get_client() -> AsyncOpenAI:
 
 
 async def run_turn(messages: list[dict], system_prompt: str, mcp: MCPClientManager) -> dict:
+    tool_calls_log: list = []
     tools = await mcp.list_tools()
     openai_tools = [
         {
@@ -52,9 +53,12 @@ async def run_turn(messages: list[dict], system_prompt: str, mcp: MCPClientManag
             try:
                 parsed = json.loads(text)
             except json.JSONDecodeError:
-                parsed = {"summary": text, "visualization": "stat", "data": {}}
+                parsed = {"summary": text, "visualization": None}
             log.info("Final reply: %s", text[:120])
-            return {"reply": parsed, "messages": current_messages[1:]}
+            payload = {"reply": parsed, "messages": current_messages[1:]}
+            if tool_calls_log:
+                payload["tool_calls"] = tool_calls_log
+            return payload
 
         if choice.finish_reason == "tool_calls":
             tool_calls = choice.message.tool_calls
@@ -78,6 +82,19 @@ async def run_turn(messages: list[dict], system_prompt: str, mcp: MCPClientManag
                 log.info("Tool call → %s(%s)", tc.function.name, json.dumps(args))
                 result = await mcp.call_tool(tc.function.name, args)
                 log.info("Tool result ← %s: %s", tc.function.name, str(result)[:200])
+                # Build a compact summary for the UI trace
+                if isinstance(result, dict):
+                    if result.get("avg_end_to_end_days") is not None:
+                        result_summary = f"{result['avg_end_to_end_days']} days avg"
+                    elif result.get("total_in_pipeline") is not None:
+                        result_summary = f"{result['total_in_pipeline']} in pipeline"
+                    elif result.get("total") is not None:
+                        result_summary = f"{result['total']} records"
+                    else:
+                        result_summary = "OK"
+                else:
+                    result_summary = str(result)[:60]
+                tool_calls_log.append({"tool": tc.function.name, "args": args, "result": result_summary})
                 current_messages.append({
                     "role": "tool",
                     "tool_call_id": tc.id,
@@ -85,4 +102,4 @@ async def run_turn(messages: list[dict], system_prompt: str, mcp: MCPClientManag
                 })
 
     log.warning("Reached MAX_ITERATIONS without end_turn")
-    return {"reply": {"summary": "Unable to complete.", "visualization": "stat", "data": {}}, "messages": current_messages[1:]}
+    return {"reply": {"summary": "Unable to complete.", "visualization": None, "data": {}}, "messages": current_messages[1:]}

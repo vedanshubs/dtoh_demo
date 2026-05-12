@@ -36,6 +36,42 @@ function boldNumbers(text) {
   return { __html: html }
 }
 
+const TOOL_COLORS = {
+  get_results_summary:   { bg: '#eff6ff', border: '#bfdbfe', text: '#1d4ed8', dot: '#3b82f6' },
+  get_pipeline_status:   { bg: '#f0fdf4', border: '#bbf7d0', text: '#15803d', dot: '#22c55e' },
+  get_analyte_breakdown: { bg: '#fdf4ff', border: '#e9d5ff', text: '#7e22ce', dot: '#a855f7' },
+  get_turnaround_stats:  { bg: '#fff7ed', border: '#fed7aa', text: '#c2410c', dot: '#f97316' },
+}
+
+function McpTrace({ calls }) {
+  if (!calls?.length) return null
+  return (
+    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5, marginTop: 10 }}>
+      {calls.map((c, i) => {
+        const col = TOOL_COLORS[c.tool] || { bg: '#f8fafc', border: '#e2e8f0', text: '#475569', dot: '#94a3b8' }
+        const argStr = Object.entries(c.args || {})
+          .map(([k, v]) => `${k}: ${v}`)
+          .join(' · ')
+        return (
+          <div key={i} style={{
+            display: 'inline-flex', alignItems: 'center', gap: 6,
+            background: col.bg, border: `1px solid ${col.border}`,
+            borderRadius: 20, padding: '3px 10px 3px 7px',
+            fontSize: 11, fontWeight: 500,
+          }}>
+            <span style={{ width: 6, height: 6, borderRadius: '50%', background: col.dot, flexShrink: 0 }} />
+            <span style={{ fontWeight: 700, color: col.text }}>{c.tool}</span>
+            {argStr && <span style={{ color: '#94a3b8' }}>·</span>}
+            {argStr && <span style={{ color: '#64748b' }}>{argStr}</span>}
+            {c.result && <span style={{ color: '#94a3b8' }}>→</span>}
+            {c.result && <span style={{ color: col.text, fontWeight: 600 }}>{c.result}</span>}
+          </div>
+        )
+      })}
+    </div>
+  )
+}
+
 const EMPTY_SUGGESTIONS = [
   "What's our positive rate for pre-employment tests this quarter?",
   'How many tests are currently waiting for MRO review?',
@@ -82,7 +118,7 @@ export default function Chat() {
       })
       const data = await res.json()
       setHistory(data.messages)
-      setMessages(prev => [...prev, { role: 'assistant', reply: data.reply }])
+      setMessages(prev => [...prev, { role: 'assistant', reply: data.reply, tool_calls: data.tool_calls || [] }])
     } catch (err) {
       if (err.name === 'AbortError') return
       setMessages(prev => [...prev, {
@@ -232,8 +268,9 @@ export default function Chat() {
                   {m.reply?.visualization && m.reply?.data && (
                     <ChartRenderer visualization={m.reply.visualization} data={m.reply.data} />
                   )}
+                  <McpTrace calls={m.tool_calls} />
                   {i === messages.length - 1 && !loading && m.reply?.suggestions?.length > 0 && (
-                    <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginTop: 14 }}>
+                    <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginTop: m.tool_calls?.length ? 14 : 14 }}>
                       <div style={{ width: '100%', fontSize: 10.5, fontWeight: 600, color: '#94a3b8', letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: 4 }}>
                         Suggested follow-ups
                       </div>

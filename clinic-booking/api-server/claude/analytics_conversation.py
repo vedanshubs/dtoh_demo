@@ -44,6 +44,8 @@ async def run_analytics_turn(messages: list[dict], system_prompt: str, mcp: MCPC
     client = _get_client()
     current_messages = [{"role": "system", "content": system_prompt}] + list(messages)
 
+    tool_calls_log: list = []
+
     for iteration in range(MAX_ITERATIONS):
         log.info("Analytics: Calling %s (iteration %d, %d messages)", MODEL, iteration + 1, len(current_messages))
         response = await client.chat.completions.create(
@@ -62,7 +64,10 @@ async def run_analytics_turn(messages: list[dict], system_prompt: str, mcp: MCPC
             except json.JSONDecodeError:
                 parsed = {"summary": text, "visualization": None}
             log.info("Analytics reply: %s", text[:120])
-            return {"reply": parsed, "messages": current_messages[1:]}
+            payload = {"reply": parsed, "messages": current_messages[1:]}
+            if tool_calls_log:
+                payload["tool_calls"] = tool_calls_log
+            return payload
 
         if choice.finish_reason == "tool_calls":
             tool_calls = choice.message.tool_calls
@@ -86,6 +91,18 @@ async def run_analytics_turn(messages: list[dict], system_prompt: str, mcp: MCPC
                 log.info("Analytics tool call → %s(%s)", tc.function.name, json.dumps(args))
                 result = await mcp.call_tool(tc.function.name, args)
                 log.info("Analytics tool result ← %s: %s", tc.function.name, str(result)[:200])
+                if isinstance(result, dict):
+                    if result.get("avg_end_to_end_days") is not None:
+                        result_summary = f"{result['avg_end_to_end_days']} days avg"
+                    elif result.get("total_in_pipeline") is not None:
+                        result_summary = f"{result['total_in_pipeline']} in pipeline"
+                    elif result.get("total") is not None:
+                        result_summary = f"{result['total']} records"
+                    else:
+                        result_summary = "OK"
+                else:
+                    result_summary = str(result)[:60]
+                tool_calls_log.append({"tool": tc.function.name, "args": args, "result": result_summary})
                 current_messages.append({
                     "role": "tool",
                     "tool_call_id": tc.id,
