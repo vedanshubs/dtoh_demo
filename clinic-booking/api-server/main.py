@@ -25,7 +25,7 @@ from rest_actions import register_action_routes
 load_dotenv()
 
 mcp_manager = MCPClientManager()
-CLIENT_ID = os.getenv("ESCREEN_CLIENT_ACCOUNT", "142451")
+CLIENT_ID = os.getenv("ESCREEN_CLIENT_ACCOUNT", "UBS001")
 
 def _get_db():
     return pymysql.connect(
