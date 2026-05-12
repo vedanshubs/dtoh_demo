@@ -1,5 +1,78 @@
 import { useState, useRef, useEffect } from 'react'
 
+/* ── Markdown helpers ────────────────────────────────────────────────── */
+function renderInline(text) {
+  const parts = []
+  const re = /(\*\*(.+?)\*\*|\*(.+?)\*|`(.+?)`)/g
+  let last = 0, m
+  while ((m = re.exec(text)) !== null) {
+    if (m.index > last) parts.push(text.slice(last, m.index))
+    if (m[0].startsWith('**'))     parts.push(<strong key={m.index}>{m[2]}</strong>)
+    else if (m[0].startsWith('*')) parts.push(<em key={m.index}>{m[3]}</em>)
+    else                           parts.push(<code key={m.index} style={{ background: '#e2e8f0', borderRadius: 3, padding: '1px 4px', fontSize: '0.9em' }}>{m[4]}</code>)
+    last = m.index + m[0].length
+  }
+  if (last < text.length) parts.push(text.slice(last))
+  return parts
+}
+
+function MarkdownText({ text }) {
+  if (!text) return null
+  const lines = text.split('\n')
+  return (
+    <span>
+      {lines.map((line, i) => (
+        <span key={i}>{renderInline(line)}{i < lines.length - 1 && <br />}</span>
+      ))}
+    </span>
+  )
+}
+
+/* Strip numbered/bullet list lines — used when list will be shown as chips or clinic cards */
+function stripList(text) {
+  if (!text) return text
+  const lines = text.split('\n')
+  const cutIdx = lines.findIndex(l => /^\s*(\d+[.)]\s|-\s|\*\s)/.test(l))
+  if (cutIdx === -1) return text
+  return lines.slice(0, cutIdx).join('\n').trimEnd()
+}
+
+/* Extract bullet/numbered items as quick-reply chips (min 2 items, max 120 chars each) */
+function parseQuickReplies(text) {
+  if (!text) return []
+  const items = []
+  for (const line of text.split('\n')) {
+    const m = line.match(/^\s*(?:[-*•]|\d+[.)]) (.+)$/)
+    if (m) {
+      const clean = m[1].replace(/\*\*(.*?)\*\*/g, '$1').replace(/\*(.*?)\*/g, '$1').replace(/`(.*?)`/g, '$1').trim()
+      if (clean.length > 0 && clean.length < 120) items.push(clean)
+    }
+  }
+  return items.length >= 2 ? items : []
+}
+
+function QuickReplies({ items, onSend }) {
+  return (
+    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 7, marginTop: 10 }}>
+      {items.map((item, i) => (
+        <button
+          key={i}
+          onClick={() => onSend(item)}
+          style={{
+            padding: '6px 14px', borderRadius: 20,
+            border: '1.5px solid #e2e8f0', background: '#fff',
+            fontSize: 12, color: '#1e40af', fontWeight: 500,
+            cursor: 'pointer', transition: 'all 0.15s',
+            boxShadow: '0 1px 3px rgba(0,0,0,0.06)',
+          }}
+          onMouseEnter={e => { e.currentTarget.style.background = '#eff6ff'; e.currentTarget.style.borderColor = '#bfdbfe'; e.currentTarget.style.color = '#1d4ed8' }}
+          onMouseLeave={e => { e.currentTarget.style.background = '#fff'; e.currentTarget.style.borderColor = '#e2e8f0'; e.currentTarget.style.color = '#1e40af' }}
+        >{item}</button>
+      ))}
+    </div>
+  )
+}
+
 /* ── Icons ───────────────────────────────────────────────────────────── */
 const IconSend = () => (
   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
@@ -355,27 +428,39 @@ export default function Chat({ donorId }) {
             {m.role === 'assistant' && (
               <div style={{ paddingTop: 2 }}><BotAvatar /></div>
             )}
-            <div style={{ maxWidth: m.clinics ? '92%' : '76%', minWidth: 0 }}>
-              {/* Text bubble */}
-              <div style={{
-                padding: '10px 14px',
-                borderRadius: m.role === 'user' ? '16px 16px 4px 16px' : '4px 16px 16px 16px',
-                background: m.role === 'user'
-                  ? 'linear-gradient(135deg, #c8102e 0%, #9b0f23 100%)'
-                  : m.error ? '#fef2f2' : '#f1f5f9',
-                color: m.role === 'user' ? '#fff' : m.error ? '#dc2626' : '#0f172a',
-                fontSize: 13.5, lineHeight: 1.7,
-                whiteSpace: 'pre-wrap', wordBreak: 'break-word',
-                boxShadow: m.role === 'user' ? '0 3px 12px rgba(200,16,46,0.3)' : '0 1px 3px rgba(0,0,0,0.05)',
-                border: m.error ? '1px solid #fecaca' : 'none',
-              }}>
-                {m.text}
-              </div>
-              {/* Clinic cards */}
-              {m.clinics && m.clinics.length > 0 && (
-                <ClinicCards clinics={m.clinics} onBook={handleBook} />
-              )}
-            </div>
+            {(() => {
+              const quickReplies = m.role === 'assistant' && !m.clinics ? parseQuickReplies(m.text) : []
+              const hasQuickReplies = quickReplies.length > 0
+              const displayText = (m.clinics || hasQuickReplies) ? stripList(m.text) : m.text
+              return (
+                <div style={{ maxWidth: m.clinics ? '92%' : '76%', minWidth: 0 }}>
+                  {/* Text bubble */}
+                  {displayText && (
+                    <div style={{
+                      padding: '10px 14px',
+                      borderRadius: m.role === 'user' ? '16px 16px 4px 16px' : '4px 16px 16px 16px',
+                      background: m.role === 'user'
+                        ? 'linear-gradient(135deg, #c8102e 0%, #9b0f23 100%)'
+                        : m.error ? '#fef2f2' : '#f1f5f9',
+                      color: m.role === 'user' ? '#fff' : m.error ? '#dc2626' : '#0f172a',
+                      fontSize: 13.5, lineHeight: 1.7,
+                      whiteSpace: m.role === 'user' ? 'pre-wrap' : 'normal',
+                      wordBreak: 'break-word',
+                      boxShadow: m.role === 'user' ? '0 3px 12px rgba(200,16,46,0.3)' : '0 1px 3px rgba(0,0,0,0.05)',
+                      border: m.error ? '1px solid #fecaca' : 'none',
+                    }}>
+                      {m.role === 'user' ? displayText : <MarkdownText text={displayText} />}
+                    </div>
+                  )}
+                  {/* Quick-reply chips for bullet/numbered lists */}
+                  {hasQuickReplies && <QuickReplies items={quickReplies} onSend={send} />}
+                  {/* Clinic cards */}
+                  {m.clinics && m.clinics.length > 0 && (
+                    <ClinicCards clinics={m.clinics} onBook={handleBook} />
+                  )}
+                </div>
+              )
+            })()}
           </div>
         ))}
 
