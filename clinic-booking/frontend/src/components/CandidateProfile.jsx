@@ -114,7 +114,7 @@ export default function CandidateProfile({ donorId, onBeginBooking }) {
               transition: 'color 0.15s',
             }}
               title={ssnVisible ? 'Hide SSN' : 'Reveal SSN'}
-            >{ssnVisible ? '🙈 Hide' : '👁 Show'}</button>
+            >{ssnVisible ? 'Hide' : 'Show'}</button>
           }
         />
         <ProfileRow label="Date of Birth" value={formatDOB(donor.dob)} />
@@ -140,7 +140,7 @@ export default function CandidateProfile({ donorId, onBeginBooking }) {
           onMouseEnter={e => e.currentTarget.style.opacity = '0.88'}
           onMouseLeave={e => e.currentTarget.style.opacity = '1'}
         >
-          🏥 Begin Booking
+          Begin Booking
         </button>
       </div>
     </div>

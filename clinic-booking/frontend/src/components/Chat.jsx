@@ -158,22 +158,20 @@ function ContextualActions({ session, hasClinics, onSend }) {
     ]
   } else if (hasClinics) {
     actions = [
-      { label: 'Show DOT-Certified Only', msg: 'Show DOT-certified clinics only' },
-      { label: 'Walk-in Only',            msg: 'Show walk-in clinics only' },
-      { label: 'Wheelchair Accessible',    msg: 'Show wheelchair accessible clinics' },
-      { label: 'Search 10 Miles',          msg: 'Search within 10 miles' },
-      { label: 'Search 25 Miles',          msg: 'Search within 25 miles' },
+      { label: 'Walk-in Only',           msg: 'Show walk-in clinics only' },
+      { label: 'DOT Certified Only',     msg: 'Show DOT-certified clinics only' },
+      { label: 'Wheelchair Accessible',  msg: 'Show wheelchair accessible clinics' },
+      { label: 'Search 10 Miles',        msg: 'Search within 10 miles' },
+      { label: 'Search 25 Miles',        msg: 'Search within 25 miles' },
     ]
   } else if (testType) {
     actions = [
-      { label: 'Find Clinics Near Me', msg: 'Find clinics near me' },
-      { label: 'Search 10 Miles',      msg: 'Search within 10 miles' },
+      { label: 'Find Clinics Near Me',  msg: 'Find clinics near me' },
+      { label: 'Search 10 Miles',       msg: 'Search within 10 miles' },
     ]
   } else {
-    actions = [
-      { label: 'Find Clinics Near Me', msg: 'Find clinics near me' },
-      { label: 'View Available Tests', msg: 'What test types are available' },
-    ]
+    // No test type yet — actions hidden; test type chips shown via welcome message
+    return null
   }
   return (
     <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, padding: '8px 16px 0' }}>
@@ -408,6 +406,25 @@ export default function Chat({ donorId }) {
     : session.testType ? 2
     : donorId ? 1 : 0
 
+  const TEST_TYPE_OPTIONS = [
+    { label: '5-Panel Urine (DOT)',       isDOT: true  },
+    { label: '10-Panel Urine (Non-DOT)',  isDOT: false },
+    { label: 'Hair Follicle 5-Panel',     isDOT: false },
+    { label: 'Oral Fluid 5-Panel',        isDOT: false },
+    { label: 'Breath Alcohol Test',       isDOT: false },
+  ]
+
+  // Begin booking: inject local welcome message with test type chips (no API call)
+  const beginBooking = () => {
+    if (hasStarted) return
+    setHasStarted(true)
+    setMessages([{
+      role: 'assistant',
+      text: 'Which drug test is needed? Select a test type to begin:',
+      chips: TEST_TYPE_OPTIONS.map(t => t.label),
+    }])
+  }
+
   const send = async (text) => {
     const msg = (text ?? input).trim()
     if (!msg || !donorId || loading) return
@@ -418,15 +435,17 @@ export default function Chat({ donorId }) {
 
     // Detect test type from user message
     const lc = msg.toLowerCase()
-    const TEST_TYPES = [
-      ['dot5', '5-Panel Urine (DOT)', true], ['dot', '5-Panel Urine (DOT)', true],
+    const TEST_TYPE_KEYS = [
       ['5-panel urine (dot)', '5-Panel Urine (DOT)', true],
-      ['10-panel urine', '10-Panel Urine (Non-DOT)', false], ['10-panel', '10-Panel Urine (Non-DOT)', false],
-      ['hair follicle', 'Hair Follicle 5-Panel', false],
-      ['oral fluid', 'Oral Fluid 5-Panel', false],
-      ['breath alcohol', 'Breath Alcohol Test', false], ['bat', 'Breath Alcohol Test', false],
+      ['dot',                 '5-Panel Urine (DOT)', true],
+      ['10-panel urine',      '10-Panel Urine (Non-DOT)', false],
+      ['10-panel',            '10-Panel Urine (Non-DOT)', false],
+      ['hair follicle',       'Hair Follicle 5-Panel', false],
+      ['oral fluid',          'Oral Fluid 5-Panel', false],
+      ['breath alcohol',      'Breath Alcohol Test', false],
+      ['bat',                 'Breath Alcohol Test', false],
     ]
-    for (const [key, label, isDOT] of TEST_TYPES) {
+    for (const [key, label, isDOT] of TEST_TYPE_KEYS) {
       if (lc.includes(key)) { setSession(s => ({ ...s, testType: label, isDOT })); break }
     }
 
@@ -517,7 +536,7 @@ export default function Chat({ donorId }) {
         {donorId && !hasStarted && (
           <CandidateProfile
             donorId={donorId}
-            onBeginBooking={() => send('Find clinics near me')}
+            onBeginBooking={beginBooking}
           />
         )}
 
@@ -529,8 +548,10 @@ export default function Chat({ donorId }) {
               background: 'linear-gradient(135deg, #fef2f2, #fee2e2)',
               border: '2px solid #fecaca',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-              margin: '0 auto 16px', fontSize: 26,
-            }}></div>
+              margin: '0 auto 16px',
+            }}>
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#c8102e" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            </div>
             <div style={{ fontSize: 16, fontWeight: 700, color: '#0f172a', marginBottom: 6 }}>Select a candidate first</div>
             <p style={{ fontSize: 13, color: '#64748b', maxWidth: 320, margin: '0 auto', lineHeight: 1.65 }}>
               Choose an employee from the left panel to begin the drug test booking process.
@@ -548,9 +569,11 @@ export default function Chat({ donorId }) {
           }}>
             {m.role === 'assistant' && <div style={{ paddingTop: 2 }}><BotAvatar /></div>}
             {(() => {
-              const quickReplies = m.role === 'assistant' && !m.clinics && !m.booking_summary ? parseQuickReplies(m.text) : []
+              const chips = m.chips || []
+              const hasChips = chips.length > 0
+              const quickReplies = !hasChips && m.role === 'assistant' && !m.clinics && !m.booking_summary ? parseQuickReplies(m.text) : []
               const hasQuickReplies = quickReplies.length > 0
-              const displayText = (m.clinics || hasQuickReplies || m.booking_summary) ? stripList(m.text) : m.text
+              const displayText = (m.clinics || hasQuickReplies || hasChips || m.booking_summary) ? stripList(m.text) : m.text
               return (
                 <div style={{ maxWidth: (m.clinics || m.booking_summary) ? '92%' : '76%', minWidth: 0 }}>
                   {displayText && (
@@ -568,6 +591,22 @@ export default function Chat({ donorId }) {
                       border: m.error ? '1px solid #fecaca' : 'none',
                     }}>
                       {m.role === 'user' ? displayText : <MarkdownText text={displayText} />}
+                    </div>
+                  )}
+                  {hasChips && (
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 7, marginTop: 10 }}>
+                      {chips.map((chip, ci) => (
+                        <button key={ci} onClick={() => send(chip)} style={{
+                          padding: '8px 16px', borderRadius: 20,
+                          border: '1.5px solid #e2e8f0', background: '#fff',
+                          fontSize: 12.5, color: '#0f172a', fontWeight: 600,
+                          cursor: 'pointer', transition: 'all 0.15s',
+                          boxShadow: '0 1px 4px rgba(0,0,0,0.07)',
+                        }}
+                          onMouseEnter={e => { e.currentTarget.style.background = '#fef2f2'; e.currentTarget.style.borderColor = '#fecaca'; e.currentTarget.style.color = '#c8102e' }}
+                          onMouseLeave={e => { e.currentTarget.style.background = '#fff'; e.currentTarget.style.borderColor = '#e2e8f0'; e.currentTarget.style.color = '#0f172a' }}
+                        >{chip}</button>
+                      ))}
                     </div>
                   )}
                   {hasQuickReplies && <QuickReplies items={quickReplies} onSend={send} />}
