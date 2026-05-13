@@ -21,9 +21,11 @@ logging.basicConfig(
 log = logging.getLogger(__name__)
 
 mcp = FastMCP("ubs-escreen")
-CLIENT_ID = os.getenv("ESCREEN_CLIENT_ACCOUNT", "DEMO_CLIENT")
-USE_MOCK = os.getenv("USE_MOCK", "true").lower() != "false"
-log.info("Server starting (CLIENT_ID=%s, use_mock=%s)", CLIENT_ID, USE_MOCK)
+CLIENT_ID         = os.getenv("ESCREEN_CLIENT_ACCOUNT", "DEMO_CLIENT")
+USE_MOCK_CLINICS  = os.getenv("USE_MOCK_CLINICS",  "true").lower()  != "false"
+USE_MOCK_ANALYTICS = os.getenv("USE_MOCK_ANALYTICS", "false").lower() != "false"
+log.info("Server starting (CLIENT_ID=%s, use_mock_clinics=%s, use_mock_analytics=%s)",
+         CLIENT_ID, USE_MOCK_CLINICS, USE_MOCK_ANALYTICS)
 
 
 # ── Clinic Booking Tools ──────────────────────────────────────────────────────
@@ -51,7 +53,7 @@ async def search_clinics(
         dot_certified_only=dot_certified_only,
         wheelchair_accessible=wheelchair_accessible,
         open_247=open_247,
-        use_mock=USE_MOCK,
+        use_mock=USE_MOCK_CLINICS,
     )
     log.info("search_clinics returned %d clinics", len(result))
     return result
@@ -85,7 +87,7 @@ async def get_results_summary(
     """Get completed drug test result counts grouped by disposition.
     date_range examples: 'last 30 days', 'last 90 days', 'last quarter', 'current year'."""
     log.info("get_results_summary(date_range=%s, disposition=%s)", date_range, disposition)
-    result = await handle_get_results_summary(CLIENT_ID, date_range, disposition, reason_for_test, specimen_type, regulation, use_mock=USE_MOCK)
+    result = await handle_get_results_summary(CLIENT_ID, date_range, disposition, reason_for_test, specimen_type, regulation, use_mock=USE_MOCK_ANALYTICS)
     log.info("get_results_summary → total=%s", result.get("total"))
     return result
 
@@ -98,7 +100,7 @@ async def get_pipeline_status(
 ) -> dict:
     """Get counts of drug tests currently in progress, grouped by pipeline stage."""
     log.info("get_pipeline_status(date_range=%s, status=%s)", date_range, status)
-    result = await handle_get_pipeline_status(CLIENT_ID, date_range, status, reason_for_test, use_mock=USE_MOCK)
+    result = await handle_get_pipeline_status(CLIENT_ID, date_range, status, reason_for_test, use_mock=USE_MOCK_ANALYTICS)
     log.info("get_pipeline_status → total_in_progress=%s", result.get("total_in_progress"))
     return result
 
@@ -108,10 +110,19 @@ async def get_analyte_breakdown(
     date_range: str,
     analyte_name: str | None = None,
     disposition: str | None = None,
+    group_by_month: bool = False,
 ) -> dict:
-    """Get per-substance positive/negative counts from analyte records."""
-    log.info("get_analyte_breakdown(date_range=%s, analyte=%s)", date_range, analyte_name)
-    result = await handle_get_analyte_breakdown(CLIENT_ID, date_range, analyte_name, disposition, use_mock=USE_MOCK)
+    """Get per-substance positive/negative counts from analyte records.
+
+    IMPORTANT — when the user asks for a monthly, month-by-month, month-on-month,
+    or trend breakdown, you MUST set group_by_month=true. Do NOT attempt to derive
+    monthly counts from the aggregated totals — that will produce wrong numbers.
+
+    When group_by_month=true the response includes a monthly_breakdown array with
+    fields: month (YYYY-MM), label (e.g. 'Dec 2025'), positive, negative, positive_rate_pct.
+    Use this array for the monthly figures, not the top-level analytes totals."""
+    log.info("get_analyte_breakdown(date_range=%s, analyte=%s, group_by_month=%s)", date_range, analyte_name, group_by_month)
+    result = await handle_get_analyte_breakdown(CLIENT_ID, date_range, analyte_name, disposition, group_by_month=group_by_month, use_mock=USE_MOCK_ANALYTICS)
     log.info("get_analyte_breakdown → %d analytes", len(result.get("analytes", [])))
     return result
 
@@ -125,7 +136,7 @@ async def get_turnaround_stats(
 ) -> dict:
     """Get average turnaround time statistics across all lifecycle stages."""
     log.info("get_turnaround_stats(date_range=%s)", date_range)
-    result = await handle_get_turnaround_stats(CLIENT_ID, date_range, reason_for_test, specimen_type, regulation, use_mock=USE_MOCK)
+    result = await handle_get_turnaround_stats(CLIENT_ID, date_range, reason_for_test, specimen_type, regulation, use_mock=USE_MOCK_ANALYTICS)
     log.info("get_turnaround_stats → avg_end_to_end=%s days", result.get("avg_end_to_end_days"))
     return result
 

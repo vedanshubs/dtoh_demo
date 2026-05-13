@@ -21,15 +21,15 @@ const IconBot = () => (
 const QUICK_QUERIES = [
   { label: 'Results Summary',   query: 'Show me a results summary for the last 30 days' },
   { label: 'Positive Rate',     query: 'What is the positive rate this quarter? How does it compare to the industry benchmark?' },
-  { label: 'Analyte Breakdown', query: 'Show analyte breakdown for the last 90 days for positive tests only' },
+  { label: 'Analyte Breakdown', query: 'Show analyte breakdown for the last 90 days' },
   { label: 'SLA Compliance',    query: 'What are the turnaround time statistics and SLA compliance for the current year?' },
   { label: 'Pipeline Status',   query: 'What is the current pipeline status? Any backlogs to be aware of?' },
 ]
 
 const EMPTY_SUGGESTIONS = [
-  'What is the positive rate this quarter vs the 4% industry benchmark?',
-  'Which cost center has the most tests currently in the pipeline?',
-  'How is SLA compliance trending — are we within the 5-day target?',
+  'Give me an overview of test results for Q1 2026',
+  'What does our current testing pipeline look like?',
+  'How are we doing on turnaround time and SLA compliance?',
 ]
 
 function boldNumbers(text) {
@@ -193,14 +193,17 @@ export default function AnalyticsChat() {
   const bottomRef  = useRef(null)
   const inputRef   = useRef(null)
   const abortRef   = useRef(null)
+  const sendingRef = useRef(false)
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages, loading])
 
   const send = async (text) => {
+    if (sendingRef.current) return
     const msg = (text ?? input).trim()
     if (!msg || loading) return
+    sendingRef.current = true
     setMessages(prev => [...prev, { role: 'user', text: msg }])
     setInput('')
     setLoading(true)
@@ -230,6 +233,7 @@ export default function AnalyticsChat() {
       }])
     } finally {
       setLoading(false)
+      sendingRef.current = false
       abortRef.current = null
       setTimeout(() => inputRef.current?.focus(), 50)
     }

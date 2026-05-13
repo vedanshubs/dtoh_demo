@@ -46,9 +46,9 @@ def mock_pipeline_status(client_id: str, date_range: str, **kwargs) -> dict:
     }
 
 
-def mock_analyte_breakdown(client_id: str, date_range: str, **kwargs) -> dict:
-    """Substance-level positive counts from UBS Q1 2026 DOT & non-DOT panels."""
-    return {
+def mock_analyte_breakdown(client_id: str, date_range: str, group_by_month: bool = False, **kwargs) -> dict:
+    """Substance-level positive counts from UBS DOT & non-DOT panels."""
+    base = {
         "client_id": client_id,
         "date_range": date_range,
         "total_positives": 20,
@@ -63,6 +63,16 @@ def mock_analyte_breakdown(client_id: str, date_range: str, **kwargs) -> dict:
             {"analyte": "Methamphetamines",           "positive": 0,  "negative": 312, "positive_rate_pct": 0.0},
         ],
     }
+    if group_by_month:
+        base["monthly_breakdown"] = [
+            {"month": "2025-12", "label": "Dec 2025", "positive": 1, "negative": 51, "positive_rate_pct": 1.9},
+            {"month": "2026-01", "label": "Jan 2026", "positive": 2, "negative": 49, "positive_rate_pct": 3.9},
+            {"month": "2026-02", "label": "Feb 2026", "positive": 1, "negative": 52, "positive_rate_pct": 1.9},
+            {"month": "2026-03", "label": "Mar 2026", "positive": 3, "negative": 48, "positive_rate_pct": 5.9},
+            {"month": "2026-04", "label": "Apr 2026", "positive": 2, "negative": 50, "positive_rate_pct": 3.8},
+            {"month": "2026-05", "label": "May 2026", "positive": 2, "negative": 51, "positive_rate_pct": 3.8},
+        ]
+    return base
 
 
 def mock_turnaround_stats(client_id: str, date_range: str, **kwargs) -> dict:

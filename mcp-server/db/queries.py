@@ -77,13 +77,22 @@ async def query_pipeline_status(client_id, date_range, status=None, reason_for_t
         conn.close()
 
 
-async def query_analyte_breakdown(client_id, date_range, analyte_name=None, disposition=None):
+_SUBSTANCE_DISP = {"positive": "Pos", "pos": "Pos", "negative": "Neg", "neg": "Neg"}
+
+
+async def query_analyte_breakdown(client_id, date_range, analyte_name=None, disposition=None, group_by_month=False):
+    # SubstanceResult uses short codes 'Pos'/'Neg' — normalize full-word values from LLM
+    if disposition:
+        disposition = _SUBSTANCE_DISP.get(disposition.lower(), disposition)
     start, end = parse_date_range(date_range)
-    log.info("query_analyte_breakdown: client_id=%s date=%s→%s analyte=%s disposition=%s",
-             client_id, start, end, analyte_name, disposition)
+    log.info("query_analyte_breakdown: client_id=%s date=%s→%s analyte=%s disposition=%s group_by_month=%s",
+             client_id, start, end, analyte_name, disposition, group_by_month)
     conn = get_connection()
     try:
         with conn.cursor() as cur:
+            result = {"client_id": client_id, "date_range": date_range}
+
+            # Aggregated analyte totals
             sql = """
                 SELECT
                     sr.AnalyteName AS analyte,
@@ -104,8 +113,41 @@ async def query_analyte_breakdown(client_id, date_range, analyte_name=None, disp
             log.debug("SQL: %s | params: %s", sql.strip(), params)
             cur.execute(sql, params)
             rows = cur.fetchall()
+            for r in rows:
+                total = (r["positive"] or 0) + (r["negative"] or 0)
+                r["positive_rate_pct"] = round(100.0 * r["positive"] / total, 1) if total else 0.0
+            result["analytes"] = rows
+            result["total_positives"] = sum(r["positive"] or 0 for r in rows)
+
+            if group_by_month:
+                month_sql = """
+                    SELECT
+                        DATE_FORMAT(tr.DateOfService, '%%Y-%%m') AS month,
+                        CAST(SUM(CASE WHEN sr.Disposition = 'Pos' THEN 1 ELSE 0 END) AS SIGNED) AS positive,
+                        CAST(SUM(CASE WHEN sr.Disposition = 'Neg' THEN 1 ELSE 0 END) AS SIGNED) AS negative
+                    FROM CollectionOrder  co
+                    JOIN TestReport       tr ON tr.CollectionOrderId = co.CollectionOrderId
+                    JOIN DrugReport       dr ON dr.TestReportId      = tr.TestReportId
+                    JOIN PanelResult      pr ON pr.DrugReportId      = dr.DrugReportId
+                    JOIN SubstanceResult  sr ON sr.PanelResultId     = pr.PanelResultId
+                    WHERE co.AccountNumber = %s
+                      AND tr.DateOfService BETWEEN %s AND %s
+                """
+                m_params = [client_id, start, end]
+                month_sql, m_params = _add_filter(month_sql, m_params, "sr.AnalyteName", analyte_name)
+                month_sql, m_params = _add_filter(month_sql, m_params, "sr.Disposition", disposition)
+                month_sql += " GROUP BY month ORDER BY month ASC"
+                cur.execute(month_sql, m_params)
+                monthly = cur.fetchall()
+                for r in monthly:
+                    total = (r["positive"] or 0) + (r["negative"] or 0)
+                    r["positive_rate_pct"] = round(100.0 * r["positive"] / total, 1) if total else 0.0
+                    from datetime import datetime
+                    r["label"] = datetime.strptime(r["month"], "%Y-%m").strftime("%b %Y")
+                result["monthly_breakdown"] = monthly
+
             log.info("query_analyte_breakdown: %d analyte rows returned", len(rows))
-            return {"client_id": client_id, "date_range": date_range, "analytes": rows}
+            return result
     finally:
         conn.close()
 
