@@ -12,6 +12,16 @@ def _add_filter(sql, params, col, val):
     return sql, params
 
 
+def _add_like_filter(sql, params, col, val):
+    """Substring (case-insensitive) match — use for free-text fields like
+    analyte names, where the LLM may pass a generic term ("Opiates") that
+    the DB stores in a more specific form ("Opiates (Codeine/Morphine)")."""
+    if val:
+        sql += f" AND {col} LIKE %s"
+        params.append(f"%{val}%")
+    return sql, params
+
+
 async def query_results_summary(client_id, date_range, disposition=None, reason_for_test=None, specimen_type=None, regulation=None):
     start, end = parse_date_range(date_range)
     log.info("query_results_summary: client_id=%s date=%s→%s disposition=%s reason=%s specimen=%s regulation=%s",
@@ -107,7 +117,7 @@ async def query_analyte_breakdown(client_id, date_range, analyte_name=None, disp
                   AND tr.DateOfService BETWEEN %s AND %s
             """
             params = [client_id, start, end]
-            sql, params = _add_filter(sql, params, "sr.AnalyteName", analyte_name)
+            sql, params = _add_like_filter(sql, params, "sr.AnalyteName", analyte_name)
             sql, params = _add_filter(sql, params, "sr.Disposition", disposition)
             sql += " GROUP BY sr.AnalyteName ORDER BY positive DESC"
             log.debug("SQL: %s | params: %s", sql.strip(), params)
@@ -134,7 +144,7 @@ async def query_analyte_breakdown(client_id, date_range, analyte_name=None, disp
                       AND tr.DateOfService BETWEEN %s AND %s
                 """
                 m_params = [client_id, start, end]
-                month_sql, m_params = _add_filter(month_sql, m_params, "sr.AnalyteName", analyte_name)
+                month_sql, m_params = _add_like_filter(month_sql, m_params, "sr.AnalyteName", analyte_name)
                 month_sql, m_params = _add_filter(month_sql, m_params, "sr.Disposition", disposition)
                 month_sql += " GROUP BY month ORDER BY month ASC"
                 cur.execute(month_sql, m_params)
