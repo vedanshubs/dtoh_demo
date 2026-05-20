@@ -1,5 +1,7 @@
 import { useState, useRef, useEffect } from 'react'
 import ChartRenderer from './ChartRenderer'
+import ViewRenderer from './ViewRenderer'
+import ErrorBoundary from './ErrorBoundary'
 
 const BotAvatar = () => (
   <div style={{
@@ -87,6 +89,47 @@ export default function Chat() {
   const bottomRef = useRef(null)
   const inputRef = useRef(null)
   const abortRef = useRef(null)
+  const streamIdRef = useRef(null)
+  const messageCounterRef = useRef(0)
+  const deltaBufRef = useRef('')
+  const rafRef = useRef(null)
+
+  // Chars per animation frame (~60fps). 3 chars/frame ≈ 180 cps — feels natural.
+  const CHARS_PER_FRAME = 3
+
+  const drainBuffer = () => {
+    if (!deltaBufRef.current) {
+      rafRef.current = null
+      return
+    }
+    const chunk = deltaBufRef.current.slice(0, CHARS_PER_FRAME)
+    deltaBufRef.current = deltaBufRef.current.slice(CHARS_PER_FRAME)
+    const id = streamIdRef.current
+    setMessages(prev => prev.map(m =>
+      m.id === id ? { ...m, streamText: (m.streamText || '') + chunk } : m
+    ))
+    rafRef.current = requestAnimationFrame(drainBuffer)
+  }
+
+  const queueDelta = (text) => {
+    deltaBufRef.current += text
+    if (rafRef.current == null) {
+      rafRef.current = requestAnimationFrame(drainBuffer)
+    }
+  }
+
+  const flushBuffer = () => {
+    if (rafRef.current != null) cancelAnimationFrame(rafRef.current)
+    rafRef.current = null
+    if (deltaBufRef.current) {
+      const remaining = deltaBufRef.current
+      deltaBufRef.current = ''
+      const id = streamIdRef.current
+      setMessages(prev => prev.map(m =>
+        m.id === id ? { ...m, streamText: (m.streamText || '') + remaining } : m
+      ))
+    }
+  }
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -105,26 +148,90 @@ export default function Chat() {
     const controller = new AbortController()
     abortRef.current = controller
 
-    setMessages(prev => [...prev, { role: 'user', text: msg }])
+    // Stable id for this turn — used everywhere instead of array index
+    const turnId = ++messageCounterRef.current
+    streamIdRef.current = turnId
+
+    setMessages(prev => [
+      ...prev,
+      { id: `u-${turnId}`, role: 'user', text: msg },
+      { id: turnId, role: 'assistant', streaming: true, streamText: '', toolCalls: [] },
+    ])
     setInput('')
     setLoading(true)
 
     try {
-      const res = await fetch('/api/chat', {
+      const res = await fetch('/api/chat/stream', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ messages: history, user_message: msg }),
         signal: controller.signal,
       })
-      const data = await res.json()
-      setHistory(data.messages)
-      setMessages(prev => [...prev, { role: 'assistant', reply: data.reply, tool_calls: data.tool_calls || [] }])
+
+      const reader = res.body.getReader()
+      const decoder = new TextDecoder()
+      let buf = ''
+
+      while (true) {
+        const { done, value } = await reader.read()
+        if (done) break
+
+        buf += decoder.decode(value, { stream: true })
+        const parts = buf.split('\n\n')
+        buf = parts.pop()
+
+        for (const part of parts) {
+          if (!part.startsWith('data: ')) continue
+          let evt
+          try { evt = JSON.parse(part.slice(6)) } catch { continue }
+
+          if (evt.event === 'tool_call') {
+            setMessages(prev => prev.map(m =>
+              m.id === turnId
+                ? { ...m, toolCalls: [...(m.toolCalls || []), evt.data] }
+                : m
+            ))
+          }
+
+          if (evt.event === 'delta') {
+            queueDelta(evt.data.text)
+          }
+
+          if (evt.event === 'done') {
+            flushBuffer()
+            const { reply, tool_calls, messages: newHistory } = evt.data
+            setHistory(newHistory || [])
+            setMessages(prev => prev.map(m =>
+              m.id === turnId
+                ? { id: turnId, role: 'assistant', reply, tool_calls: tool_calls || [] }
+                : m
+            ))
+          }
+
+          if (evt.event === 'error') {
+            setMessages(prev => prev.map(m =>
+              m.id === turnId
+                ? { id: turnId, role: 'assistant', reply: { summary: evt.data.message || 'Something went wrong.', error: true } }
+                : m
+            ))
+          }
+        }
+      }
     } catch (err) {
-      if (err.name === 'AbortError') return
-      setMessages(prev => [...prev, {
-        role: 'assistant',
-        reply: { summary: 'Something went wrong. Please try again.', error: true },
-      }])
+      flushBuffer()
+      if (err.name === 'AbortError') {
+        setMessages(prev => prev.map(m =>
+          m.id === turnId && m.streaming
+            ? { id: turnId, role: 'assistant', reply: { summary: m.streamText || 'Stopped.', view: null, suggestions: [] }, tool_calls: m.toolCalls || [] }
+            : m
+        ))
+        return
+      }
+      setMessages(prev => prev.map(m =>
+        m.id === turnId
+          ? { id: turnId, role: 'assistant', reply: { summary: 'Something went wrong. Please try again.', error: true } }
+          : m
+      ))
     } finally {
       abortRef.current = null
       setLoading(false)
@@ -224,7 +331,7 @@ export default function Chat() {
 
         {messages.map((m, i) => (
           <div
-            key={i}
+            key={m.id ?? `legacy-${i}`}
             style={{
               display: 'flex',
               justifyContent: m.role === 'user' ? 'flex-end' : 'flex-start',
@@ -255,20 +362,46 @@ export default function Chat() {
                 <span style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>{m.text}</span>
               ) : (
                 <div style={{ padding: '14px 16px' }}>
-                  {m.reply?.summary && (
+                  {/* ── Streaming in-progress state ── */}
+                  {m.streaming && (
+                    <>
+                      {m.toolCalls?.length > 0 && <McpTrace calls={m.toolCalls} />}
+                      {m.streamText ? (
+                        <p style={{ fontSize: 14.5, lineHeight: 1.7, color: '#1e293b', margin: '10px 0 0' }}>
+                          <span dangerouslySetInnerHTML={boldNumbers(m.streamText)} />
+                          <span style={{
+                            display: 'inline-block', width: 2, height: '1em',
+                            background: '#c8102e', marginLeft: 2, verticalAlign: 'text-bottom',
+                            animation: 'blink 1s step-end infinite',
+                          }} />
+                          <style>{`@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }`}</style>
+                        </p>
+                      ) : (
+                        <TypingIndicator />
+                      )}
+                    </>
+                  )}
+                  {/* ── Completed state ── */}
+                  {!m.streaming && m.reply?.summary && (
                     <p
                       dangerouslySetInnerHTML={boldNumbers(m.reply.summary)}
                       style={{
                         fontSize: 14.5, lineHeight: 1.7, color: '#1e293b',
                         fontWeight: 400,
-                        margin: m.reply?.visualization ? '0 0 14px' : '0',
+                        margin: m.reply?.view ? '0 0 14px' : '0',
                       }}
                     />
                   )}
-                  {m.reply?.visualization && m.reply?.data && (
-                    <ChartRenderer visualization={m.reply.visualization} data={m.reply.data} />
-                  )}
-                  <McpTrace calls={m.tool_calls} />
+                  {!m.streaming && (m.reply?.view ? (
+                    <ErrorBoundary label="chart view">
+                      <ViewRenderer view={m.reply.view} />
+                    </ErrorBoundary>
+                  ) : m.reply?.visualization && m.reply?.data ? (
+                    <ErrorBoundary label="legacy chart">
+                      <ChartRenderer visualization={m.reply.visualization} data={m.reply.data} />
+                    </ErrorBoundary>
+                  ) : null)}
+                  {!m.streaming && <McpTrace calls={m.tool_calls} />}
                   {i === messages.length - 1 && !loading && m.reply?.suggestions?.length > 0 && (
                     <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginTop: m.tool_calls?.length ? 14 : 14 }}>
                       <div style={{ width: '100%', fontSize: 10.5, fontWeight: 600, color: '#94a3b8', letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: 4 }}>
@@ -303,7 +436,8 @@ export default function Chat() {
           </div>
         ))}
 
-        {loading && (
+        {/* Loading only shown before the streaming placeholder message appears */}
+        {loading && !messages.some(m => m.streaming) && (
           <div style={{ display: 'flex', alignItems: 'flex-end', gap: 8, marginBottom: 16 }}>
             <BotAvatar />
             <div style={{

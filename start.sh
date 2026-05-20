@@ -10,13 +10,13 @@ echo "================================================"
 echo ""
 
 # --- Kill any stale processes on our ports ---
-for port in 8005 8006 8010; do
+for port in 8005 8006 8010 5173 5174; do
     pids=$(lsof -ti :$port 2>/dev/null || true)
     [ -n "$pids" ] && kill -9 $pids 2>/dev/null && echo "      Cleared stale process on port $port" || true
 done
 
 # --- MySQL Docker container ---
-echo "[1/5] Ensuring MySQL container is running..."
+echo "[1/6] Ensuring MySQL container is running..."
 if ! sudo docker ps --format "{{.Names}}" | grep -q "^escreen-db$"; then
     sudo docker start escreen-db
     echo "      Started escreen-db. Waiting 5s for MySQL to be ready..."
@@ -26,7 +26,7 @@ else
 fi
 
 # --- MCP Server ---
-echo "[2/5] Starting MCP server (port 8010)..."
+echo "[2/6] Starting MCP server (port 8010)..."
 cd "$ROOT/mcp-server"
 source .venv/bin/activate
 PYTHONPATH=. python3 server_http.py &
@@ -34,7 +34,7 @@ MCP_PID=$!
 deactivate 2>/dev/null || true
 
 # --- Clinic Booking API ---
-echo "[3/5] Starting Clinic-Booking API server (port 8005)..."
+echo "[3/6] Starting Clinic-Booking API server (port 8005)..."
 cd "$ROOT/clinic-booking/api-server"
 if [ -d ".venv" ]; then
     source .venv/bin/activate
@@ -60,13 +60,13 @@ for i in $(seq 1 20); do
 done
 
 # --- Clinic Booking Frontend ---
-echo "[4/5] Starting Unified Frontend (port 5173)..."
+echo "[4/6] Starting Unified Frontend (port 5173)..."
 cd "$ROOT/clinic-booking/frontend"
 npm run dev &
 CLINIC_FE_PID=$!
 
 # --- Data-Viz API ---
-echo "[5/5] Starting Data-Viz API server (port 8006)..."
+echo "[5/6] Starting Data-Viz API server (port 8006)..."
 cd "$ROOT/data-viz/api-server"
 if [ -d ".venv" ]; then
     source .venv/bin/activate
@@ -91,6 +91,12 @@ for i in $(seq 1 20); do
     sleep 1
 done
 
+# --- Data-Viz Frontend ---
+echo "[6/6] Starting Data-Viz Frontend (port 5174)..."
+cd "$ROOT/data-viz/frontend"
+npm run dev &
+DATAVIZ_FE_PID=$!
+
 echo ""
 echo "================================================"
 echo "  Services started:"
@@ -98,11 +104,12 @@ echo "  MySQL DB              -> localhost:3306"
 echo "  MCP Server            -> http://localhost:8010"
 echo "  Clinic Booking API    -> http://localhost:8005"
 echo "  Data-Viz API          -> http://localhost:8006"
-echo "  Unified UI            -> http://localhost:5173"
+echo "  Clinic Booking UI     -> http://localhost:5173"
+echo "  Data-Viz UI           -> http://localhost:5174"
 echo "================================================"
 echo ""
 echo "Press Ctrl+C to stop all services."
 
-trap "echo 'Stopping...'; kill $MCP_PID $CLINIC_API_PID $CLINIC_FE_PID $DATAVIZ_API_PID 2>/dev/null; exit 0" INT TERM
+trap "echo 'Stopping...'; kill $MCP_PID $CLINIC_API_PID $CLINIC_FE_PID $DATAVIZ_API_PID $DATAVIZ_FE_PID 2>/dev/null; exit 0" INT TERM
 
 wait
