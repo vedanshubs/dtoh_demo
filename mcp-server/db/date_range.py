@@ -25,11 +25,22 @@ def parse_date_range(date_range: str) -> tuple[str, str]:
         yesterday = today - timedelta(days=1)
         return yesterday.isoformat(), yesterday.isoformat()
 
-    # last N / past N days / weeks / months
-    m = re.match(r'(?:last|past)\s+(\d+)\s*(day|days|week|weeks|month|months)', dr)
+    # all time
+    if re.search(r'\ball\s+time\b|\ball\s+data\b|\beverything\b', dr):
+        return date(2000, 1, 1).isoformat(), today.isoformat()
+
+    # last N / past N days / weeks / months / years
+    m = re.match(r'(?:last|past)\s+(\d+)\s*(day|days|week|weeks|month|months|year|years)', dr)
     if m:
         n, unit = int(m.group(1)), m.group(2)
-        days = n * 30 if 'month' in unit else n * 7 if 'week' in unit else n
+        if 'year' in unit:
+            days = n * 365
+        elif 'month' in unit:
+            days = n * 30
+        elif 'week' in unit:
+            days = n * 7
+        else:
+            days = n
         return (today - timedelta(days=days)).isoformat(), today.isoformat()
 
     # last week / past week / previous week (Mon–Sun of previous calendar week)

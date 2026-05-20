@@ -1,10 +1,12 @@
+import json
 import logging
 import os
 import pymysql
 import pymysql.cursors
 from contextlib import asynccontextmanager
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 from dotenv import load_dotenv
 
@@ -17,6 +19,8 @@ log = logging.getLogger(__name__)
 
 from transport.client import MCPClientManager
 from claude.conversation import run_turn
+from claude.stream import run_turn_stream
+from claude.booking_state import get_session, reset_session, State
 from claude.prompts.system_prompt import build_system_prompt
 from claude.analytics_conversation import run_analytics_turn
 from claude.prompts.analytics_prompt import build_analytics_prompt
@@ -38,19 +42,25 @@ def _get_db():
     )
 
 
-# Full mock donor profiles (used when DB is unavailable) — includes SSN/DOB for profile card
-_MOCK_DONORS_FULL = [
-    {"id": 1,  "first_name": "James",   "last_name": "Hartley",  "ssn": "312445678", "dob": "1988-04-12", "day_phone": "2125550101", "email": "james.hartley@example.com",  "address1": "245 Park Ave, Apt 12B",     "city": "New York",     "state": "NY", "zip": "10017", "other_id": "DL-NY-8812345",  "other_id_type": "D", "role": "Analyst"},
-    {"id": 2,  "first_name": "Sofia",   "last_name": "Morales",  "ssn": "423556789", "dob": "1992-09-23", "day_phone": "2015550202", "email": "sofia.morales@example.com",  "address1": "88 Hudson St, Apt 3",       "city": "Jersey City",  "state": "NJ", "zip": "07302", "other_id": "PP-US-23456789", "other_id_type": "P", "role": "Associate"},
-    {"id": 3,  "first_name": "Marcus",  "last_name": "Webb",     "ssn": "534667890", "dob": "1985-11-07", "day_phone": "2015550303", "email": "marcus.webb@example.com",    "address1": "300 Hackensack Ave, Apt 5", "city": "Kearny",       "state": "NJ", "zip": "07032", "other_id": "DL-NJ-5534567",  "other_id_type": "D", "role": "Manager"},
-    {"id": 4,  "first_name": "Priya",   "last_name": "Nair",     "ssn": "645778901", "dob": "1995-02-14", "day_phone": "2125550404", "email": "priya.nair@example.com",     "address1": "140 W 57th St, Apt 6A",     "city": "New York",     "state": "NY", "zip": "10019", "other_id": "EMP-UBS-00412",  "other_id_type": "E", "role": "VP"},
-    {"id": 5,  "first_name": "Daniel",  "last_name": "Okoye",    "ssn": "756889012", "dob": "1990-06-30", "day_phone": "2015550505", "email": "daniel.okoye@example.com",   "address1": "800 Boulevard East, Apt 2", "city": "Weehawken",    "state": "NJ", "zip": "07086", "other_id": "DL-NJ-7756789",  "other_id_type": "D", "role": "Analyst"},
-    {"id": 6,  "first_name": "Rachel",  "last_name": "Kim",      "ssn": "867990123", "dob": "1993-08-18", "day_phone": "2125550606", "email": "rachel.kim@example.com",     "address1": "211 E 53rd St, Apt 4D",     "city": "New York",     "state": "NY", "zip": "10022", "other_id": "PP-US-34567890", "other_id_type": "P", "role": "Associate"},
-    {"id": 7,  "first_name": "Tom",     "last_name": "Bruckner", "ssn": "978001234", "dob": "1983-03-22", "day_phone": "9145550707", "email": "tom.bruckner@example.com",   "address1": "1 Mamaroneck Ave, Apt 8B",  "city": "White Plains", "state": "NY", "zip": "10601", "other_id": "DL-NY-9978012",  "other_id_type": "D", "role": "Director"},
-    {"id": 8,  "first_name": "Amara",   "last_name": "Diallo",   "ssn": "189112345", "dob": "1997-12-05", "day_phone": "2125550808", "email": "amara.diallo@example.com",   "address1": "75 Varick St, Fl 3",        "city": "New York",     "state": "NY", "zip": "10013", "other_id": "EMP-UBS-00837",  "other_id_type": "E", "role": "Analyst"},
-    {"id": 9,  "first_name": "Wei",     "last_name": "Zhang",    "ssn": "290223456", "dob": "1989-07-16", "day_phone": "2015550909", "email": "wei.zhang@example.com",      "address1": "700 Park Ave, Apt 12",      "city": "Hoboken",      "state": "NJ", "zip": "07030", "other_id": "DL-NJ-2290234",  "other_id_type": "D", "role": "Associate"},
-    {"id": 10, "first_name": "Natasha", "last_name": "Petrov",   "ssn": "301334567", "dob": "1991-04-29", "day_phone": "9145551010", "email": "natasha.petrov@example.com", "address1": "515 North Ave, Apt 5C",     "city": "New Rochelle", "state": "NY", "zip": "10801", "other_id": "PP-US-45678901", "other_id_type": "P", "role": "Manager"},
-]
+# Donor fixtures — loaded from JSON file rather than inlined (used when DB is unavailable).
+# Full profile includes SSN/DOB/email for the profile card; redacted view is used for LLM context.
+_FIXTURE_PATH = os.path.join(os.path.dirname(__file__), "fixtures", "donors.json")
+try:
+    with open(_FIXTURE_PATH, "r") as _f:
+        _MOCK_DONORS_FULL = __import__("json").load(_f)
+    log.info("Loaded %d donor fixtures from %s", len(_MOCK_DONORS_FULL), _FIXTURE_PATH)
+except FileNotFoundError:
+    log.error("Donor fixtures missing at %s", _FIXTURE_PATH)
+    _MOCK_DONORS_FULL = []
+
+
+# PII fields that must never reach the LLM context.
+_PII_FIELDS = {"ssn", "dob", "day_phone", "email", "other_id", "other_id_type"}
+
+
+def redact_donor_for_llm(donor: dict) -> dict:
+    """Return a copy of the donor profile with PII stripped — for system prompt use only."""
+    return {k: v for k, v in donor.items() if k not in _PII_FIELDS}
 
 def _load_donors():
     """Returns lightweight donor list (no SSN) for candidate selector."""
@@ -149,12 +159,23 @@ def _ensure_bookings_table():
                     clinic          VARCHAR(256),
                     address         VARCHAR(256),
                     zip             VARCHAR(16),
+                    transcript      MEDIUMTEXT,
+                    fingerprint     VARCHAR(64),
                     booked_at       DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP
                 )
             """)
+            # Additive migration for existing tables — no destructive changes.
+            for col_sql in (
+                "ALTER TABLE bookings ADD COLUMN transcript MEDIUMTEXT",
+                "ALTER TABLE bookings ADD COLUMN fingerprint VARCHAR(64)",
+            ):
+                try:
+                    cur.execute(col_sql)
+                except Exception:
+                    pass  # column already exists
         conn.commit()
         conn.close()
-        log.info("bookings table ready")
+        log.info("bookings table ready (with transcript + fingerprint audit columns)")
     except Exception as e:
         log.warning("Could not ensure bookings table: %s", e)
 
@@ -211,10 +232,44 @@ async def chat(req: ChatRequest):
         donor = next((d for d in donors if d["id"] == req.donor_id), donors[0])
     log.info("Chat request | donor=%s %s | message=%r", donor["first_name"], donor["last_name"], req.user_message[:80])
     test_types = _load_test_types()
-    system_prompt = build_system_prompt(donor, test_types)
+    system_prompt = build_system_prompt(redact_donor_for_llm(donor), test_types)
     messages = list(req.messages) + [{"role": "user", "content": req.user_message}]
     result = await run_turn(messages, system_prompt, req.donor_id, mcp_manager, existing_clinics=req.clinics)
     return result
+
+
+@app.post("/api/chat/stream")
+async def chat_stream(req: ChatRequest, request: Request):
+    """Streaming SSE endpoint — primary path for the UI."""
+    donor = _load_donor_full(req.donor_id)
+    if not donor:
+        donors = _load_donors()
+        donor = next((d for d in donors if d["id"] == req.donor_id), donors[0])
+    log.info("Chat (stream) | donor=%s %s | message=%r", donor["first_name"], donor["last_name"], req.user_message[:80])
+    test_types = _load_test_types()
+    system_prompt = build_system_prompt(redact_donor_for_llm(donor), test_types)
+    messages = list(req.messages) + [{"role": "user", "content": req.user_message}]
+
+    async def event_generator():
+        try:
+            async for event in run_turn_stream(messages, system_prompt, req.donor_id, mcp_manager, existing_clinics=req.clinics):
+                if await request.is_disconnected():
+                    log.info("Client disconnected — stopping stream")
+                    break
+                yield f"data: {json.dumps(event)}\n\n"
+        except Exception as exc:
+            log.error("Stream error: %s", exc, exc_info=True)
+            yield f"data: {json.dumps({'event': 'error', 'data': {'message': str(exc)}})}\n\n"
+
+    return StreamingResponse(
+        event_generator(),
+        media_type="text/event-stream",
+        headers={
+            "Cache-Control": "no-cache",
+            "X-Accel-Buffering": "no",
+            "Connection": "keep-alive",
+        },
+    )
 
 
 class AnalyticsChatRequest(BaseModel):
@@ -231,6 +286,71 @@ async def analytics_chat(req: AnalyticsChatRequest):
     return result
 
 
+class ConfirmBookingRequest(BaseModel):
+    donor_id: int
+    fingerprint: str   # idempotency token returned in the chat response
+
+
+@app.post("/api/bookings/confirm")
+async def confirm_booking(req: ConfirmBookingRequest):
+    """
+    Deterministic confirmation endpoint. The UI calls this when the user clicks
+    Confirm. The LLM does NOT call place_order — only this endpoint does, and
+    only when the per-donor state machine is in AWAITING_CONFIRMATION with a
+    matching fingerprint.
+    """
+    from fastapi import HTTPException
+
+    session = get_session(req.donor_id)
+    ok, reason = session.can_place_order(req.fingerprint)
+    if not ok:
+        log.warning("[confirm] rejected donor=%d: %s", req.donor_id, reason)
+        raise HTTPException(status_code=409, detail=f"Cannot confirm: {reason}")
+
+    booking = dict(session.proposed or {})
+    log.info("[confirm] placing order for donor=%d fingerprint=%s", req.donor_id, req.fingerprint)
+
+    # Map the proposed booking to place_order arguments.
+    # MCP tool requires: clinic_id (int), donor_id, service_identifier, reason_for_test
+    try:
+        clinic_id_val = int(booking.get("site_id", 0))
+    except (TypeError, ValueError):
+        clinic_id_val = 0
+    args = {
+        "donor_id":           req.donor_id,
+        "clinic_id":          clinic_id_val,
+        "service_identifier": booking.get("service_identifier", ""),
+        "reason_for_test":    booking.get("reason", ""),
+    }
+    try:
+        result = await mcp_manager.call_tool("place_order", args)
+    except Exception as e:
+        log.error("[confirm] place_order MCP call failed: %s", e)
+        raise HTTPException(status_code=502, detail=f"place_order failed: {e}")
+
+    if not isinstance(result, dict):
+        raise HTTPException(status_code=502, detail="place_order returned malformed payload")
+
+    reg_id = result.get("registration_id") or result.get("registrationId") or ""
+    if not reg_id:
+        raise HTTPException(status_code=502, detail="place_order returned no registration_id")
+
+    session.mark_confirmed(reg_id)
+
+    return {
+        "registration_id":    reg_id,
+        "scheduled_time":     result.get("scheduled_time", ""),
+        "appointment_window": result.get("appointment_window", ""),
+        "state":              session.state.value,
+    }
+
+
+@app.post("/api/bookings/reset")
+async def reset_booking_session(donor_id: int):
+    reset_session(donor_id)
+    return {"ok": True, "state": State.IDLE.value}
+
+
 class BookingAuditRequest(BaseModel):
     donor_id:        int | None = None
     registrationId:  str
@@ -241,6 +361,8 @@ class BookingAuditRequest(BaseModel):
     clinic:          str | None = None
     address:         str | None = None
     zip:             str | None = None
+    transcript:      list[dict] | None = None  # full message history at time of booking
+    fingerprint:     str | None = None         # idempotency token used at confirm
 
 
 @app.post("/api/bookings")
@@ -250,14 +372,18 @@ async def record_booking(req: BookingAuditRequest):
         with conn.cursor() as cur:
             cur.execute(
                 """INSERT INTO bookings
-                   (registration_id, donor_id, candidate, test_type, reason, preferred_date, clinic, address, zip)
-                   VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)""",
+                   (registration_id, donor_id, candidate, test_type, reason, preferred_date,
+                    clinic, address, zip, transcript, fingerprint)
+                   VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)""",
                 (req.registrationId, req.donor_id, req.candidate, req.testType,
-                 req.reason, req.preferredDate, req.clinic, req.address, req.zip),
+                 req.reason, req.preferredDate, req.clinic, req.address, req.zip,
+                 json.dumps(req.transcript) if req.transcript else None,
+                 req.fingerprint),
             )
         conn.commit()
         conn.close()
-        log.info("Booking audit saved: %s", req.registrationId)
+        log.info("Booking audit saved: %s (transcript: %d msgs)",
+                 req.registrationId, len(req.transcript or []))
     except Exception as e:
         log.warning("Failed to save booking audit: %s", e)
     return {"ok": True}

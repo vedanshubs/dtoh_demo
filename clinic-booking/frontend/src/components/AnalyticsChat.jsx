@@ -152,6 +152,24 @@ function AnalyticsMessage({ msg, onSuggestionClick }) {
         {/* MCP tool trace */}
         <McpTrace calls={toolCalls} />
 
+        {/* Token usage */}
+        {msg.usage && (
+          <div style={{ marginTop: 8, display: 'flex', gap: 6 }}>
+            <span style={{
+              display: 'inline-flex', alignItems: 'center', gap: 4,
+              background: '#f1f5f9', border: '1px solid #e2e8f0',
+              borderRadius: 20, padding: '2px 9px',
+              fontSize: 10.5, color: '#64748b', fontWeight: 500,
+            }}>
+              🔢 {msg.usage.total_tokens.toLocaleString()} tokens
+              <span style={{ color: '#94a3b8' }}>·</span>
+              <span style={{ color: '#10b981' }}>↑{msg.usage.prompt_tokens.toLocaleString()}</span>
+              <span style={{ color: '#94a3b8' }}>·</span>
+              <span style={{ color: '#6366f1' }}>↓{msg.usage.completion_tokens.toLocaleString()}</span>
+            </span>
+          </div>
+        )}
+
         {/* Suggestion chips */}
         {suggestions.length > 0 && (
           <div style={{ marginTop: toolCalls.length ? 12 : 0 }}>
@@ -223,7 +241,7 @@ export default function AnalyticsChat() {
       setHistory(data.messages)
       const reply = data.reply
       const summaryText = typeof reply === 'object' ? (reply.summary || JSON.stringify(reply)) : reply
-      setMessages(prev => [...prev, { role: 'assistant', text: summaryText, reply, tool_calls: data.tool_calls || [] }])
+      setMessages(prev => [...prev, { role: 'assistant', text: summaryText, reply, tool_calls: data.tool_calls || [], usage: data.usage || null }])
     } catch (err) {
       if (err.name === 'AbortError') return
       setMessages(prev => [...prev, {

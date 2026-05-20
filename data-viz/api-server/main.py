@@ -18,7 +18,7 @@ log = logging.getLogger(__name__)
 from transport.client import MCPClientManager
 from ai.conversation import run_turn
 from ai.stream import run_turn_stream
-from ai.prompts.system_prompt import build_system_prompt
+from ai.prompts.system_prompt import build_system_prompt, build_tool_selection_prompt
 from rest_actions import register_action_routes
 
 load_dotenv()
@@ -68,11 +68,12 @@ async def chat_stream(req: ChatRequest, request: Request):
     """Streaming SSE endpoint — primary path for the UI."""
     log.info("Chat request (stream)  | client=%s | message=%r", CLIENT_ID, req.user_message[:80])
     system_prompt = build_system_prompt(CLIENT_ID)
+    tool_selection_prompt = build_tool_selection_prompt(CLIENT_ID)
     messages = list(req.messages) + [{"role": "user", "content": req.user_message}]
 
     async def event_generator():
         try:
-            async for event in run_turn_stream(messages, system_prompt, mcp_manager):
+            async for event in run_turn_stream(messages, system_prompt, tool_selection_prompt, mcp_manager):
                 if await request.is_disconnected():
                     log.info("Client disconnected — stopping stream")
                     break

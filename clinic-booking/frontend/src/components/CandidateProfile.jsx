@@ -28,9 +28,9 @@ function formatDOB(dob) {
 
 function ProfileRow({ label, value, action }) {
   return (
-    <div style={{ display: 'flex', gap: 8, padding: '5px 0', borderBottom: '1px solid #f1f5f9', alignItems: 'center' }}>
-      <span style={{ width: 120, flexShrink: 0, fontSize: 11, fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{label}</span>
-      <span style={{ fontSize: 13, color: '#0f172a', flex: 1 }}>{value}</span>
+    <div style={{ display: 'flex', gap: 10, padding: '8px 0', borderBottom: '1px solid #f1f5f9', alignItems: 'center' }}>
+      <span style={{ width: 130, flexShrink: 0, fontSize: 11.5, fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.06em' }}>{label}</span>
+      <span style={{ fontSize: 14, color: '#0f172a', flex: 1, fontWeight: 500 }}>{value}</span>
       {action}
     </div>
   )
@@ -88,18 +88,18 @@ export default function CandidateProfile({ donorId, onBeginBooking }) {
             {donor.first_name[0]}{donor.last_name[0]}
           </div>
           <div>
-            <div style={{ fontSize: 15, fontWeight: 700, color: '#0f172a', lineHeight: 1.2 }}>
+            <div style={{ fontSize: 17, fontWeight: 700, color: '#0f172a', lineHeight: 1.2, letterSpacing: '-0.01em' }}>
               {donor.first_name} {donor.last_name}
             </div>
-            <div style={{ fontSize: 11, color: '#64748b', marginTop: 2 }}>
+            <div style={{ fontSize: 12.5, color: '#64748b', marginTop: 3 }}>
               Candidate #{donor.id} · {donor.role || 'Employee'} · {donor.city}, {donor.state}
             </div>
           </div>
         </div>
         <div style={{
-          fontSize: 10, fontWeight: 700, letterSpacing: '0.08em',
+          fontSize: 11, fontWeight: 700, letterSpacing: '0.08em',
           color: '#065f46', background: '#dcfce7', border: '1px solid #86efac',
-          borderRadius: 20, padding: '3px 10px', textTransform: 'uppercase',
+          borderRadius: 20, padding: '4px 12px', textTransform: 'uppercase',
         }}>Active</div>
       </div>
 
@@ -129,13 +129,13 @@ export default function CandidateProfile({ donorId, onBeginBooking }) {
         <button
           onClick={onBeginBooking}
           style={{
-            display: 'inline-flex', alignItems: 'center', gap: 7,
-            padding: '8px 20px', borderRadius: 8,
+            display: 'inline-flex', alignItems: 'center', gap: 8,
+            padding: '11px 24px', borderRadius: 10,
             background: 'linear-gradient(135deg, #c8102e, #9b0f23)',
-            color: '#fff', fontSize: 13, fontWeight: 600,
+            color: '#fff', fontSize: 14.5, fontWeight: 700,
             border: 'none', cursor: 'pointer',
-            boxShadow: '0 2px 8px rgba(200,16,46,0.3)',
-            transition: 'opacity 0.15s',
+            boxShadow: '0 3px 12px rgba(200,16,46,0.32)',
+            transition: 'opacity 0.15s, transform 0.15s',
           }}
           onMouseEnter={e => e.currentTarget.style.opacity = '0.88'}
           onMouseLeave={e => e.currentTarget.style.opacity = '1'}

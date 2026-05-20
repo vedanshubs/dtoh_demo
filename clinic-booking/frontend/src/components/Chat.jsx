@@ -5,6 +5,7 @@ import BookingSummary from './BookingSummary'
 import BookingPassport from './BookingPassport'
 import McpActivityPanel from './McpActivityPanel'
 import InlineDatePicker from './InlineDatePicker'
+import { safeParseActions, findAction } from '../lib/actionSchema'
 
 /* Markdown helpers */
 function renderInline(text) {
@@ -64,20 +65,21 @@ function parseQuickReplies(text) {
 
 function QuickReplies({ items, onSend }) {
   return (
-    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 7, marginTop: 10 }}>
+    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginTop: 12 }}>
       {items.map((item, i) => (
         <button
           key={i}
           onClick={() => onSend(item)}
           style={{
-            padding: '8px 16px', borderRadius: 20,
+            padding: '10px 18px', borderRadius: 22,
             border: '1.5px solid #e2e8f0', background: '#fff',
-            fontSize: 12.5, color: '#0f172a', fontWeight: 600,
+            fontSize: 14, color: '#0f172a', fontWeight: 600,
             cursor: 'pointer', transition: 'all 0.15s',
             boxShadow: '0 1px 4px rgba(0,0,0,0.07)',
+            letterSpacing: '0.005em',
           }}
-          onMouseEnter={e => { e.currentTarget.style.background = '#fef2f2'; e.currentTarget.style.borderColor = '#fecaca'; e.currentTarget.style.color = '#c8102e' }}
-          onMouseLeave={e => { e.currentTarget.style.background = '#fff'; e.currentTarget.style.borderColor = '#e2e8f0'; e.currentTarget.style.color = '#0f172a' }}
+          onMouseEnter={e => { e.currentTarget.style.background = '#fef2f2'; e.currentTarget.style.borderColor = '#fecaca'; e.currentTarget.style.color = '#c8102e'; e.currentTarget.style.transform = 'translateY(-1px)' }}
+          onMouseLeave={e => { e.currentTarget.style.background = '#fff'; e.currentTarget.style.borderColor = '#e2e8f0'; e.currentTarget.style.color = '#0f172a'; e.currentTarget.style.transform = 'translateY(0)' }}
         >{item}</button>
       ))}
     </div>
@@ -390,6 +392,8 @@ export default function Chat({ donorId, donorName }) {
   const [passportOpen,      setPassportOpen]      = useState(false)
   const [mcpCalls,          setMcpCalls]          = useState([])
   const [pendingClinic,     setPendingClinic]     = useState(null)   // clinic awaiting date selection
+  const [lastFingerprint,   setLastFingerprint]   = useState(null)   // idempotency token for /api/bookings/confirm
+  const [bookingState,      setBookingState]      = useState('idle') // mirrors server state machine
 
   // Session memory cleared on donor change
   const [session, setSession] = useState({
@@ -400,6 +404,40 @@ export default function Chat({ donorId, donorName }) {
   const bottomRef = useRef(null)
   const inputRef  = useRef(null)
   const lastActivityRef      = useRef(Date.now())
+  // ── Streaming refs ──
+  const abortRef        = useRef(null)
+  const streamIdRef     = useRef(null)
+  const messageCounterRef = useRef(0)
+  const deltaBufRef     = useRef('')
+  const rafRef          = useRef(null)
+  const CHARS_PER_FRAME = 3
+
+  const drainBuffer = () => {
+    if (!deltaBufRef.current) { rafRef.current = null; return }
+    const chunk = deltaBufRef.current.slice(0, CHARS_PER_FRAME)
+    deltaBufRef.current = deltaBufRef.current.slice(CHARS_PER_FRAME)
+    const id = streamIdRef.current
+    setMessages(prev => prev.map(m =>
+      m.id === id ? { ...m, streamText: (m.streamText || '') + chunk } : m
+    ))
+    rafRef.current = requestAnimationFrame(drainBuffer)
+  }
+  const queueDelta = (text) => {
+    deltaBufRef.current += text
+    if (rafRef.current == null) rafRef.current = requestAnimationFrame(drainBuffer)
+  }
+  const flushBuffer = () => {
+    if (rafRef.current != null) cancelAnimationFrame(rafRef.current)
+    rafRef.current = null
+    if (deltaBufRef.current) {
+      const remaining = deltaBufRef.current
+      deltaBufRef.current = ''
+      const id = streamIdRef.current
+      setMessages(prev => prev.map(m =>
+        m.id === id ? { ...m, streamText: (m.streamText || '') + remaining } : m
+      ))
+    }
+  }
   const [showTimeoutWarning, setShowTimeoutWarning] = useState(false)
 
   useEffect(() => {
@@ -452,10 +490,21 @@ export default function Chat({ donorId, donorName }) {
     if (!msg || !donorId || loading) return
     lastActivityRef.current = Date.now()
     setShowTimeoutWarning(false)
-    setMessages(prev => [...prev, { role: 'user', text: msg }])
+    // Stable id for this turn — used everywhere instead of array index
+    const turnId = ++messageCounterRef.current
+    streamIdRef.current = turnId
+
+    setMessages(prev => [
+      ...prev,
+      { id: `u-${turnId}`, role: 'user', text: msg },
+      { id: turnId, role: 'assistant', streaming: true, streamText: '', toolCalls: [] },
+    ])
     setInput('')
     setHasStarted(true)
     setLoading(true)
+
+    const controller = new AbortController()
+    abortRef.current = controller
 
     // Detect test type and reason from user message
     const lc = msg.toLowerCase()
@@ -495,79 +544,178 @@ export default function Chat({ donorId, donorName }) {
     }
 
     try {
-      const res = await fetch('/api/chat', {
+      const res = await fetch('/api/chat/stream', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ donor_id: donorId, messages: history, user_message: msg, clinics: lastClinics }),
+        signal: controller.signal,
       })
       if (!res.ok) throw new Error(`Server error ${res.status}`)
-      const data = await res.json()
+
+      const reader = res.body.getReader()
+      const decoder = new TextDecoder()
+      let buf = ''
+      let data = null  // final 'done' payload
+
+      while (true) {
+        const { done, value } = await reader.read()
+        if (done) break
+        buf += decoder.decode(value, { stream: true })
+        const parts = buf.split('\n\n')
+        buf = parts.pop()
+        for (const part of parts) {
+          if (!part.startsWith('data: ')) continue
+          let evt
+          try { evt = JSON.parse(part.slice(6)) } catch { continue }
+
+          if (evt.event === 'tool_call') {
+            const ts = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' })
+            setMcpCalls(prev => [...prev, { ...evt.data, ts }])
+            setMessages(prev => prev.map(m =>
+              m.id === turnId ? { ...m, toolCalls: [...(m.toolCalls || []), evt.data] } : m
+            ))
+          }
+          if (evt.event === 'delta') {
+            queueDelta(evt.data.text)
+          }
+          if (evt.event === 'done') {
+            flushBuffer()
+            data = evt.data
+          }
+          if (evt.event === 'error') {
+            flushBuffer()
+            setMessages(prev => prev.map(m =>
+              m.id === turnId
+                ? { id: turnId, role: 'assistant', text: evt.data.message || 'Something went wrong.', error: true }
+                : m
+            ))
+            return
+          }
+        }
+      }
+
+      if (!data) {
+        setMessages(prev => prev.map(m =>
+          m.id === turnId ? { id: turnId, role: 'assistant', text: 'Empty response from server.', error: true } : m
+        ))
+        return
+      }
+
       setHistory(data.messages)
 
-      if (data.tool_calls?.length) {
-        const ts = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' })
-        setMcpCalls(prev => [...prev, ...data.tool_calls.map(tc => ({ ...tc, ts }))])
-      }
+      // ── Validate the structured action DSL ──
+      const actions = safeParseActions(data.actions)
+      const messageText = (data.message ?? data.reply ?? '').toString()
+      const quickReplies = findAction(actions, 'quick_replies')?.items || []
+      const bookingSummaryAction = findAction(actions, 'booking_summary')
+      const bookingConfirmedAction = findAction(actions, 'booking_confirmed')
+
+      // Mirror server state machine
+      if (data.state) setBookingState(data.state)
+      if (data.fingerprint) setLastFingerprint(data.fingerprint)
+      else if (bookingConfirmedAction) setLastFingerprint(null)  // clear after confirmation
+
+      // tool_call events were already streamed live and added to mcpCalls; skip duplicate add.
       const scheduledTime = data.tool_calls?.find(tc => tc.tool === 'place_order')?.scheduled_time || ''
 
       const returnedClinics = data.clinics?.length ? data.clinics : null
       if (returnedClinics) { setHasClinics(true); setLastClinics(returnedClinics) }
 
-      if (data.booking_summary) {
-        // Ensure the date is present even if AI omitted it from the summary block
-        const bs = data.booking_summary
-        if (!bs['Preferred Date'] && session.preferredDate) {
-          bs['Preferred Date'] = session.preferredDate
-        }
+      // ── Booking summary (proposed, awaiting confirmation) ──
+      // Source of truth: booking_summary action. Falls back to legacy data.booking_summary
+      // for resilience while the server bridge is in place.
+      const summaryFromAction = bookingSummaryAction ? {
+        'Candidate':      bookingSummaryAction.candidate,
+        'Test Type':      bookingSummaryAction.test_type,
+        'Reason':         bookingSummaryAction.reason,
+        'Clinic':         bookingSummaryAction.clinic,
+        'Address':        bookingSummaryAction.address,
+        'ZIP':            bookingSummaryAction.zip,
+        'Preferred Date': bookingSummaryAction.preferred_date || session.preferredDate || '',
+      } : null
+      const effectiveSummary = summaryFromAction || data.booking_summary || null
+      if (effectiveSummary) {
+        const filled = !effectiveSummary['Preferred Date'] && session.preferredDate
+          ? { ...effectiveSummary, 'Preferred Date': session.preferredDate }
+          : effectiveSummary
         setSession(s => ({ ...s, clinicSelected: true }))
-        setLastBookingSummary(bs)
+        setLastBookingSummary(filled)
       }
 
-      const regMatch = data.reply.match(/(?:Registration ID:|registration_id:)\s*([A-Z0-9-]+)/i)
-      const isBookingConfirmed = !!regMatch
+      // ── Booking confirmed (registration_id arrived) ──
+      // Source of truth: booking_confirmed action. registration_id comes from the action's
+      // explicit field — no more regex matching the prose for an ID.
+      const isBookingConfirmed = !!bookingConfirmedAction
       if (isBookingConfirmed) {
+        const a = bookingConfirmedAction
         setSession(s => ({ ...s, bookingConfirmed: true }))
         setLastClinics([])
-        const summary = lastBookingSummary || data.booking_summary || {}
         const passportData = {
-          registrationId: regMatch[1],
-          candidate:     summary['Candidate']      || donorName || '',
-          testType:      summary['Test Type']      || '',
-          reason:        summary['Reason']         || '',
-          preferredDate: summary['Preferred Date'] || session.preferredDate || '',
-          clinic:        summary['Clinic']         || '',
-          address:       summary['Address']        || '',
-          zip:           summary['ZIP']            || summary['ZIP Code'] || '',
-          appointmentWindow: scheduledTime,
-          issuedAt:      new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
+          registrationId:    a.registration_id,
+          candidate:         a.candidate         || donorName || '',
+          testType:          a.test_type         || '',
+          reason:            a.reason            || '',
+          preferredDate:     a.preferred_date    || session.preferredDate || '',
+          clinic:            a.clinic            || '',
+          address:           a.address           || '',
+          zip:               a.zip               || '',
+          appointmentWindow: a.appointment_window || scheduledTime,
+          issuedAt:          new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
         }
         setPassport(passportData)
         setPassportOpen(true)
         fetch('/api/bookings', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ donor_id: donorId, ...passportData, preferredDate: passportData.preferredDate }),
+          body: JSON.stringify({
+            donor_id: donorId,
+            ...passportData,
+            preferredDate: passportData.preferredDate,
+            transcript: history,                  // full message history for audit
+            fingerprint: lastFingerprint,         // idempotency token used at confirm
+          }),
         }).catch(() => {})
       }
 
       // Only show clinic cards when search_clinics fired this turn (returnedClinics is fresh)
-      const showClinics = returnedClinics && !data.booking_summary && !isBookingConfirmed ? returnedClinics : null
+      const showClinics = returnedClinics && !effectiveSummary && !isBookingConfirmed ? returnedClinics : null
 
-      const summaryForMsg = data.booking_summary
-        ? (!data.booking_summary['Preferred Date'] && session.preferredDate
-            ? { ...data.booking_summary, 'Preferred Date': session.preferredDate }
-            : data.booking_summary)
+      const summaryForMsg = effectiveSummary
+        ? (!effectiveSummary['Preferred Date'] && session.preferredDate
+            ? { ...effectiveSummary, 'Preferred Date': session.preferredDate }
+            : effectiveSummary)
         : null
-      setMessages(prev => [...prev, {
-        role: 'assistant',
-        text: data.reply,
-        clinics: showClinics,
-        booking_summary: summaryForMsg,
-        showPassport: isBookingConfirmed,
-      }])
+      setMessages(prev => prev.map(m =>
+        m.id === turnId
+          ? {
+              id: turnId,
+              role: 'assistant',
+              text: messageText,
+              clinics: showClinics,
+              booking_summary: summaryForMsg,
+              showPassport: isBookingConfirmed,
+              quickReplies,
+              usage: data.usage || null,
+            }
+          : m
+      ))
     } catch (err) {
-      setMessages(prev => [...prev, { role: 'assistant', text: `${err.message || 'Something went wrong.'}`, error: true }])
+      flushBuffer()
+      if (err.name === 'AbortError') {
+        setMessages(prev => prev.map(m =>
+          m.id === turnId && m.streaming
+            ? { id: turnId, role: 'assistant', text: m.streamText || 'Stopped.' }
+            : m
+        ))
+        return
+      }
+      setMessages(prev => prev.map(m =>
+        m.id === turnId
+          ? { id: turnId, role: 'assistant', text: `${err.message || 'Something went wrong.'}`, error: true }
+          : m
+      ))
     } finally {
+      abortRef.current = null
       setLoading(false)
       setTimeout(() => inputRef.current?.focus(), 50)
     }
@@ -601,8 +749,34 @@ export default function Chat({ donorId, donorName }) {
     send(`I'd like to book at ${clinic.SiteName}${dist}. Address: ${addr}. Site ID: ${id}${walkin}${dot}. Preferred date: ${dateStr}.`)
   }
 
-  const handleConfirm = () => send('Confirm')
-  const handleEdit    = () => send('Edit details')
+  // Deterministic confirmation: hit /api/bookings/confirm directly, then feed
+  // the result back into the chat so the LLM can emit booking_confirmed.
+  const handleConfirm = async () => {
+    if (!donorId || !lastFingerprint) {
+      // Fallback: if we don't have a fingerprint (e.g. server hasn't proposed yet),
+      // send "Confirm" through the chat — covers legacy / mid-cutover cases.
+      return send('Confirm')
+    }
+    setLoading(true)
+    try {
+      const res = await fetch('/api/bookings/confirm', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ donor_id: donorId, fingerprint: lastFingerprint }),
+      })
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}))
+        throw new Error(err.detail || `Confirm failed (${res.status})`)
+      }
+      const data = await res.json()
+      // Tell the LLM what happened so it can emit booking_confirmed in the next turn.
+      send(`The booking has been confirmed by the system. Registration ID: ${data.registration_id}. Appointment window: ${data.scheduled_time || 'TBD'}. Please acknowledge with a booking_confirmed action.`)
+    } catch (err) {
+      setMessages(prev => [...prev, { role: 'assistant', text: `Confirmation failed: ${err.message}`, error: true }])
+      setLoading(false)
+    }
+  }
+  const handleEdit = () => send('Edit details')
   const handleKey     = (e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send() } }
 
   const isEmpty = messages.length === 0 && !loading
@@ -623,7 +797,7 @@ export default function Chat({ donorId, donorName }) {
       }}>
         <BotAvatar />
         <div style={{ flex: 1 }}>
-          <div style={{ fontSize: 14.5, fontWeight: 600, color: '#0f172a' }}>Booking Assistant</div>
+          <div style={{ fontSize: 16, fontWeight: 700, color: '#0f172a', letterSpacing: '-0.005em' }}>Booking Assistant</div>
           <div style={{ fontSize: 11, color: '#10b981', display: 'flex', alignItems: 'center', gap: 5, marginTop: 1 }}>
             <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#10b981', display: 'inline-block' }} />
             AI-powered MCP tools active
@@ -684,30 +858,88 @@ export default function Chat({ donorId, donorName }) {
 
         {/* Messages */}
         {messages.map((m, i) => (
-          <div key={i} style={{
+          <div key={m.id ?? `legacy-${i}`} style={{
             display: 'flex',
             justifyContent: m.role === 'user' ? 'flex-end' : 'flex-start',
             alignItems: 'flex-start', gap: 8, marginBottom: 14,
             animation: 'fadeSlideIn 0.25s ease',
           }}>
             {m.role === 'assistant' && <div style={{ paddingTop: 2 }}><BotAvatar /></div>}
-            {(() => {
+            {/* Streaming placeholder — replaced in place when 'done' arrives */}
+            {m.streaming && (
+              <div style={{ maxWidth: '76%' }}>
+                {m.toolCalls?.length > 0 && (
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5, marginBottom: 8 }}>
+                    {m.toolCalls.map((tc, ti) => (
+                      <span key={ti} style={{
+                        display: 'inline-flex', alignItems: 'center', gap: 6,
+                        background: '#eff6ff', border: '1px solid #bfdbfe',
+                        borderRadius: 20, padding: '3px 10px',
+                        fontSize: 11, fontWeight: 600, color: '#1d4ed8',
+                      }}>
+                        <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#3b82f6' }} />
+                        {tc.tool}
+                        {tc.result && <span style={{ color: '#64748b', fontWeight: 500 }}>· {tc.result}</span>}
+                      </span>
+                    ))}
+                  </div>
+                )}
+                <div style={{
+                  padding: '12px 16px',
+                  borderRadius: '4px 16px 16px 16px',
+                  background: '#f1f5f9',
+                  color: '#0f172a',
+                  fontSize: 15.5, lineHeight: 1.7,
+                  wordBreak: 'break-word',
+                }}>
+                  {m.streamText ? (
+                    <>
+                      <MarkdownText text={m.streamText} />
+                      <span style={{
+                        display: 'inline-block', width: 2, height: '1em',
+                        background: '#c8102e', marginLeft: 2, verticalAlign: 'text-bottom',
+                        animation: 'streamBlink 1s step-end infinite',
+                      }} />
+                      <style>{`@keyframes streamBlink { 0%,100%{opacity:1} 50%{opacity:0} }`}</style>
+                    </>
+                  ) : (
+                    <div style={{ display: 'flex', gap: 4 }}>
+                      {[0, 1, 2].map(d => (
+                        <span key={d} style={{
+                          width: 6, height: 6, borderRadius: '50%', background: '#94a3b8',
+                          animation: `cbBounce 1.3s ${d * 0.18}s ease-in-out infinite`,
+                        }} />
+                      ))}
+                      <style>{`@keyframes cbBounce { 0%,60%,100%{transform:translateY(0);opacity:.4} 30%{transform:translateY(-5px);opacity:1} }`}</style>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+            {!m.streaming && (() => {
               const chips = m.chips || []
               const hasChips = chips.length > 0
-              const quickReplies = !hasChips && m.role === 'assistant' && !m.clinics && !m.booking_summary && !m.datePicker ? parseQuickReplies(m.text) : []
+              // Prefer the typed quick_replies action from the message envelope.
+              // Fall back to regex parsing only if the server didn't supply one (resilience during cutover).
+              // Suppress the typed quick_replies when a booking_summary card is shown —
+              // the card has its own Confirm/Edit buttons, so the chips would be a duplicate.
+              const quickRepliesRaw = m.quickReplies?.length
+                ? m.quickReplies
+                : (!hasChips && m.role === 'assistant' && !m.clinics && !m.booking_summary && !m.datePicker ? parseQuickReplies(m.text) : [])
+              const quickReplies = m.booking_summary ? [] : quickRepliesRaw
               const hasQuickReplies = quickReplies.length > 0
               const displayText = (m.clinics || hasQuickReplies || hasChips || m.booking_summary || m.datePicker) ? stripList(m.text) : m.text
               return (
                 <div style={{ maxWidth: (m.clinics || m.booking_summary || m.datePicker) ? '92%' : '76%', minWidth: 0 }}>
                   {displayText && (
                     <div style={{
-                      padding: '10px 14px',
-                      borderRadius: m.role === 'user' ? '16px 16px 4px 16px' : '4px 16px 16px 16px',
+                      padding: '12px 16px',
+                      borderRadius: m.role === 'user' ? '18px 18px 4px 18px' : '4px 18px 18px 18px',
                       background: m.role === 'user'
                         ? 'linear-gradient(135deg, #c8102e 0%, #9b0f23 100%)'
                         : m.error ? '#fef2f2' : '#f1f5f9',
                       color: m.role === 'user' ? '#fff' : m.error ? '#dc2626' : '#0f172a',
-                      fontSize: 14.5, lineHeight: 1.72,
+                      fontSize: 15.5, lineHeight: 1.7,
                       whiteSpace: m.role === 'user' ? 'pre-wrap' : 'normal',
                       wordBreak: 'break-word',
                       boxShadow: m.role === 'user' ? '0 3px 12px rgba(200,16,46,0.3)' : '0 1px 3px rgba(0,0,0,0.05)',
@@ -757,13 +989,32 @@ export default function Chat({ donorId, donorName }) {
                       📋 View Booking Passport
                     </button>
                   )}
+                  {m.role === 'assistant' && !m.streaming && m.usage && (
+                    <div style={{ marginTop: 8, display: 'flex', gap: 6 }}>
+                      <span style={{
+                        display: 'inline-flex', alignItems: 'center', gap: 4,
+                        background: '#f1f5f9', border: '1px solid #e2e8f0',
+                        borderRadius: 20, padding: '2px 9px',
+                        fontSize: 10.5, color: '#64748b', fontWeight: 500,
+                      }}>
+                        🔢 {m.usage.total_tokens.toLocaleString()} tokens
+                        <span style={{ color: '#94a3b8' }}>·</span>
+                        <span style={{ color: '#10b981' }}>↑{m.usage.prompt_tokens.toLocaleString()}</span>
+                        <span style={{ color: '#94a3b8' }}>·</span>
+                        <span style={{ color: '#6366f1' }}>↓{m.usage.completion_tokens.toLocaleString()}</span>
+                      </span>
+                    </div>
+                  )}
                 </div>
               )
             })()}
           </div>
         ))}
 
-        {loading && (
+        {/* Loading indicator only shown when no streaming placeholder is present.
+            The streaming placeholder message already shows typing dots while waiting
+            for the first delta, so this would double up otherwise. */}
+        {loading && !messages.some(m => m.streaming) && (
           <div style={{ display: 'flex', alignItems: 'flex-end', gap: 8, marginBottom: 12 }}>
             <BotAvatar />
             <div style={{ padding: '11px 15px', borderRadius: '4px 16px 16px 16px', background: '#f1f5f9', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
@@ -828,7 +1079,7 @@ export default function Chat({ donorId, donorName }) {
             style={{
               flex: 1, border: 'none', background: 'transparent',
               resize: 'none', outline: 'none',
-              fontSize: 14.5, color: '#0f172a',
+              fontSize: 15, color: '#0f172a',
               lineHeight: 1.5, maxHeight: 120, overflow: 'auto',
             }}
             onInput={e => {

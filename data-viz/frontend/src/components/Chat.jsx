@@ -199,11 +199,11 @@ export default function Chat() {
 
           if (evt.event === 'done') {
             flushBuffer()
-            const { reply, tool_calls, messages: newHistory } = evt.data
+            const { reply, tool_calls, messages: newHistory, usage } = evt.data
             setHistory(newHistory || [])
             setMessages(prev => prev.map(m =>
               m.id === turnId
-                ? { id: turnId, role: 'assistant', reply, tool_calls: tool_calls || [] }
+                ? { id: turnId, role: 'assistant', reply, tool_calls: tool_calls || [], usage: usage || null }
                 : m
             ))
           }
@@ -402,6 +402,22 @@ export default function Chat() {
                     </ErrorBoundary>
                   ) : null)}
                   {!m.streaming && <McpTrace calls={m.tool_calls} />}
+                  {!m.streaming && m.usage && (
+                    <div style={{ marginTop: 8, display: 'flex', gap: 6 }}>
+                      <span style={{
+                        display: 'inline-flex', alignItems: 'center', gap: 4,
+                        background: '#f1f5f9', border: '1px solid #e2e8f0',
+                        borderRadius: 20, padding: '2px 9px',
+                        fontSize: 10.5, color: '#64748b', fontWeight: 500,
+                      }}>
+                        🔢 {m.usage.total_tokens.toLocaleString()} tokens
+                        <span style={{ color: '#94a3b8' }}>·</span>
+                        <span style={{ color: '#10b981' }}>↑{m.usage.prompt_tokens.toLocaleString()}</span>
+                        <span style={{ color: '#94a3b8' }}>·</span>
+                        <span style={{ color: '#6366f1' }}>↓{m.usage.completion_tokens.toLocaleString()}</span>
+                      </span>
+                    </div>
+                  )}
                   {i === messages.length - 1 && !loading && m.reply?.suggestions?.length > 0 && (
                     <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginTop: m.tool_calls?.length ? 14 : 14 }}>
                       <div style={{ width: '100%', fontSize: 10.5, fontWeight: 600, color: '#94a3b8', letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: 4 }}>
