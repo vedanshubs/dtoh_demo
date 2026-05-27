@@ -9,23 +9,27 @@ dist/
 build/
 .eggs/
 *.egg
+
+# Virtual environments
 .venv/
 venv/
 env/
 
-# Env files
+# Env files — keep examples, never commit real secrets
 .env
 !.env.example
 
-# pytest
+# pytest / coverage
 .pytest_cache/
 .coverage
 htmlcov/
 
 # Node
 node_modules/
-dist/
 .vite/
+
+# Build output
+dist/
 
 # OS
 .DS_Store
@@ -37,14 +41,18 @@ Thumbs.db
 *.suo
 *.user
 
-# Documents — sensitive integration details, not for source control
-*.pdf
+# Certificates and keys — never commit
+*.pfx
+*.p12
+*.cer
+*.pem
+*.key
 
-# Allow generated SQL seed files and fixture JSON (committed intentionally)
-!db/seed_data.sql
-!db/seed_poc2_data.sql
-!db/seed_poc2_reference.sql
-!db/schema_poc2.sql
-!mcp-server/mocks/clinics.json
-!mcp-server/mocks/zipcodes.json
+# Local Claude / AI tool configs
+claude_desktop_config.json
 
+# Temp test scripts
+/test_*.py
+
+# Duplicate root-level planning docs (canonical copies live in docs/)
+2026-*.md

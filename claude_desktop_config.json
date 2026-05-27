@@ -1,7 +1,0 @@
-{
-  "mcpServers": {
-    "ubs-escreen": {
-      "url": "http://localhost:8010/mcp"
-    }
-  }
-}

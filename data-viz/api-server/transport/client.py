@@ -1,11 +1,18 @@
 import json
 import os
 import pathlib
+import sys
 from mcp import ClientSession, StdioServerParameters
 from mcp.client.stdio import stdio_client
 
 _HERE = pathlib.Path(__file__).resolve().parent.parent  # api-server/
 _MCP_SERVER = _HERE.parent.parent / "mcp-server"
+
+# Resolve the correct venv layout for this OS
+_VENV_DIR = ".venv" if (_MCP_SERVER / ".venv").exists() else "venv"
+_BIN_DIR = "Scripts" if sys.platform == "win32" else "bin"
+_PYTHON_EXE = "python.exe" if sys.platform == "win32" else "python"
+_DEFAULT_PYTHON = str(_MCP_SERVER / _VENV_DIR / _BIN_DIR / _PYTHON_EXE)
 
 
 class MCPClientManager:
@@ -17,7 +24,7 @@ class MCPClientManager:
 
     async def start(self):
         server_path = os.getenv("MCP_SERVER_PATH") or str(_MCP_SERVER / "server.py")
-        python_bin = os.getenv("MCP_PYTHON") or str(_MCP_SERVER / "venv" / "bin" / "python")
+        python_bin = os.getenv("MCP_PYTHON") or _DEFAULT_PYTHON
         server_params = StdioServerParameters(
             command=python_bin,
             args=[server_path],
