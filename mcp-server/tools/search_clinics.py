@@ -121,9 +121,15 @@ def _normalize_clinic(clinic: dict) -> dict:
     enriched["workers_comp"]        = _attr(clinic, "Workers' Comp") == "Yes"
     enriched["after_hours"]         = _attr(clinic, "After Hours Drug Screening") == "Yes"
     enriched["public_transport"]    = _attr(clinic, "Public Transportation") == "Yes"
-    enriched["observed_collections"]= _attr(clinic, "Observed Collections") == "Yes"
-    enriched["mobile_collections"]  = _attr(clinic, "Mobile Drug Collections") == "Yes"
-    enriched["billing_tier"]        = _attr(clinic, "Billing Tier") or "Unknown"
+    enriched["observed_collections"] = _attr(clinic, "Observed Collections") == "Yes"
+    enriched["mobile_collections"]   = _attr(clinic, "Mobile Drug Collections") == "Yes"
+    enriched["after_hours"]          = _attr(clinic, "After Hours Drug Screening") == "Yes"
+    enriched["physicals"]            = (
+        _attr(clinic, "Physicals Performed by MD/DO") == "Yes"
+        or _attr(clinic, "Physicals Performed by NP/PA") == "Yes"
+    )
+    enriched["on_site_collections"]  = _attr(clinic, "On-site Collections") == "Yes"
+    enriched["billing_tier"]         = _attr(clinic, "Billing Tier") or "Unknown"
     enriched["hours_by_day"]        = parsed_hours
     enriched["hours_display"]       = _format_hours_human(parsed_hours)
     return enriched
@@ -155,6 +161,13 @@ def _mock_search(zipcode: str, radius: float, service_identifier: str) -> list:
     return sorted(results, key=lambda c: c["Distance"])
 
 
+def _has_weekend(clinic: dict) -> bool:
+    hbd = clinic.get("hours_by_day", {})
+    sat = hbd.get("Saturday", {})
+    sun = hbd.get("Sunday", {})
+    return (sat and not sat.get("closed")) or (sun and not sun.get("closed"))
+
+
 def _apply_attribute_filters(
     clinics: list,
     walk_in_only: bool,
@@ -164,16 +177,26 @@ def _apply_attribute_filters(
     eccf_only: bool,
     workers_comp_only: bool,
     observed_only: bool,
+    mobile_only: bool,
+    after_hours_only: bool,
+    physicals_only: bool,
+    weekend_only: bool,
+    on_site_only: bool,
 ) -> list:
     out = []
     for c in clinics:
-        if walk_in_only       and not c.get("walk_in"):               continue
-        if dot_certified_only and not c.get("dot_certified"):         continue
-        if wheelchair_accessible and not c.get("wheelchair_accessible"): continue
-        if open_247           and not _is_24_7(c):                    continue
-        if eccf_only          and not c.get("eccf_enabled"):          continue
-        if workers_comp_only  and not c.get("workers_comp"):          continue
-        if observed_only      and not c.get("observed_collections"):  continue
+        if walk_in_only          and not c.get("walk_in"):                 continue
+        if dot_certified_only    and not c.get("dot_certified"):           continue
+        if wheelchair_accessible and not c.get("wheelchair_accessible"):   continue
+        if open_247              and not _is_24_7(c):                      continue
+        if eccf_only             and not c.get("eccf_enabled"):            continue
+        if workers_comp_only     and not c.get("workers_comp"):            continue
+        if observed_only         and not c.get("observed_collections"):    continue
+        if mobile_only           and not c.get("mobile_collections"):      continue
+        if after_hours_only      and not c.get("after_hours"):             continue
+        if physicals_only        and not c.get("physicals"):               continue
+        if weekend_only          and not _has_weekend(c):                  continue
+        if on_site_only          and not c.get("on_site_collections"):     continue
         out.append(c)
     return out
 
@@ -189,6 +212,11 @@ async def handle_search_clinics(
     eccf_only: bool = False,
     workers_comp_only: bool = False,
     observed_only: bool = False,
+    mobile_only: bool = False,
+    after_hours_only: bool = False,
+    physicals_only: bool = False,
+    weekend_only: bool = False,
+    on_site_only: bool = False,
     use_mock: bool = True,
 ) -> list:
     if use_mock:
@@ -200,11 +228,14 @@ async def handle_search_clinics(
     # Normalize every clinic (hours parsing + attribute flattening)
     results = [_normalize_clinic(c) for c in results]
 
-    if any([walk_in_only, dot_certified_only, wheelchair_accessible, open_247,
-            eccf_only, workers_comp_only, observed_only]):
+    filters = [walk_in_only, dot_certified_only, wheelchair_accessible, open_247,
+               eccf_only, workers_comp_only, observed_only, mobile_only,
+               after_hours_only, physicals_only, weekend_only, on_site_only]
+    if any(filters):
         results = _apply_attribute_filters(
             results, walk_in_only, dot_certified_only, wheelchair_accessible, open_247,
-            eccf_only, workers_comp_only, observed_only,
+            eccf_only, workers_comp_only, observed_only, mobile_only,
+            after_hours_only, physicals_only, weekend_only, on_site_only,
         )
 
     return results

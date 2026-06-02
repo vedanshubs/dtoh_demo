@@ -45,15 +45,22 @@ async def search_clinics(
     eccf_only: bool = False,
     workers_comp_only: bool = False,
     observed_only: bool = False,
+    mobile_only: bool = False,
+    after_hours_only: bool = False,
+    physicals_only: bool = False,
+    weekend_only: bool = False,
+    on_site_only: bool = False,
 ) -> list[dict]:
     """Search for drug test collection clinics near a zip code.
-    Filters: walk_in_only, wheelchair_accessible, open_247, eccf_only (electronic chain of custody),
-    workers_comp_only, observed_only (required for RTD/for-cause tests).
-    Returns a list of clinic objects with address, hours, distance, and all attributes."""
+    Boolean filters (combine freely):
+      walk_in_only, wheelchair_accessible, open_247, eccf_only, workers_comp_only,
+      observed_only, mobile_only, after_hours_only, physicals_only, weekend_only, on_site_only.
+    Returns clinics with address, hours, distance, and all capability attributes."""
     log.info(
-        "search_clinics(zipcode=%s, radius=%s, service=%s, walk_in=%s, wheelchair=%s, 247=%s, eccf=%s, wc=%s, obs=%s)",
+        "search_clinics(zip=%s r=%s svc=%s wi=%s wc=%s 247=%s eccf=%s wcomp=%s obs=%s mob=%s ah=%s phys=%s wknd=%s os=%s)",
         zipcode, radius, service_identifier, walk_in_only, wheelchair_accessible, open_247,
-        eccf_only, workers_comp_only, observed_only,
+        eccf_only, workers_comp_only, observed_only, mobile_only, after_hours_only,
+        physicals_only, weekend_only, on_site_only,
     )
     result = await handle_search_clinics(
         zipcode, radius, service_identifier,
@@ -64,6 +71,11 @@ async def search_clinics(
         eccf_only=eccf_only,
         workers_comp_only=workers_comp_only,
         observed_only=observed_only,
+        mobile_only=mobile_only,
+        after_hours_only=after_hours_only,
+        physicals_only=physicals_only,
+        weekend_only=weekend_only,
+        on_site_only=on_site_only,
         use_mock=USE_MOCK_CLINICS,
     )
     log.info("search_clinics returned %d clinics", len(result))

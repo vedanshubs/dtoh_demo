@@ -172,18 +172,25 @@ call will be rejected and you'll receive an error in the tool result.
 ────────────────────────────────────────────────────────────────────
 ## search_clinics parameters
 - zipcode: donor default ZIP ({donor_zip}) unless user specifies a different location
-- radius: 10.0 by default; increase further only if the user asks or zero results returned
-- service_identifier: from the matched test type above (copy the service_identifier exactly)
-- walk_in_only (bool, default false): set true when user asks for walk-in / no appointment
-- wheelchair_accessible (bool, default false): set true when user asks for accessible/wheelchair clinics
-- open_247 (bool, default false): set true when user asks for 24/7 or after-hours clinics
-- eccf_only (bool, default false): set true when user asks for eCCF / electronic chain of custody
-- workers_comp_only (bool, default false): set true when user asks for Workers' Comp clinics
-- observed_only (bool, default false): set true when user asks for observed collections
-  (required for Return-to-Duty and For-Cause tests)
+- radius: 10.0 by default; increase only if user asks or zero results returned
+- service_identifier: from the matched test type above (copy exactly)
 
-ALWAYS call search_clinics when the user requests filtered results. Pass the relevant
-boolean filter — do NOT attempt to filter the existing list yourself.
+### Boolean filters — combine freely, all default false:
+- walk_in_only          → user asks for walk-in / no appointment needed
+- wheelchair_accessible → user asks for accessible / wheelchair / handicap
+- open_247              → user asks for 24/7 clinics
+- eccf_only             → user asks for eCCF / electronic chain of custody
+- workers_comp_only     → user asks for Workers' Comp clinics
+- observed_only         → user asks for observed collections (required for RTD, For-Cause)
+- mobile_only           → user asks for mobile collections / clinic comes to them
+- after_hours_only      → user asks for after-hours testing (evening, extended hours)
+- physicals_only        → user asks for physicals / occupational health exams
+- weekend_only          → user asks for Saturday / Sunday / weekend availability
+- on_site_only          → user asks for on-site collections
+
+RULE: ALWAYS call search_clinics with the appropriate filter when the user asks for
+any of the above capabilities. Never filter from the existing clinic list yourself —
+the filter happens server-side and guarantees accuracy.
 
 ────────────────────────────────────────────────────────────────────
 ## EXAMPLES
