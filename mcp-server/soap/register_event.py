@@ -66,6 +66,16 @@ _ENVELOPE = """\
           <eis2:OccHealthReasonForService>{occ_reason}</eis2:OccHealthReasonForService>
         </eis1:ServicesToBePerformed>
         <eis1:CollectionSiteId>{collection_site_id}</eis1:CollectionSiteId>
+        <eis1:CustomFields>
+          <eis2:CustomField>
+            <eis2:FieldName>CustomField1</eis2:FieldName>
+            <eis2:FieldValue>{custom_field_1}</eis2:FieldValue>
+          </eis2:CustomField>
+          <eis2:CustomField>
+            <eis2:FieldName>CustomField2</eis2:FieldName>
+            <eis2:FieldValue>{custom_field_2}</eis2:FieldValue>
+          </eis2:CustomField>
+        </eis1:CustomFields>
         <eis1:EventSettings>
           <eis2:EventSetting>
             <eis2:SettingName>StartDate</eis2:SettingName>
@@ -108,54 +118,73 @@ def _format_phone(phone: str) -> str:
     return phone
 
 
+def _local(tag: str) -> str:
+    return tag.split("}")[-1] if "}" in tag else tag
+
+
+def _find_local(elem, local_name: str):
+    """Find first child element matching local tag name (ignoring namespace)."""
+    for child in elem:
+        if _local(child.tag) == local_name:
+            return child
+    return None
+
+
+def _text_local(elem, local_name: str) -> str:
+    child = _find_local(elem, local_name)
+    return (child.text or "").strip() if child is not None else ""
+
+
 def _parse_response(xml_text: str) -> dict:
     try:
         root = ET.fromstring(xml_text)
-        pr = None
+
+        # Locate RegisterScheduledEventResult anywhere in the tree
+        result_el = None
         for elem in root.iter():
-            local = elem.tag.split("}")[-1] if "}" in elem.tag else elem.tag
-            if local == "PhysicalResult":
+            if _local(elem.tag) == "RegisterScheduledEventResult":
+                result_el = elem
+                break
+
+        if result_el is None:
+            log.warning("RegisterScheduledEventResult not found:\n%s", xml_text[:800])
+            return {"success": False, "registration_id": None, "confirmation_code": None,
+                    "errors": ["Unexpected response structure"], "raw_response": xml_text[:800]}
+
+        is_valid = _text_local(result_el, "IsValid").lower() == "true"
+
+        # Collect error descriptions if present
+        errors = []
+        errors_el = _find_local(result_el, "Errors")
+        if errors_el is not None:
+            for err in errors_el:
+                desc = _text_local(err, "ErrorDescription")
+                if desc:
+                    errors.append(desc)
+
+        if not is_valid or errors:
+            log.warning("RegisterScheduledEvent returned IsValid=false: %s", errors)
+            return {"success": False, "registration_id": None, "confirmation_code": None, "errors": errors}
+
+        registration_id = _text_local(result_el, "RegistrationId")
+
+        # PhysicalResult may be nested inside the result element
+        pr = None
+        for elem in result_el.iter():
+            if _local(elem.tag) == "PhysicalResult":
                 pr = elem
                 break
 
-        if pr is None:
-            log.warning("PhysicalResult not found in response:\n%s", xml_text[:800])
-            return {
-                "success": False,
-                "registration_id": None,
-                "confirmation_code": None,
-                "errors": ["PhysicalResult missing in response"],
-                "raw_response": xml_text[:800],
-            }
-
-        def t(tag):
-            for child in pr:
-                local = child.tag.split("}")[-1] if "}" in child.tag else child.tag
-                if local == tag:
-                    return child.text or ""
-            return ""
-
-        physical_id = t("PhysicalID")
-        if not physical_id:
-            return {
-                "success": False,
-                "registration_id": None,
-                "confirmation_code": None,
-                "errors": ["No PhysicalID in response"],
-                "raw_response": xml_text[:800],
-            }
-
         return {
             "success": True,
-            "registration_id": physical_id,
-            "confirmation_code": t("ConfirmationNumber"),
-            "status": t("OverallStatusDescription"),
-            "clinic_name": t("ClinicName"),
-            "clinic_address": t("ClinicAddress1"),
-            "clinic_city": t("ClinicCity"),
-            "clinic_state": t("ClinicState"),
-            "clinic_phone": t("CollectionSitePhoneNumber"),
-            "external_donor_id": t("ExternalDonorID"),
+            "registration_id": registration_id or (_text_local(pr, "PhysicalID") if pr else ""),
+            "confirmation_code": _text_local(pr, "ConfirmationNumber") if pr else "",
+            "status": _text_local(pr, "OverallStatusDescription") if pr else "",
+            "clinic_name": _text_local(pr, "ClinicName") if pr else "",
+            "clinic_address": _text_local(pr, "ClinicAddress1") if pr else "",
+            "clinic_city": _text_local(pr, "ClinicCity") if pr else "",
+            "clinic_state": _text_local(pr, "ClinicState") if pr else "",
+            "clinic_phone": _text_local(pr, "CollectionSitePhoneNumber") if pr else "",
             "errors": [],
         }
     except ET.ParseError as exc:
@@ -194,6 +223,8 @@ async def register_scheduled_event(
         drug_reason=drug_reason,
         occ_reason=occ_reason,
         collection_site_id=clinic_id,
+        custom_field_1=os.getenv("ESCREEN_CUSTOM_FIELD_1", "020919"),
+        custom_field_2=os.getenv("ESCREEN_CUSTOM_FIELD_2", "MCP Demo"),
         start_date=start_date,
         expiry_date=expiry_date,
     )
