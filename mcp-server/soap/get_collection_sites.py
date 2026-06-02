@@ -1,7 +1,8 @@
-# Real eScreen SOAP call removed — system uses mock data only.
-# This file is retained as a placeholder for future integration
-# once IP allowlisting is granted by eScreen.
+import logging
+import os
+import xml.etree.ElementTree as ET
 
+from soap.client import soap_post
 
 log = logging.getLogger(__name__)
 
