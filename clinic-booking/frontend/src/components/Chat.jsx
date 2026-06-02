@@ -236,12 +236,14 @@ function ClinicCards({ clinics, onBook, isDOT }) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginTop: 10 }}>
       {shown.map((c, i) => {
-        const walkIn   = attr(c, 'Walk In Drug Testing - No Appointment Required') === 'Yes'
-        const dotCert  = attr(c, 'DOT Certified Physician') === 'Yes'
-        const handicap = attr(c, 'Handicap Access') === 'Yes'
-        const transit  = attr(c, 'Public Transportation') === 'Yes'
-        const afterHrs = attr(c, 'After Hours Drug Screening') === 'Yes'
+        const walkIn   = c.walk_in   ?? attr(c, 'Walk In Drug Testing - No Appointment Required') === 'Yes'
+        const dotCert  = c.dot_certified ?? attr(c, 'DOT Certified Physician') === 'Yes'
+        const handicap = c.wheelchair_accessible ?? attr(c, 'Handicap Access') === 'Yes'
+        const transit  = c.public_transport ?? attr(c, 'Public Transportation') === 'Yes'
+        const afterHrs = c.after_hours ?? attr(c, 'After Hours Drug Screening') === 'Yes'
+        const eccf     = c.eccf_enabled ?? attr(c, 'eCCF Enabled') === 'Yes'
         const weekend  = hasWeekendHours(c)
+        const hoursDisplay = c.hours_display || null
         const isBest   = i === 0
 
         const phone = c.PhoneNumber
@@ -291,6 +293,14 @@ function ClinicCards({ clinics, onBook, isDOT }) {
               )}
             </div>
 
+            {/* Hours */}
+            {hoursDisplay && (
+              <div style={{ fontSize: 11.5, color: '#374151', display: 'flex', alignItems: 'flex-start', gap: 5, marginBottom: 8, lineHeight: 1.5 }}>
+                <span style={{ flexShrink: 0 }}>🕐</span>
+                <span>{hoursDisplay}</span>
+              </div>
+            )}
+
             {/* Capability badges */}
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5, marginBottom: 10 }}>
               {walkIn ? (
@@ -312,6 +322,9 @@ function ClinicCards({ clinics, onBook, isDOT }) {
               )}
               {afterHrs && (
                 <span style={{ fontSize: 10.5, fontWeight: 600, color: '#1e293b', background: '#f1f5f9', border: '1px solid #cbd5e1', borderRadius: 20, padding: '2px 8px' }}>After Hours</span>
+              )}
+              {eccf && (
+                <span style={{ fontSize: 10.5, fontWeight: 600, color: '#6d28d9', background: '#f5f3ff', border: '1px solid #ddd6fe', borderRadius: 20, padding: '2px 8px' }}>eCCF</span>
               )}
               {c.SupportedSpecimenTypes?.map(t => (
                 <span key={t} style={{ fontSize: 10.5, color: '#7c3aed', background: '#f5f3ff', border: '1px solid #ddd6fe', borderRadius: 20, padding: '2px 8px' }}>
