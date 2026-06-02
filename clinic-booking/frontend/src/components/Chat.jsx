@@ -777,7 +777,13 @@ export default function Chat({ donorId, donorName }) {
   }
 
   const handleBook = (clinic) => {
-    // Pause booking — inject a local date-picker message, don't call API yet
+    // Ensure the selected clinic is always in lastClinics so the LLM has it in context,
+    // even if the user picked from an older search result that lastClinics no longer contains.
+    setLastClinics(prev => {
+      const id = clinic.EscreenSiteId ?? clinic.CollectionSiteId
+      const already = prev.some(c => (c.EscreenSiteId ?? c.CollectionSiteId) === id)
+      return already ? prev : [clinic, ...prev]
+    })
     setPendingClinic(clinic)
     setMessages(prev => [...prev, {
       role: 'assistant',

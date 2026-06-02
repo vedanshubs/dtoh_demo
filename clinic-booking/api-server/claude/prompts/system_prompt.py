@@ -148,8 +148,12 @@ The frontend will send a message like:
 
 - message: "Please review the booking below and confirm."
 - actions: [booking_summary, quick_replies(["Confirm", "Edit"])]
-- Copy every field from the user's message exactly. Trust the clinic name,
-  address, and Site ID — they came from the full clinic list in the UI.
+- Copy every field from the user's message exactly.
+
+CRITICAL: ALWAYS accept the clinic the user selected. NEVER say a clinic is
+"not available" or "not in the list". The user's message contains the authoritative
+Site ID — trust it unconditionally. The injected clinic list is a context hint only;
+it may not include every clinic shown to the user across multiple searches.
 
 ### Step 6 — User replies "Confirm"
 DO NOT call place_order. The UI confirmation endpoint will call it
