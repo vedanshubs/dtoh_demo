@@ -137,19 +137,48 @@ async def run_turn_stream(
 
         if choice.finish_reason == "stop":
             text = choice.message.content or ""
+            raw = {}
             try:
                 raw = json.loads(text)
+            except json.JSONDecodeError:
+                pass
+
+            # Same nested-reply unwrap as Phase 2
+            for _ in range(3):
+                inner = raw.get("message") if isinstance(raw, dict) else None
+                if isinstance(inner, str) and inner.lstrip().startswith("{") and '"message"' in inner:
+                    try:
+                        nested = json.loads(inner)
+                        if isinstance(nested, dict) and "message" in nested:
+                            log.warning("Phase-1: unwrapping nested Reply JSON")
+                            if not raw.get("actions") and nested.get("actions"):
+                                raw["actions"] = nested["actions"]
+                            raw["message"] = nested["message"]
+                            continue
+                    except json.JSONDecodeError:
+                        pass
+                break
+
+            try:
                 reply = Reply.model_validate(raw)
                 parsed = reply.model_dump()
-            except Exception:
-                parsed = {"message": text, "actions": []}
+            except Exception as exc:
+                log.warning("Phase-1 reply validation failed (%s) — using raw dict", exc)
+                # Use what the model gave us rather than falling back to the raw JSON string
+                if isinstance(raw, dict):
+                    parsed = {"message": raw.get("message", text), "actions": raw.get("actions", [])}
+                else:
+                    parsed = {"message": text, "actions": []}
+                parsed.setdefault("message", text)
+                parsed.setdefault("actions", [])
+
             # Store clean prose in history — never raw JSON (model echoes it back otherwise).
             action_types = [a["type"] for a in parsed.get("actions", [])]
             hist = parsed.get("message", "")
             if action_types:
                 hist += f"\n\n[ui_actions_sent: {', '.join(action_types)}]"
             current_messages.append({"role": "assistant", "content": hist})
-            # Replay summary via delta events for UX consistency
+            # Replay only the clean prose via delta events (never the raw JSON)
             for ch in parsed.get("message", ""):
                 yield {"event": "delta", "data": {"text": ch}}
             try:

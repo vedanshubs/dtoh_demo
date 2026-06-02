@@ -645,7 +645,21 @@ export default function Chat({ donorId, donorName }) {
 
       // ── Validate the structured action DSL ──
       const actions = safeParseActions(data.actions)
-      const messageText = (data.message ?? data.reply ?? '').toString()
+
+      // Safety net: if the server sent raw JSON as the message field, extract prose + actions
+      let rawMsg = (data.message ?? data.reply ?? '').toString()
+      if (rawMsg.trimStart().startsWith('{') && rawMsg.includes('"message"')) {
+        try {
+          const parsed = JSON.parse(rawMsg)
+          if (parsed && typeof parsed.message === 'string') {
+            rawMsg = parsed.message
+            if (!data.actions?.length && Array.isArray(parsed.actions)) {
+              data.actions = parsed.actions
+            }
+          }
+        } catch (_) { /* leave rawMsg as-is */ }
+      }
+      const messageText = rawMsg
       const quickReplies = findAction(actions, 'quick_replies')?.items || []
       const bookingSummaryAction = findAction(actions, 'booking_summary')
       const bookingConfirmedAction = findAction(actions, 'booking_confirmed')
