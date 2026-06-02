@@ -1,6 +1,10 @@
 import logging
 import os
 import sys
+from dotenv import load_dotenv
+
+load_dotenv()
+
 from mcp.server.fastmcp import FastMCP
 from tools.search_clinics import handle_search_clinics
 from tools.place_order import handle_place_order
@@ -8,9 +12,6 @@ from tools.get_results_summary import handle_get_results_summary
 from tools.get_pipeline_status import handle_get_pipeline_status
 from tools.get_analyte_breakdown import handle_get_analyte_breakdown
 from tools.get_turnaround_stats import handle_get_turnaround_stats
-from dotenv import load_dotenv
-
-load_dotenv()
 
 logging.basicConfig(
     stream=sys.stderr,
@@ -21,11 +22,14 @@ logging.basicConfig(
 log = logging.getLogger(__name__)
 
 mcp = FastMCP("ubs-escreen")
-CLIENT_ID         = os.getenv("ESCREEN_CLIENT_ACCOUNT", "DEMO_CLIENT")
-USE_MOCK_CLINICS  = os.getenv("USE_MOCK_CLINICS",  "true").lower()  != "false"
+CLIENT_ID          = os.getenv("ESCREEN_CLIENT_ACCOUNT", "DEMO_CLIENT")
+USE_MOCK_CLINICS   = os.getenv("USE_MOCK_CLINICS",   "true").lower()  != "false"
+USE_MOCK_BOOKINGS  = os.getenv("USE_MOCK_BOOKINGS",  "false").lower() != "false"
 USE_MOCK_ANALYTICS = os.getenv("USE_MOCK_ANALYTICS", "false").lower() != "false"
-log.info("Server starting (CLIENT_ID=%s, use_mock_clinics=%s, use_mock_analytics=%s)",
-         CLIENT_ID, USE_MOCK_CLINICS, USE_MOCK_ANALYTICS)
+log.info(
+    "Server starting (CLIENT_ID=%s, mock_clinics=%s, mock_bookings=%s, mock_analytics=%s)",
+    CLIENT_ID, USE_MOCK_CLINICS, USE_MOCK_BOOKINGS, USE_MOCK_ANALYTICS,
+)
 
 
 # ── Clinic Booking Tools ──────────────────────────────────────────────────────
@@ -36,21 +40,20 @@ async def search_clinics(
     radius: float,
     service_identifier: str,
     walk_in_only: bool = False,
-    dot_certified_only: bool = False,
     wheelchair_accessible: bool = False,
     open_247: bool = False,
 ) -> list[dict]:
     """Search for drug test collection clinics near a zip code.
-    Optional filters: walk_in_only, dot_certified_only, wheelchair_accessible, open_247.
+    Optional filters: walk_in_only, wheelchair_accessible, open_247.
     Returns a list of clinic objects with address, distance, attributes, and Google Maps URL."""
     log.info(
-        "search_clinics(zipcode=%s, radius=%s, service=%s, walk_in=%s, dot=%s, wheelchair=%s, 247=%s)",
-        zipcode, radius, service_identifier, walk_in_only, dot_certified_only, wheelchair_accessible, open_247,
+        "search_clinics(zipcode=%s, radius=%s, service=%s, walk_in=%s, wheelchair=%s, 247=%s)",
+        zipcode, radius, service_identifier, walk_in_only, wheelchair_accessible, open_247,
     )
     result = await handle_search_clinics(
         zipcode, radius, service_identifier,
         walk_in_only=walk_in_only,
-        dot_certified_only=dot_certified_only,
+        dot_certified_only=False,
         wheelchair_accessible=wheelchair_accessible,
         open_247=open_247,
         use_mock=USE_MOCK_CLINICS,
@@ -67,9 +70,14 @@ async def place_order(
     reason_for_test: str,
 ) -> dict:
     """Place a drug test booking at a clinic for a donor.
-    Fetches donor PII server-side. Returns registration_id on success."""
+    donor_id must be the candidate's numeric id from the candidates table.
+    reason_for_test codes: PE=Pre-Employment, RA=Random, PA=Post-Accident, RD=Return-to-Duty, FU=Follow-Up.
+    Fetches donor PII server-side. Returns registration_id and confirmation_code on success."""
     log.info("place_order(clinic_id=%s, donor_id=%s, service=%s, reason=%s)", clinic_id, donor_id, service_identifier, reason_for_test)
-    result = await handle_place_order(clinic_id, donor_id, service_identifier, reason_for_test)
+    result = await handle_place_order(
+        clinic_id, donor_id, service_identifier, reason_for_test,
+        use_mock=USE_MOCK_BOOKINGS,
+    )
     log.info("place_order result: success=%s, registration_id=%s", result.get("success"), result.get("registration_id"))
     return result
 
