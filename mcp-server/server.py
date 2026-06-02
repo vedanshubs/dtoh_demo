@@ -42,13 +42,18 @@ async def search_clinics(
     walk_in_only: bool = False,
     wheelchair_accessible: bool = False,
     open_247: bool = False,
+    eccf_only: bool = False,
+    workers_comp_only: bool = False,
+    observed_only: bool = False,
 ) -> list[dict]:
     """Search for drug test collection clinics near a zip code.
-    Optional filters: walk_in_only, wheelchair_accessible, open_247.
-    Returns a list of clinic objects with address, distance, attributes, and Google Maps URL."""
+    Filters: walk_in_only, wheelchair_accessible, open_247, eccf_only (electronic chain of custody),
+    workers_comp_only, observed_only (required for RTD/for-cause tests).
+    Returns a list of clinic objects with address, hours, distance, and all attributes."""
     log.info(
-        "search_clinics(zipcode=%s, radius=%s, service=%s, walk_in=%s, wheelchair=%s, 247=%s)",
+        "search_clinics(zipcode=%s, radius=%s, service=%s, walk_in=%s, wheelchair=%s, 247=%s, eccf=%s, wc=%s, obs=%s)",
         zipcode, radius, service_identifier, walk_in_only, wheelchair_accessible, open_247,
+        eccf_only, workers_comp_only, observed_only,
     )
     result = await handle_search_clinics(
         zipcode, radius, service_identifier,
@@ -56,6 +61,9 @@ async def search_clinics(
         dot_certified_only=False,
         wheelchair_accessible=wheelchair_accessible,
         open_247=open_247,
+        eccf_only=eccf_only,
+        workers_comp_only=workers_comp_only,
+        observed_only=observed_only,
         use_mock=USE_MOCK_CLINICS,
     )
     log.info("search_clinics returned %d clinics", len(result))

@@ -161,17 +161,19 @@ def _apply_attribute_filters(
     dot_certified_only: bool,
     wheelchair_accessible: bool,
     open_247: bool,
+    eccf_only: bool,
+    workers_comp_only: bool,
+    observed_only: bool,
 ) -> list:
     out = []
     for c in clinics:
-        if walk_in_only and not c.get("walk_in"):
-            continue
-        if dot_certified_only and not c.get("dot_certified"):
-            continue
-        if wheelchair_accessible and not c.get("wheelchair_accessible"):
-            continue
-        if open_247 and not _is_24_7(c):
-            continue
+        if walk_in_only       and not c.get("walk_in"):               continue
+        if dot_certified_only and not c.get("dot_certified"):         continue
+        if wheelchair_accessible and not c.get("wheelchair_accessible"): continue
+        if open_247           and not _is_24_7(c):                    continue
+        if eccf_only          and not c.get("eccf_enabled"):          continue
+        if workers_comp_only  and not c.get("workers_comp"):          continue
+        if observed_only      and not c.get("observed_collections"):  continue
         out.append(c)
     return out
 
@@ -184,6 +186,9 @@ async def handle_search_clinics(
     dot_certified_only: bool = False,
     wheelchair_accessible: bool = False,
     open_247: bool = False,
+    eccf_only: bool = False,
+    workers_comp_only: bool = False,
+    observed_only: bool = False,
     use_mock: bool = True,
 ) -> list:
     if use_mock:
@@ -195,9 +200,11 @@ async def handle_search_clinics(
     # Normalize every clinic (hours parsing + attribute flattening)
     results = [_normalize_clinic(c) for c in results]
 
-    if any([walk_in_only, dot_certified_only, wheelchair_accessible, open_247]):
+    if any([walk_in_only, dot_certified_only, wheelchair_accessible, open_247,
+            eccf_only, workers_comp_only, observed_only]):
         results = _apply_attribute_filters(
-            results, walk_in_only, dot_certified_only, wheelchair_accessible, open_247
+            results, walk_in_only, dot_certified_only, wheelchair_accessible, open_247,
+            eccf_only, workers_comp_only, observed_only,
         )
 
     return results

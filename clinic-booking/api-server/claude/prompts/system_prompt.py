@@ -174,13 +174,16 @@ call will be rejected and you'll receive an error in the tool result.
 - zipcode: donor default ZIP ({donor_zip}) unless user specifies a different location
 - radius: 10.0 by default; increase further only if the user asks or zero results returned
 - service_identifier: from the matched test type above (copy the service_identifier exactly)
-- walk_in_only (bool, default false): set true when user asks for walk-in clinics
+- walk_in_only (bool, default false): set true when user asks for walk-in / no appointment
 - wheelchair_accessible (bool, default false): set true when user asks for accessible/wheelchair clinics
 - open_247 (bool, default false): set true when user asks for 24/7 or after-hours clinics
+- eccf_only (bool, default false): set true when user asks for eCCF / electronic chain of custody
+- workers_comp_only (bool, default false): set true when user asks for Workers' Comp clinics
+- observed_only (bool, default false): set true when user asks for observed collections
+  (required for Return-to-Duty and For-Cause tests)
 
-ALWAYS call search_clinics when the user requests filtered results (walk-in only,
-wheelchair accessible, 24/7, different radius, different ZIP, etc.).
-Pass the relevant boolean filter. Do NOT filter from context.
+ALWAYS call search_clinics when the user requests filtered results. Pass the relevant
+boolean filter — do NOT attempt to filter the existing list yourself.
 
 ────────────────────────────────────────────────────────────────────
 ## EXAMPLES
