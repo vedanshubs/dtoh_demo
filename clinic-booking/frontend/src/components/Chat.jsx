@@ -244,13 +244,18 @@ function ClinicCards({ clinics, onBook, isDOT, preferWeekend }) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginTop: 10 }}>
       {shown.map((c, i) => {
-        const walkIn   = c.walk_in   ?? attr(c, 'Walk In Drug Testing - No Appointment Required') === 'Yes'
-        const dotCert  = c.dot_certified ?? attr(c, 'DOT Certified Physician') === 'Yes'
-        const handicap = c.wheelchair_accessible ?? attr(c, 'Handicap Access') === 'Yes'
-        const transit  = c.public_transport ?? attr(c, 'Public Transportation') === 'Yes'
-        const afterHrs = c.after_hours ?? attr(c, 'After Hours Drug Screening') === 'Yes'
-        const eccf     = c.eccf_enabled ?? attr(c, 'eCCF Enabled') === 'Yes'
-        const weekend  = hasWeekendHours(c)
+        const walkIn    = c.walk_in              ?? attr(c, 'Walk In Drug Testing - No Appointment Required') === 'Yes'
+        const dotCert   = c.dot_certified        ?? attr(c, 'DOT Certified Physician') === 'Yes'
+        const handicap  = c.wheelchair_accessible ?? attr(c, 'Handicap Access') === 'Yes'
+        const transit   = c.public_transport     ?? attr(c, 'Public Transportation') === 'Yes'
+        const afterHrs  = c.after_hours          ?? attr(c, 'After Hours Drug Screening') === 'Yes'
+        const eccf      = c.eccf_enabled         ?? attr(c, 'eCCF Enabled') === 'Yes'
+        const workerComp  = c.workers_comp       ?? attr(c, "Workers' Comp") === 'Yes'
+        const observed    = c.observed_collections ?? attr(c, 'Observed Collections') === 'Yes'
+        const mobile      = c.mobile_collections ?? attr(c, 'Mobile Drug Collections') === 'Yes'
+        const physMD      = attr(c, 'Physicals Performed by MD/DO') === 'Yes'
+        const physNP      = attr(c, 'Physicals Performed by NP/PA') === 'Yes'
+        const weekend   = hasWeekendHours(c)
         const hoursDisplay = c.hours_display || null
         const isBest   = i === 0
 
@@ -333,6 +338,20 @@ function ClinicCards({ clinics, onBook, isDOT, preferWeekend }) {
               )}
               {eccf && (
                 <span style={{ fontSize: 10.5, fontWeight: 600, color: '#6d28d9', background: '#f5f3ff', border: '1px solid #ddd6fe', borderRadius: 20, padding: '2px 8px' }}>eCCF</span>
+              )}
+              {workerComp && (
+                <span style={{ fontSize: 10.5, fontWeight: 600, color: '#065f46', background: '#f0fdf4', border: '1px solid #86efac', borderRadius: 20, padding: '2px 8px' }}>Workers' Comp</span>
+              )}
+              {observed && (
+                <span style={{ fontSize: 10.5, fontWeight: 600, color: '#7c3aed', background: '#faf5ff', border: '1px solid #d8b4fe', borderRadius: 20, padding: '2px 8px' }}>Observed</span>
+              )}
+              {mobile && (
+                <span style={{ fontSize: 10.5, fontWeight: 600, color: '#0369a1', background: '#f0f9ff', border: '1px solid #7dd3fc', borderRadius: 20, padding: '2px 8px' }}>Mobile</span>
+              )}
+              {(physMD || physNP) && (
+                <span style={{ fontSize: 10.5, fontWeight: 600, color: '#374151', background: '#f9fafb', border: '1px solid #d1d5db', borderRadius: 20, padding: '2px 8px' }}>
+                  Physicals {physMD && physNP ? '(MD/DO & NP/PA)' : physMD ? '(MD/DO)' : '(NP/PA)'}
+                </span>
               )}
               {c.SupportedSpecimenTypes?.map(t => (
                 <span key={t} style={{ fontSize: 10.5, color: '#7c3aed', background: '#f5f3ff', border: '1px solid #ddd6fe', borderRadius: 20, padding: '2px 8px' }}>
