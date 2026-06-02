@@ -131,21 +131,29 @@ function attr(clinic, name) {
 }
 
 function hasWeekendHours(clinic) {
+  // Prefer pre-parsed hours_by_day (enriched MCP response)
+  if (clinic.hours_by_day) {
+    const sat = clinic.hours_by_day['Saturday']
+    const sun = clinic.hours_by_day['Sunday']
+    return (sat && !sat.closed) || (sun && !sun.closed)
+  }
+  // Fallback: parse raw Clinic Hours attribute string
   const h = attr(clinic, 'Clinic Hours') || ''
   const m = h.match(/SaturdayHoursOpen:(\d{2}:\d{2})/)
-  return m && m[1] !== '00:00'
+  return !!(m && m[1] !== '00:00')
 }
 
-function scoreClinic(clinic, isDOT) {
+function scoreClinic(clinic, isDOT, preferWeekend = false) {
   let score = 0
-  const dotCert = attr(clinic, 'DOT Certified Physician') === 'Yes'
-  const walkIn  = attr(clinic, 'Walk In Drug Testing - No Appointment Required') === 'Yes'
-  const weekend = hasWeekendHours(clinic)
-  const handicap = attr(clinic, 'Handicap Access') === 'Yes'
-  if (isDOT && dotCert) score += 100
-  if (walkIn)  score += 30
-  if (weekend) score += 10
-  if (handicap) score += 5
+  const dotCert  = clinic.dot_certified         ?? attr(clinic, 'DOT Certified Physician') === 'Yes'
+  const walkIn   = clinic.walk_in               ?? attr(clinic, 'Walk In Drug Testing - No Appointment Required') === 'Yes'
+  const weekend  = hasWeekendHours(clinic)
+  const handicap = clinic.wheelchair_accessible ?? attr(clinic, 'Handicap Access') === 'Yes'
+  if (isDOT && dotCert)         score += 100
+  if (walkIn)                   score += 30
+  if (preferWeekend && weekend) score += 50   // heavily boost when user asks for weekend
+  else if (weekend)             score += 10
+  if (handicap)                 score += 5
   const dist = clinic.Distance ?? 99
   score += Math.max(0, 20 * (1 - dist / 20))
   return score
@@ -225,11 +233,11 @@ function BotAvatar() {
 /* Clinic card list */
 const PAGE_SIZE = 5
 
-function ClinicCards({ clinics, onBook, isDOT }) {
+function ClinicCards({ clinics, onBook, isDOT, preferWeekend }) {
   const [visible, setVisible] = useState(PAGE_SIZE)
 
   // Sort by weighted score client-side
-  const ranked = [...clinics].sort((a, b) => scoreClinic(b, isDOT) - scoreClinic(a, isDOT))
+  const ranked = [...clinics].sort((a, b) => scoreClinic(b, isDOT, preferWeekend) - scoreClinic(a, isDOT, preferWeekend))
   const shown = ranked.slice(0, visible)
   const hasMore = visible < ranked.length
 
@@ -705,6 +713,7 @@ export default function Chat({ donorId, donorName }) {
               role: 'assistant',
               text: messageText,
               clinics: showClinics,
+              triggerText: msg,
               booking_summary: summaryForMsg,
               showPassport: isBookingConfirmed,
               quickReplies,
@@ -997,7 +1006,12 @@ export default function Chat({ donorId, donorName }) {
                   )}
                   {hasQuickReplies && <QuickReplies items={quickReplies} onSend={send} />}
                   {m.clinics?.length > 0 && (
-                    <ClinicCards clinics={m.clinics} onBook={handleBook} isDOT={session.isDOT} />
+                    <ClinicCards
+                      clinics={m.clinics}
+                      onBook={handleBook}
+                      isDOT={session.isDOT}
+                      preferWeekend={/weekend|saturday|sunday|sat\b|sun\b/i.test(m.triggerText || '')}
+                    />
                   )}
                   {m.datePicker && (
                     <InlineDatePicker
