@@ -19,17 +19,17 @@ const IconBot = () => (
 )
 
 const QUICK_QUERIES = [
-  { label: 'Results Summary',   query: 'Show me a results summary for the last 30 days' },
-  { label: 'Positive Rate',     query: 'What is the positive rate this quarter? How does it compare to the industry benchmark?' },
-  { label: 'Analyte Breakdown', query: 'Show analyte breakdown for the last 90 days' },
-  { label: 'SLA Compliance',    query: 'What are the turnaround time statistics and SLA compliance for the current year?' },
-  { label: 'Pipeline Status',   query: 'What is the current pipeline status? Any backlogs to be aware of?' },
+  { label: 'Q1 2026 Outcomes',       query: 'Show me the full test outcome breakdown for Q1 2026 — positive, negative, cancelled, no-show.' },
+  { label: 'Positive Rate Trend',    query: 'Show me the month-over-month positive rate trend for the last 6 months.' },
+  { label: 'Top Substances',         query: 'Which substances drove the most positives over the last 6 months? Show me a breakdown.' },
+  { label: 'SLA & Turnaround',       query: 'How are we performing on turnaround time and SLA compliance this year?' },
+  { label: 'Live Pipeline',          query: 'How many tests are currently in progress and at what stage in the pipeline?' },
 ]
 
 const EMPTY_SUGGESTIONS = [
-  'Give me an overview of test results for Q1 2026',
-  'What does our current testing pipeline look like?',
-  'How are we doing on turnaround time and SLA compliance?',
+  'How did pre-employment testing perform in Q1 2026?',
+  'Which month had the highest positive rate in the last 6 months?',
+  'How does our SLA compliance break down by stage?',
 ]
 
 function boldNumbers(text) {
