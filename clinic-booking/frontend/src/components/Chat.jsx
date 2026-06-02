@@ -659,7 +659,7 @@ export default function Chat({ donorId, donorName }) {
           clinic:            a.clinic            || '',
           address:           a.address           || '',
           zip:               a.zip               || '',
-          appointmentWindow: a.appointment_window || scheduledTime,
+          appointmentWindow: a.appointment_window || session.appointmentWindow || scheduledTime,
           issuedAt:          new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
         }
         setPassport(passportData)
@@ -729,24 +729,42 @@ export default function Chat({ donorId, donorName }) {
       text: '',
       datePicker: true,
       clinicName: clinic.SiteName,
+      hoursByDay: clinic.hours_by_day || null,
     }])
   }
 
-  const handleDateSelect = (dateStr) => {
+  // Build a human-readable appointment window from clinic hours info for a given day
+  const appointmentWindow = (hoursInfo) => {
+    if (!hoursInfo || hoursInfo.closed) return null
+    const fmt = (t) => {
+      if (!t || t === '00:00') return null
+      const [h, m] = t.split(':').map(Number)
+      const suffix = h >= 12 ? 'PM' : 'AM'
+      return `${h % 12 || 12}:${String(m).padStart(2, '0')} ${suffix}`
+    }
+    const open  = fmt(hoursInfo.open)
+    const close = fmt(hoursInfo.close)
+    return (open && close) ? `${open} – ${close}` : null
+  }
+
+  const handleDateSelect = (dateStr, isoDate, hoursInfo) => {
     const clinic = pendingClinic
     if (!clinic) return
     setPendingClinic(null)
+    const window = appointmentWindow(hoursInfo)
+    const windowNote = window ? ` Appointment window: ${window}.` : ''
     // Replace the date-picker message with the confirmed date display
     setMessages(prev => prev.map(m =>
-      m.datePicker ? { ...m, datePicker: false, text: `📅 Preferred date: **${dateStr}**` } : m
+      m.datePicker ? { ...m, datePicker: false, text: `📅 Preferred date: **${dateStr}**${window ? `\n🕐 Clinic hours: **${window}**` : ''}` } : m
     ))
-    setSession(s => ({ ...s, selectedClinic: clinic, preferredDate: dateStr }))
+    setSession(s => ({ ...s, selectedClinic: clinic, preferredDate: dateStr, appointmentWindow: window }))
     const id   = clinic.EscreenSiteId ?? clinic.CollectionSiteId
     const addr = [clinic.Address1, clinic.City, clinic.State, clinic.ZipCode].filter(Boolean).join(', ')
     const dist = clinic.Distance != null ? ` (${clinic.Distance} mi)` : ''
-    const walkin = clinic.Attributes?.find(a => a.AttributeName === 'Walk In Drug Testing - No Appointment Required')?.AttributeValue === 'Yes' ? ', walk-in' : ''
-    const dot    = clinic.Attributes?.find(a => a.AttributeName === 'DOT Certified Physician')?.AttributeValue === 'Yes' ? ', DOT certified' : ''
-    send(`I'd like to book at ${clinic.SiteName}${dist}. Address: ${addr}. Site ID: ${id}${walkin}${dot}. Preferred date: ${dateStr}.`)
+    const walkin = clinic.walk_in
+      || clinic.Attributes?.find(a => a.AttributeName === 'Walk In Drug Testing - No Appointment Required')?.AttributeValue === 'Yes'
+    const walkinNote = walkin ? ', walk-in' : ''
+    send(`I'd like to book at ${clinic.SiteName}${dist}. Address: ${addr}. Site ID: ${id}${walkinNote}. Preferred date: ${dateStr}.${windowNote}`)
   }
 
   // Deterministic confirmation: hit /api/bookings/confirm directly, then feed
@@ -969,7 +987,11 @@ export default function Chat({ donorId, donorName }) {
                     <ClinicCards clinics={m.clinics} onBook={handleBook} isDOT={session.isDOT} />
                   )}
                   {m.datePicker && (
-                    <InlineDatePicker clinicName={m.clinicName} onSelect={handleDateSelect} />
+                    <InlineDatePicker
+                      clinicName={m.clinicName}
+                      hoursByDay={m.hoursByDay}
+                      onSelect={handleDateSelect}
+                    />
                   )}
                   {m.booking_summary && (
                     <BookingSummary summary={m.booking_summary} onConfirm={handleConfirm} onEdit={handleEdit} />
