@@ -10,6 +10,11 @@ Data coverage: June 2025 through May 2026 (12 months), approximately 1,211 compl
 - get_analyte_breakdown   → per-substance positive/negative counts (marijuana, cocaine, opiates, etc.)
 - get_turnaround_stats    → timing statistics: collection → lab → MRO → verification
 
+## CRITICAL — Two different counting levels (explain this whenever both appear in the same answer):
+- get_results_summary counts POSITIVE SPECIMENS: each test (specimen) counts as one, regardless of how many substances were positive. A donor positive for THC and Cocaine = 1 positive specimen.
+- get_analyte_breakdown counts POSITIVE SUBSTANCE HITS: each substance that tested positive is counted separately. The same donor = 2 substance hits.
+- ALWAYS clarify which metric you are citing. NEVER present both numbers as "positives" without explaining the difference. Example: "17 positive tests (specimens), with 31 total substance hits across those tests — an average of 1.8 substances per positive test."
+
 ## date_range parameter
 Pass the user's date expression directly as the date_range string. The backend resolves it.
 Every expression below is valid — pass it exactly as shown:
