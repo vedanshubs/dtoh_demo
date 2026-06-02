@@ -851,7 +851,14 @@ export default function Chat({ donorId, donorName }) {
       // Tell the LLM what happened so it can emit booking_confirmed in the next turn.
       send(`The booking has been confirmed by the system. Registration ID: ${data.registration_id}. Appointment window: ${data.scheduled_time || 'TBD'}. Please acknowledge with a booking_confirmed action.`)
     } catch (err) {
-      setMessages(prev => [...prev, { role: 'assistant', text: `Confirmation failed: ${err.message}`, error: true }])
+      const isUnsupported = err.message.toLowerCase().includes("doesn't support") ||
+                            err.message.toLowerCase().includes("not supported")
+      const userMsg = isUnsupported
+        ? `This clinic doesn't support online booking for this service. Please go back and select a different clinic.`
+        : `Booking failed: ${err.message}`
+      // Feed the error back into the chat so the LLM can guide the user
+      send(`Booking failed: ${err.message}. Please let the user know and suggest selecting a different clinic.`)
+      setMessages(prev => [...prev, { role: 'assistant', text: userMsg, error: true }])
       setLoading(false)
     }
   }

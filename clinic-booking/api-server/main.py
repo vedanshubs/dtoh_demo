@@ -331,6 +331,18 @@ async def confirm_booking(req: ConfirmBookingRequest):
     if not isinstance(result, dict):
         raise HTTPException(status_code=502, detail="place_order returned malformed payload")
 
+    # eScreen rejects some clinics for a given service (e.g. "Service Currently Not Supported").
+    # Return a 422 with a user-friendly message so the frontend can surface it.
+    if not result.get("success", True):
+        errors = result.get("errors", [])
+        raw_err = errors[0] if errors else "Booking was declined by the collection site."
+        if "not supported" in raw_err.lower() or "service" in raw_err.lower():
+            user_msg = "This clinic doesn't support online booking for this service. Please select a different clinic."
+        else:
+            user_msg = f"Booking declined: {raw_err}"
+        log.warning("[confirm] place_order rejected: %s", raw_err)
+        raise HTTPException(status_code=422, detail=user_msg)
+
     reg_id = result.get("registration_id") or result.get("registrationId") or ""
     if not reg_id:
         raise HTTPException(status_code=502, detail="place_order returned no registration_id")
