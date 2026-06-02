@@ -5,6 +5,46 @@ from db.date_range import parse_date_range
 log = logging.getLogger(__name__)
 
 
+# Maps LLM abbreviations / short forms to the full strings stored in the DB
+_REASON_MAP = {
+    "pe":                "Pre-Employment",
+    "pre-employment":    "Pre-Employment",
+    "pre employment":    "Pre-Employment",
+    "preemployment":     "Pre-Employment",
+    "ra":                "Random",
+    "random":            "Random",
+    "fc":                "For Cause",
+    "for cause":         "For Cause",
+    "forcause":          "For Cause",
+    "pa":                "Post-Accident",
+    "post-accident":     "Post-Accident",
+    "post accident":     "Post-Accident",
+    "rd":                "Return to Duty",
+    "return to duty":    "Return to Duty",
+    "returntoDuty":      "Return to Duty",
+}
+
+_DISPOSITION_MAP = {
+    "positive":            "Positive",
+    "pos":                 "Positive",
+    "negative":            "Negative",
+    "neg":                 "Negative",
+    "cancelled":           "Cancelled",
+    "canceled":            "Cancelled",
+    "no show":             "No Show",
+    "noshow":              "No Show",
+    "test not performed":  "Test Not Performed",
+    "rejected":            "Rejected Specimen",
+    "rejected specimen":   "Rejected Specimen",
+}
+
+
+def _normalize(val: str | None, mapping: dict) -> str | None:
+    if not val:
+        return val
+    return mapping.get(val.lower().strip(), val)
+
+
 def _add_filter(sql, params, col, val):
     if val:
         sql += f" AND {col} = %s"
@@ -23,6 +63,8 @@ def _add_like_filter(sql, params, col, val):
 
 
 async def query_results_summary(client_id, date_range, disposition=None, reason_for_test=None, specimen_type=None, regulation=None):
+    disposition    = _normalize(disposition,    _DISPOSITION_MAP)
+    reason_for_test = _normalize(reason_for_test, _REASON_MAP)
     start, end = parse_date_range(date_range)
     log.info("query_results_summary: client_id=%s date=%s→%s disposition=%s reason=%s specimen=%s regulation=%s",
              client_id, start, end, disposition, reason_for_test, specimen_type, regulation)
@@ -56,6 +98,7 @@ async def query_results_summary(client_id, date_range, disposition=None, reason_
 
 
 async def query_pipeline_status(client_id, date_range, status=None, reason_for_test=None):
+    reason_for_test = _normalize(reason_for_test, _REASON_MAP)
     start, end = parse_date_range(date_range)
     log.info("query_pipeline_status: client_id=%s date=%s→%s status=%s reason=%s",
              client_id, start, end, status, reason_for_test)
@@ -163,6 +206,7 @@ async def query_analyte_breakdown(client_id, date_range, analyte_name=None, disp
 
 
 async def query_turnaround_stats(client_id, date_range, reason_for_test=None, specimen_type=None, regulation=None):
+    reason_for_test = _normalize(reason_for_test, _REASON_MAP)
     start, end = parse_date_range(date_range)
     log.info("query_turnaround_stats: client_id=%s date=%s→%s reason=%s specimen=%s regulation=%s",
              client_id, start, end, reason_for_test, specimen_type, regulation)
