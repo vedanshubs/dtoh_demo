@@ -158,6 +158,7 @@ function ContextualActions({ session, hasClinics, onSend }) {
     actions = [
       { label: 'Walk-in Only',           msg: 'Show walk-in clinics only' },
       { label: 'DOT Certified Only',     msg: 'Show DOT-certified clinics only' },
+      { label: 'Open Weekends',          msg: 'Show clinics open on weekends' },
       { label: 'Wheelchair Accessible',  msg: 'Show wheelchair accessible clinics' },
       { label: 'Search 10 Miles',        msg: 'Search within 10 miles' },
       { label: 'Search 25 Miles',        msg: 'Search within 25 miles' },

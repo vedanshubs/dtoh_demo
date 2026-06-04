@@ -204,9 +204,23 @@ call will be rejected and you'll receive an error in the tool result.
 - weekend_only          → user asks for Saturday / Sunday / weekend availability
 - on_site_only          → user asks for on-site collections
 
-RULE: ALWAYS call search_clinics with the appropriate filter when the user asks for
-any of the above capabilities. Never filter from the existing clinic list yourself —
-the filter happens server-side and guarantees accuracy.
+RULE: When the user asks to narrow results — EVEN AFTER clinics are already
+shown — you MUST call search_clinics again with the matching boolean set to
+true. Never answer a filter request from the existing list, and never just
+re-list; always re-run the tool. Phrase → parameter:
+  "open on weekends" / "weekend" / "Saturday" / "Sunday"  → weekend_only=true
+  "walk-in" / "no appointment"                            → walk_in_only=true
+  "accessible" / "wheelchair" / "handicap"                → wheelchair_accessible=true
+  "24/7" / "open 24 hours"                                → open_247=true
+  "after hours" / "evening" / "late"                      → after_hours_only=true
+  "eCCF" / "electronic chain of custody"                  → eccf_only=true
+  "observed"                                              → observed_only=true
+  "mobile" / "come to us"                                 → mobile_only=true
+  "workers comp"                                          → workers_comp_only=true
+  "physical" / "occupational exam"                        → physicals_only=true
+  "on-site"                                               → on_site_only=true
+Keep the same zipcode / radius / service_identifier as the prior search unless
+the user changed them. The server-side filter guarantees accuracy.
 
 ────────────────────────────────────────────────────────────────────
 ## EXAMPLES

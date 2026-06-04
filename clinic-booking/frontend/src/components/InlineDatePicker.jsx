@@ -44,6 +44,24 @@ function hoursForDate(iso, hoursByDay) {
   return hoursByDay[dayName] || null
 }
 
+// "This Weekend" target: the soonest upcoming weekend day this clinic is OPEN.
+// Falls back to whichever weekend day comes first (so the closed warning shows
+// if neither is open or hours are unknown). Fixes Sunday-only clinics being
+// flagged closed when "This Weekend" used to hard-code Saturday.
+function thisWeekendIso(hoursByDay) {
+  const day = new Date().getDay()
+  const satOffset = (6 - day + 7) % 7
+  const sunOffset = (7 - day) % 7
+  const satIso = getDateStr(satOffset)
+  const sunIso = getDateStr(sunOffset)
+  const ordered = satOffset <= sunOffset ? [satIso, sunIso] : [sunIso, satIso]
+  const isOpen = (iso) => {
+    const info = hoursForDate(iso, hoursByDay)
+    return info && !info.closed
+  }
+  return ordered.find(isOpen) || ordered[0]
+}
+
 function fmt12(time24) {
   if (!time24 || time24 === '00:00') return null
   const [h, m] = time24.split(':').map(Number)
@@ -63,7 +81,7 @@ function hoursLabel(info) {
 const QUICK = [
   { label: 'Today',        resolve: () => getDateStr(0) },
   { label: 'Tomorrow',     resolve: () => getDateStr(1) },
-  { label: 'This Weekend', resolve: () => getDateStr((6 - new Date().getDay() + 7) % 7) },
+  { label: 'This Weekend', resolve: (hoursByDay) => thisWeekendIso(hoursByDay) },
   { label: 'Next Week',    resolve: () => getMondayOffset(0) },
 ]
 
@@ -90,7 +108,7 @@ export default function InlineDatePicker({ clinicName, hoursByDay, onSelect }) {
   }
 
   const handleQuick = (q) => {
-    const iso = q.resolve()
+    const iso = q.resolve(hoursByDay)
     const info = hoursForDate(iso, hoursByDay)
     if (info?.closed) {
       // Auto-pick in single mode so user sees the warning
@@ -135,7 +153,7 @@ export default function InlineDatePicker({ clinicName, hoursByDay, onSelect }) {
         </div>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 14 }}>
           {QUICK.map(q => {
-            const iso  = q.resolve()
+            const iso  = q.resolve(hoursByDay)
             const info = hoursForDate(iso, hoursByDay)
             const closed = info?.closed === true
             return (
