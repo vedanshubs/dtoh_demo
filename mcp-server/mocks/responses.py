@@ -3,9 +3,9 @@
 # Primary use cases: Pre-Employment (PE), Random (RND), For Cause (FC), Return to Duty (RTD)
 
 
-def mock_results_summary(client_id: str, date_range: str, **kwargs) -> dict:
+def mock_results_summary(client_id: str, date_range: str, group_by_reason: bool = False, **kwargs) -> dict:
     """UBS Q1 2026 drug test results — 487 tests across all US offices."""
-    return {
+    result = {
         "client_id": client_id,
         "date_range": date_range,
         "total": 487,
@@ -18,13 +18,20 @@ def mock_results_summary(client_id: str, date_range: str, **kwargs) -> dict:
             {"disposition": "No Show",                "count": 4,   "pct": 0.8},
             {"disposition": "Rejected Specimen",      "count": 2,   "pct": 0.4},
         ],
-        "by_reason_for_test": [
+    }
+    # Match the live DB contract: only emit `by_reason` (with precomputed
+    # positive_rate_pct) when group_by_reason is requested.
+    if group_by_reason:
+        rows = [
             {"reason": "Pre-Employment",   "total": 312, "positive": 11},
             {"reason": "Random",           "total": 124, "positive": 6},
             {"reason": "For Cause",        "total": 38,  "positive": 3},
             {"reason": "Return to Duty",   "total": 13,  "positive": 0},
-        ],
-    }
+        ]
+        for r in rows:
+            r["positive_rate_pct"] = round(100.0 * r["positive"] / r["total"], 1) if r["total"] else 0.0
+        result["by_reason"] = rows
+    return result
 
 
 def mock_pipeline_status(client_id: str, date_range: str, **kwargs) -> dict:

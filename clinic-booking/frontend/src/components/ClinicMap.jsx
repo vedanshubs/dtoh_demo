@@ -306,7 +306,7 @@ export default function ClinicMap({ clinics = [], donorZip, donorName, onBook })
                     <span>{address}</span>
                   </div>
                   <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', marginBottom: 6 }}>
-                    {activeClinic.Distance != null && (
+                    {activeClinic.Distance > 0 && (
                       <Chip label={`${activeClinic.Distance} mi`} color="#475569" bg="#f1f5f9" />
                     )}
                     {badges.map(b => <Chip key={b.label} label={b.label} color={b.color} bg={b.bg} />)}
@@ -439,7 +439,7 @@ export default function ClinicMap({ clinics = [], donorZip, donorName, onBook })
                 }}>
                   📍 {address}
                 </div>
-                {c.Distance != null && (
+                {c.Distance > 0 && (
                   <div style={{ fontSize: 10.5, color: '#94a3b8', marginTop: 2 }}>{c.Distance} mi away</div>
                 )}
                 {badges.length > 0 && (

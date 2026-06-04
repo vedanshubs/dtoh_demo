@@ -31,27 +31,35 @@ _REASON_LABELS = {
     "pre employment":      "PE",
     "preemployment":       "PE",
     "random":              "RA",
+    "rnd":                 "RA",
     "post-accident":       "PA",
     "post accident":       "PA",
     "return to duty":      "RD",
     "return-to-duty":      "RD",
+    "rtd":                 "RD",
     "follow-up":           "FU",
     "follow up":           "FU",
     "reasonable suspicion": "RS",
     "for cause":           "RS",
     "for-cause":           "RS",
+    "fc":                  "RS",
 }
 
 
 def _reason_code(reason_for_test: str) -> str:
     """Accept either a code ('PE') or a human label ('Pre-Employment') and
-    return the canonical code _REASON_MAP understands."""
+    return the canonical code _REASON_MAP understands. Falls back to 'PE' for
+    anything unrecognized (logged, so a wrong reason doesn't pass silently)."""
     if not reason_for_test:
         return "PE"
     rt = reason_for_test.strip()
     if rt.upper() in _REASON_MAP:
         return rt.upper()
-    return _REASON_LABELS.get(rt.lower(), "PE")
+    code = _REASON_LABELS.get(rt.lower())
+    if code is None:
+        log.warning("Unrecognized reason_for_test %r — defaulting to PE (PreEmployment)", reason_for_test)
+        return "PE"
+    return code
 
 _ENVELOPE = """\
 <soapenv:Envelope

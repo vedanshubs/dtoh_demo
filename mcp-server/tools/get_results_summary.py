@@ -13,7 +13,7 @@ async def handle_get_results_summary(
     use_mock: bool = True,
 ) -> dict:
     if use_mock:
-        return mock_results_summary(client_id, date_range)
+        return mock_results_summary(client_id, date_range, group_by_reason=group_by_reason)
     return await query_results_summary(
         client_id, date_range,
         disposition=disposition,

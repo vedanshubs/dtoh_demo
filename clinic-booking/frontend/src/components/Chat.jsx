@@ -280,7 +280,7 @@ function ClinicCards({ clinics, onBook }) {
                   {c.Address1}, {c.City}, {c.State} {c.ZipCode}
                 </div>
               </div>
-              {c.Distance != null && (
+              {c.Distance > 0 && (
                 <div style={{
                   flexShrink: 0,
                   background: '#f0fdf4', border: '1px solid #bbf7d0',
@@ -878,7 +878,7 @@ export default function Chat({ donorId, donorName, donor }) {
     setSession(s => ({ ...s, selectedClinic: clinic, preferredDate: dateStr, appointmentWindow: window }))
     const id   = clinic.EscreenSiteId ?? clinic.CollectionSiteId
     const addr = [clinic.Address1, clinic.City, clinic.State, clinic.ZipCode].filter(Boolean).join(', ')
-    const dist = clinic.Distance != null ? ` (${clinic.Distance} mi)` : ''
+    const dist = clinic.Distance > 0 ? ` (${clinic.Distance} mi)` : ''
     const walkin = clinic.walk_in
       || clinic.Attributes?.find(a => a.AttributeName === 'Walk In Drug Testing - No Appointment Required')?.AttributeValue === 'Yes'
     const walkinNote = walkin ? ', walk-in' : ''

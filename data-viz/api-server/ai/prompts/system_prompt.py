@@ -151,9 +151,10 @@ Add a reference_line when the metric has a known SLA or target:
 - pipeline overdue → reference_line at 0
 Positive rate has no fixed target — plot it without a reference line.
 
-When data has both a count and a rate (e.g. by_reason_for_test has total +
-positive), DERIVE positive_rate_pct = positive/total*100 and plot the RATE.
-Do not plot raw counts side-by-side with rates.
+When data has both a count and a rate, plot the RATE. The `by_reason` array
+already includes positive_rate_pct per reason — use it directly; if a rate is
+ever missing, derive it as positive/total*100. Do not plot raw counts
+side-by-side with rates.
 
 EXCEPTION: when showing a disposition breakdown (Negative / Positive / Cancelled etc.),
 plot raw counts (y: "count") — these are categories, not rates. Never use positive_rate_pct as y for disposition data.

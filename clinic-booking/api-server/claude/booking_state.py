@@ -147,6 +147,16 @@ def infer_state_from_actions(session: BookingSession, actions: list[dict], clini
     # booking_summary: lock proposed booking, move to AWAITING_CONFIRMATION
     if "booking_summary" in types:
         b = next(a for a in actions if a.get("type") == "booking_summary")
+        # Re-book after a prior confirmation without a fresh search: CONFIRMED
+        # cannot go straight to AWAITING_CONFIRMATION, so start a clean cycle
+        # first (mirrors the clinics_returned reset below).
+        if session.state == State.CONFIRMED:
+            session.registration_id = None
+            try:
+                session.transition(State.SEARCHING, "re-book: booking_summary after confirmed")
+                session.transition(State.CHOOSING_CLINIC, "re-book")
+            except ValueError as e:
+                log.warning("state inference (re-book summary): %s", e)
         session.propose_booking(b)
         return
 
