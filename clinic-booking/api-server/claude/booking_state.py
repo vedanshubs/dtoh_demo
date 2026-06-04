@@ -46,7 +46,8 @@ _ALLOWED: dict[State, set[State]] = {
     State.SEARCHING:             {State.CHOOSING_CLINIC, State.IDLE},
     State.CHOOSING_CLINIC:       {State.AWAITING_CONFIRMATION, State.SEARCHING, State.IDLE},
     State.AWAITING_CONFIRMATION: {State.CONFIRMED, State.CHOOSING_CLINIC, State.SEARCHING, State.IDLE},
-    State.CONFIRMED:             {State.IDLE},
+    # After a booking, a new search starts a fresh cycle (book-another support).
+    State.CONFIRMED:             {State.IDLE, State.SEARCHING},
 }
 
 
@@ -151,6 +152,18 @@ def infer_state_from_actions(session: BookingSession, actions: list[dict], clini
 
     # search_clinics tool fired → SEARCHING / CHOOSING_CLINIC
     if clinics_returned:
+        # A new search after a confirmed booking starts a fresh cycle: clear the
+        # previous proposal/fingerprint so the next booking gets a clean token.
+        if session.state == State.CONFIRMED:
+            session.proposed = None
+            session.fingerprint = None
+            session.registration_id = None
+            try:
+                session.transition(State.SEARCHING, "new search after confirmed booking")
+                session.transition(State.CHOOSING_CLINIC, "clinics displayed")
+            except ValueError as e:
+                log.warning("state inference (re-book): %s", e)
+            return
         # If we're already past SEARCHING, leave it; otherwise advance.
         if session.state in (State.IDLE, State.SELECTING_TEST, State.SELECTING_REASON, State.SEARCHING):
             try:

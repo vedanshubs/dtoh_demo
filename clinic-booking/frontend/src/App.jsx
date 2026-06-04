@@ -1,17 +1,11 @@
 import { useState, useEffect } from 'react'
 import CandidateSelector from './components/CandidateSelector'
 import BookingChat from './components/Chat'
-import AnalyticsChat from './components/AnalyticsChat'
 
 /* ── Icons (inline SVG, no deps) ─────────────────────────────────────── */
 const IconCalendar = ({ size = 16, color = 'currentColor' }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <rect x="3" y="4" width="18" height="18" rx="2" /><line x1="16" y1="2" x2="16" y2="6" /><line x1="8" y1="2" x2="8" y2="6" /><line x1="3" y1="10" x2="21" y2="10" />
-  </svg>
-)
-const IconChart = ({ size = 16, color = 'currentColor' }) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <line x1="18" y1="20" x2="18" y2="10" /><line x1="12" y1="20" x2="12" y2="4" /><line x1="6" y1="20" x2="6" y2="14" />
   </svg>
 )
 const IconShield = ({ size = 14, color = 'currentColor' }) => (
@@ -22,7 +16,6 @@ const IconShield = ({ size = 14, color = 'currentColor' }) => (
 
 const VIEWS = [
   { id: 'booking',   label: 'Book a Test',  Icon: IconCalendar,  desc: 'Schedule employee drug tests' },
-  { id: 'analytics', label: 'Analytics',    Icon: IconChart,     desc: 'Program insights & metrics'   },
 ]
 
 function useIsMobile(bp = 768) {
@@ -40,7 +33,7 @@ function GlobalStyles() {
   return (
     <style>{`
       *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-      body { overflow: hidden; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
+      body { overflow: hidden; font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
       ::-webkit-scrollbar { width: 5px; height: 5px; }
       ::-webkit-scrollbar-track { background: transparent; }
       ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
@@ -161,21 +154,29 @@ function Sidebar({ view, onViewChange, isMobile }) {
 function AppHeader({ view, donor, isMobile, onViewChange }) {
   const meta = {
     booking:   { title: 'Drug Test Booking',      sub: 'Schedule and manage employee occupational health tests' },
-    analytics: { title: 'Analytics Dashboard',    sub: 'Program-wide insights, trends, and compliance metrics' },
   }
   const { title, sub } = meta[view]
 
   return (
     <header style={{
-      height: 60, background: '#ffffff',
-      borderBottom: '1px solid #e2e8f0',
+      height: 64, background: 'linear-gradient(135deg, #c8102e 0%, #8b0000 100%)',
+      borderBottom: 'none',
       display: 'flex', alignItems: 'center', justifyContent: 'space-between',
       padding: '0 24px', flexShrink: 0,
-      boxShadow: '0 1px 0 #e2e8f0',
+      position: 'sticky', top: 0, zIndex: 10,
     }}>
-      <div>
-        <h1 style={{ fontSize: 15, fontWeight: 700, color: '#0f172a', lineHeight: 1.3 }}>{title}</h1>
-        <p  style={{ fontSize: 11.5, color: '#94a3b8', lineHeight: 1, marginTop: 2 }}>{sub}</p>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+        <div style={{
+          width: 38, height: 38, borderRadius: 10,
+          background: 'rgba(255,255,255,0.15)',
+          border: '1px solid rgba(255,255,255,0.2)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          fontSize: 19, flexShrink: 0,
+        }}>📅</div>
+        <div>
+          <h1 style={{ fontSize: 17, fontWeight: 700, color: '#fff', letterSpacing: '-0.01em', lineHeight: 1.2 }}>{title}</h1>
+          <p  style={{ fontSize: 11, color: 'rgba(255,255,255,0.65)', lineHeight: 1, marginTop: 2 }}>{sub}</p>
+        </div>
       </div>
 
       <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
@@ -188,8 +189,8 @@ function AppHeader({ view, donor, isMobile, onViewChange }) {
                 style={{
                   padding: '5px 10px', borderRadius: 8,
                   border: 'none', cursor: 'pointer', fontSize: 11.5, fontWeight: 600,
-                  background: view === id ? '#fef2f2' : '#f1f5f9',
-                  color: view === id ? '#c8102e' : '#475569',
+                  background: view === id ? '#fff' : 'rgba(255,255,255,0.15)',
+                  color: view === id ? '#c8102e' : '#fff',
                 }}
               >{label}</button>
             ))}
@@ -198,11 +199,11 @@ function AppHeader({ view, donor, isMobile, onViewChange }) {
         {!isMobile && donor && view === 'booking' && <DonorBadge donor={donor} />}
         <div style={{
           display: 'flex', alignItems: 'center', gap: 5,
-          fontSize: 11, fontWeight: 600, color: '#92400e',
-          background: '#fffbeb', border: '1px solid #fde68a',
+          fontSize: 11, fontWeight: 600, color: '#fff',
+          background: 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.2)',
           padding: '4px 10px', borderRadius: 20,
         }}>
-          <IconShield size={12} color="#92400e" />Demo Mode
+          <IconShield size={12} color="#fff" />Demo Mode
         </div>
       </div>
     </header>
@@ -214,20 +215,20 @@ function DonorBadge({ donor }) {
   return (
     <div style={{
       display: 'flex', alignItems: 'center', gap: 8,
-      background: '#fef2f2', border: '1px solid #fecaca',
+      background: 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.2)',
       borderRadius: 24, padding: '5px 12px 5px 6px',
     }}>
       <div style={{
         width: 26, height: 26, borderRadius: '50%',
-        background: 'linear-gradient(135deg, #c8102e, #8b0000)',
+        background: '#fff',
         display: 'flex', alignItems: 'center', justifyContent: 'center',
-        fontSize: 10, fontWeight: 700, color: '#fff', flexShrink: 0,
+        fontSize: 10, fontWeight: 700, color: '#c8102e', flexShrink: 0,
       }}>{initials}</div>
       <div>
-        <div style={{ fontSize: 12, fontWeight: 600, color: '#991b1b', lineHeight: 1.2 }}>
+        <div style={{ fontSize: 12, fontWeight: 600, color: '#fff', lineHeight: 1.2 }}>
           {donor.first_name} {donor.last_name}
         </div>
-        <div style={{ fontSize: 10, color: '#b91c1c', lineHeight: 1, marginTop: 1 }}>{donor.role}</div>
+        <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.7)', lineHeight: 1, marginTop: 1 }}>{donor.role}</div>
       </div>
     </div>
   )
@@ -274,16 +275,8 @@ function BookingLayout({ donorId, donor, onSelectDonor, isMobile }) {
         </div>
       )}
       <div style={{ flex: 1, overflow: 'hidden', padding: '16px', background: '#f8fafc', minHeight: 0 }}>
-        <BookingChat donorId={donorId} donorName={donor ? donor.first_name : null} />
+        <BookingChat donorId={donorId} donorName={donor ? donor.first_name : null} donor={donor} />
       </div>
-    </div>
-  )
-}
-
-function AnalyticsLayout() {
-  return (
-    <div style={{ flex: 1, overflow: 'hidden', padding: '16px', background: '#f8fafc' }}>
-      <AnalyticsChat />
     </div>
   )
 }
@@ -312,11 +305,7 @@ export default function App() {
         <AppHeader view={view} donor={donor} isMobile={isMobile} onViewChange={setView} />
 
         <div style={{ flex: 1, overflow: 'hidden', display: 'flex', minHeight: 0 }}>
-          {view === 'booking' ? (
-            <BookingLayout donorId={donorId} donor={donor} onSelectDonor={handleSelectDonor} isMobile={isMobile} />
-          ) : (
-            <AnalyticsLayout />
-          )}
+          <BookingLayout donorId={donorId} donor={donor} onSelectDonor={handleSelectDonor} isMobile={isMobile} />
         </div>
       </div>
     </div>

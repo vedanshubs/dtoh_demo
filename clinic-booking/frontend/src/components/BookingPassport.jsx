@@ -13,7 +13,7 @@ const Field = ({ label, value, wide }) => (
   </div>
 )
 
-export default function BookingPassport({ data, onClose }) {
+export default function BookingPassport({ data, onClose, onNewBooking }) {
   useEffect(() => {
     document.body.style.overflow = 'hidden'
     return () => { document.body.style.overflow = '' }
@@ -94,7 +94,7 @@ export default function BookingPassport({ data, onClose }) {
         borderRadius: 16,
         overflow: 'hidden',
         boxShadow: '0 24px 64px rgba(0,0,0,0.3)',
-        fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
+        fontFamily: "'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
       }}>
         {/* Header */}
         <div style={{ background: 'linear-gradient(135deg, #c8102e 0%, #8b0000 100%)', padding: '24px 28px 20px' }}>
@@ -159,14 +159,25 @@ export default function BookingPassport({ data, onClose }) {
           }}>
             ⬇ Download PDF
           </button>
-          <button onClick={onClose} style={{
-            flex: 1, padding: '11px 0',
-            background: '#f1f5f9', color: '#475569',
-            border: 'none', borderRadius: 8,
-            fontSize: 13, fontWeight: 600, cursor: 'pointer',
-          }}>
-            Close
-          </button>
+          {onNewBooking ? (
+            <button onClick={onNewBooking} style={{
+              flex: 1, padding: '11px 0',
+              background: '#f1f5f9', color: '#475569',
+              border: 'none', borderRadius: 8,
+              fontSize: 13, fontWeight: 600, cursor: 'pointer',
+            }}>
+              ➕ Book another
+            </button>
+          ) : (
+            <button onClick={onClose} style={{
+              flex: 1, padding: '11px 0',
+              background: '#f1f5f9', color: '#475569',
+              border: 'none', borderRadius: 8,
+              fontSize: 13, fontWeight: 600, cursor: 'pointer',
+            }}>
+              Close
+            </button>
+          )}
         </div>
       </div>
     </div>

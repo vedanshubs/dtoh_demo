@@ -2,10 +2,19 @@ import { useState } from 'react'
 
 const DAY_NAMES = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
 
+// Format a Date as a LOCAL YYYY-MM-DD (toISOString would convert to UTC and
+// roll the date forward in the evening for timezones behind UTC).
+function toLocalIso(d) {
+  const y = d.getFullYear()
+  const m = String(d.getMonth() + 1).padStart(2, '0')
+  const day = String(d.getDate()).padStart(2, '0')
+  return `${y}-${m}-${day}`
+}
+
 function getDateStr(offsetDays = 0) {
   const d = new Date()
   d.setDate(d.getDate() + offsetDays)
-  return d.toISOString().split('T')[0]
+  return toLocalIso(d)
 }
 
 function getMondayOffset(weeksAhead = 0) {
@@ -13,13 +22,7 @@ function getMondayOffset(weeksAhead = 0) {
   const day = d.getDay()
   const toMonday = day === 0 ? 1 : (8 - day) % 7 || 7
   d.setDate(d.getDate() + toMonday + weeksAhead * 7)
-  return d.toISOString().split('T')[0]
-}
-
-function getSundayOffset(weeksAhead = 0) {
-  const mon = new Date(getMondayOffset(weeksAhead))
-  mon.setDate(mon.getDate() + 6)
-  return mon.toISOString().split('T')[0]
+  return toLocalIso(d)
 }
 
 function humanDate(iso) {
@@ -58,10 +61,10 @@ function hoursLabel(info) {
 }
 
 const QUICK = [
-  { label: 'Today',     resolve: () => getDateStr(0) },
-  { label: 'Tomorrow',  resolve: () => getDateStr(1) },
-  { label: 'This Week', resolve: () => getDateStr(0) },
-  { label: 'Next Week', resolve: () => getMondayOffset(0) },
+  { label: 'Today',        resolve: () => getDateStr(0) },
+  { label: 'Tomorrow',     resolve: () => getDateStr(1) },
+  { label: 'This Weekend', resolve: () => getDateStr((6 - new Date().getDay() + 7) % 7) },
+  { label: 'Next Week',    resolve: () => getMondayOffset(0) },
 ]
 
 export default function InlineDatePicker({ clinicName, hoursByDay, onSelect }) {

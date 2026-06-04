@@ -51,6 +51,10 @@ Thumbs.db
 # Local Claude / AI tool configs
 claude_desktop_config.json
 
+# Service logs (from start.ps1 hidden processes)
+/logs/
+*.log
+
 # Temp test scripts
 /test_*.py
 

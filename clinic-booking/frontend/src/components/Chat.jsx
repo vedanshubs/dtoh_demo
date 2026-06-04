@@ -4,6 +4,7 @@ import ProgressStepper from './ProgressStepper'
 import BookingSummary from './BookingSummary'
 import BookingPassport from './BookingPassport'
 import McpActivityPanel from './McpActivityPanel'
+import ClinicMap from './ClinicMap'
 import InlineDatePicker from './InlineDatePicker'
 import { safeParseActions, findAction } from '../lib/actionSchema'
 
@@ -143,22 +144,6 @@ function hasWeekendHours(clinic) {
   return !!(m && m[1] !== '00:00')
 }
 
-function scoreClinic(clinic, isDOT, preferWeekend = false) {
-  let score = 0
-  const dotCert  = clinic.dot_certified         ?? attr(clinic, 'DOT Certified Physician') === 'Yes'
-  const walkIn   = clinic.walk_in               ?? attr(clinic, 'Walk In Drug Testing - No Appointment Required') === 'Yes'
-  const weekend  = hasWeekendHours(clinic)
-  const handicap = clinic.wheelchair_accessible ?? attr(clinic, 'Handicap Access') === 'Yes'
-  if (isDOT && dotCert)         score += 100
-  if (walkIn)                   score += 30
-  if (preferWeekend && weekend) score += 50   // heavily boost when user asks for weekend
-  else if (weekend)             score += 10
-  if (handicap)                 score += 5
-  const dist = clinic.Distance ?? 99
-  score += Math.max(0, 20 * (1 - dist / 20))
-  return score
-}
-
 /* Contextual quick-action buttons */
 function ContextualActions({ session, hasClinics, onSend }) {
   const { testType, clinicSelected, bookingConfirmed } = session
@@ -233,13 +218,12 @@ function BotAvatar() {
 /* Clinic card list */
 const PAGE_SIZE = 5
 
-function ClinicCards({ clinics, onBook, isDOT, preferWeekend }) {
+function ClinicCards({ clinics, onBook }) {
   const [visible, setVisible] = useState(PAGE_SIZE)
 
-  // Sort by weighted score client-side
-  const ranked = [...clinics].sort((a, b) => scoreClinic(b, isDOT, preferWeekend) - scoreClinic(a, isDOT, preferWeekend))
-  const shown = ranked.slice(0, visible)
-  const hasMore = visible < ranked.length
+  // `clinics` arrives pre-ranked (sorted once in send() so the map matches).
+  const shown = clinics.slice(0, visible)
+  const hasMore = visible < clinics.length
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginTop: 10 }}>
@@ -286,7 +270,7 @@ function ClinicCards({ clinics, onBook, isDOT, preferWeekend }) {
                       fontSize: 10, fontWeight: 700, color: '#92400e',
                       background: '#fef3c7', border: '1px solid #fde68a',
                       borderRadius: 20, padding: '2px 8px',
-                    }}>Best Match</span>
+                    }}>Nearest</span>
                   </div>
                 )}
                 <div style={{ fontSize: 13.5, fontWeight: 700, color: '#0f172a', marginBottom: 3 }}>{c.SiteName}</div>
@@ -411,7 +395,7 @@ function ClinicCards({ clinics, onBook, isDOT, preferWeekend }) {
           onMouseEnter={e => { e.currentTarget.style.background = '#f1f5f9'; e.currentTarget.style.borderColor = '#94a3b8'; e.currentTarget.style.color = '#1e293b' }}
           onMouseLeave={e => { e.currentTarget.style.background = '#f8fafc'; e.currentTarget.style.borderColor = '#cbd5e1'; e.currentTarget.style.color = '#475569' }}
         >
-          Show more ({Math.min(PAGE_SIZE, ranked.length - visible)} of {ranked.length - visible} remaining)
+          Show more ({Math.min(PAGE_SIZE, clinics.length - visible)} of {clinics.length - visible} remaining)
         </button>
       )}
     </div>
@@ -419,7 +403,7 @@ function ClinicCards({ clinics, onBook, isDOT, preferWeekend }) {
 }
 
 /* Main component */
-export default function Chat({ donorId, donorName }) {
+export default function Chat({ donorId, donorName, donor }) {
   const [messages,          setMessages]          = useState([])
   const [history,           setHistory]           = useState([])
   const [input,             setInput]             = useState('')
@@ -434,6 +418,8 @@ export default function Chat({ donorId, donorName }) {
   const [pendingClinic,     setPendingClinic]     = useState(null)   // clinic awaiting date selection
   const [lastFingerprint,   setLastFingerprint]   = useState(null)   // idempotency token for /api/bookings/confirm
   const [bookingState,      setBookingState]      = useState('idle') // mirrors server state machine
+  const [mapCollapsed,      setMapCollapsed]      = useState(false)   // right-panel map collapse toggle
+  const [mapWidth,          setMapWidth]          = useState(460)     // right-panel map width (px), drag-resizable
 
   // Session memory cleared on donor change
   const [session, setSession] = useState({
@@ -514,15 +500,61 @@ export default function Chat({ donorId, donorName }) {
     { label: 'Breath Alcohol Test',       isDOT: false },
   ]
 
+  // Full reset of a booking cycle — clears all frontend state AND the server-side
+  // per-donor state machine. Used by both "Clear" and "Book another test" so a
+  // second booking in the same session starts from a clean slate.
+  const resetBooking = () => {
+    abortRef.current?.abort()
+    setMessages([]); setHistory([]); setHasStarted(false); setHasClinics(false); setLastClinics([])
+    setLastBookingSummary(null); setPassport(null); setPassportOpen(false); setMcpCalls([])
+    setPendingClinic(null); setLastFingerprint(null); setBookingState('idle')
+    setShowTimeoutWarning(false); lastActivityRef.current = Date.now()
+    setSession({ testType: null, reasonForTest: null, selectedClinic: null, clinicSelected: false, bookingConfirmed: false, isDOT: false, preferredDate: null })
+    if (donorId) {
+      fetch(`/api/bookings/reset?donor_id=${donorId}`, { method: 'POST' }).catch(() => {})
+    }
+  }
+
+  const welcomeMessage = () => ({
+    role: 'assistant',
+    text: `What test do you need?\n\nYou can describe the full request — for example: "pre-employment DOT urine, nearest walk-in" — or select a test type below:`,
+    chips: TEST_TYPE_OPTIONS.map(t => t.label),
+  })
+
+  // "Book another test" — clean reset, then immediately re-show the welcome.
+  // State updates are batched, so the welcome wins over resetBooking's clears.
+  const startNewBooking = () => {
+    resetBooking()
+    setHasStarted(true)
+    setMessages([welcomeMessage()])
+  }
+
   // Begin booking: inject local welcome message with test type chips (no API call)
   const beginBooking = () => {
     if (hasStarted) return
     setHasStarted(true)
-    setMessages([{
-      role: 'assistant',
-      text: `What test do you need?\n\nYou can describe the full request — for example: "pre-employment DOT urine, nearest walk-in" — or select a test type below:`,
-      chips: TEST_TYPE_OPTIONS.map(t => t.label),
-    }])
+    setMessages([welcomeMessage()])
+  }
+
+  // Drag the boundary between chat and map to resize the map panel.
+  const startMapResize = (e) => {
+    e.preventDefault()
+    const startX = e.clientX
+    const startW = mapWidth
+    const onMove = (ev) => {
+      const delta = startX - ev.clientX            // drag left → wider map
+      setMapWidth(Math.min(820, Math.max(320, startW + delta)))
+    }
+    const onUp = () => {
+      window.removeEventListener('mousemove', onMove)
+      window.removeEventListener('mouseup', onUp)
+      document.body.style.cursor = ''
+      document.body.style.userSelect = ''
+    }
+    document.body.style.cursor = 'col-resize'
+    document.body.style.userSelect = 'none'
+    window.addEventListener('mousemove', onMove)
+    window.addEventListener('mouseup', onUp)
   }
 
   const send = async (text) => {
@@ -566,17 +598,23 @@ export default function Chat({ donorId, donorName }) {
     const REASON_KEYS = [
       ['pre-employment', 'Pre-Employment'],
       ['pre employment', 'Pre-Employment'],
+      ['pre-emp',        'Pre-Employment'],
+      ['pre emp',        'Pre-Employment'],
+      ['preemp',         'Pre-Employment'],
       ['1.',             'Pre-Employment'],
       ['random',         'Random'],
+      ['rand',           'Random'],
       ['2.',             'Random'],
       ['for cause',      'For Cause'],
       ['for-cause',      'For Cause'],
       ['3.',             'For Cause'],
       ['post-accident',  'Post-Accident'],
       ['post accident',  'Post-Accident'],
+      ['post acc',       'Post-Accident'],
       ['4.',             'Post-Accident'],
       ['return to duty', 'Return to Duty'],
       ['return-to-duty', 'Return to Duty'],
+      ['rtd',            'Return to Duty'],
       ['5.',             'Return to Duty'],
     ]
     for (const [key, label] of REASON_KEYS) {
@@ -672,8 +710,14 @@ export default function Chat({ donorId, donorName }) {
       // tool_call events were already streamed live and added to mcpCalls; skip duplicate add.
       const scheduledTime = data.tool_calls?.find(tc => tc.tool === 'place_order')?.scheduled_time || ''
 
+      // Rank clinics by distance (nearest first) ONCE here, so the chat cards
+      // and the map share the exact same order and numbering. DOT / walk-in
+      // remain visible as badges but do not affect ordering.
       const returnedClinics = data.clinics?.length ? data.clinics : null
-      if (returnedClinics) { setHasClinics(true); setLastClinics(returnedClinics) }
+      const rankedClinics = returnedClinics
+        ? [...returnedClinics].sort((a, b) => (a.Distance ?? Infinity) - (b.Distance ?? Infinity))
+        : null
+      if (rankedClinics) { setHasClinics(true); setLastClinics(rankedClinics) }
 
       // ── Booking summary (proposed, awaiting confirmation) ──
       // Source of truth: booking_summary action. Falls back to legacy data.booking_summary
@@ -732,7 +776,7 @@ export default function Chat({ donorId, donorName }) {
       }
 
       // Only show clinic cards when search_clinics fired this turn (returnedClinics is fresh)
-      const showClinics = returnedClinics && !effectiveSummary && !isBookingConfirmed ? returnedClinics : null
+      const showClinics = rankedClinics && !effectiveSummary && !isBookingConfirmed ? rankedClinics : null
 
       const summaryForMsg = effectiveSummary
         ? (!effectiveSummary['Preferred Date'] && session.preferredDate
@@ -854,11 +898,12 @@ export default function Chat({ donorId, donorName }) {
       const isUnsupported = err.message.toLowerCase().includes("doesn't support") ||
                             err.message.toLowerCase().includes("not supported")
       const userMsg = isUnsupported
-        ? `This clinic doesn't support online booking for this service. Please go back and select a different clinic.`
-        : `Booking failed: ${err.message}`
-      // Feed the error back into the chat so the LLM can guide the user
-      send(`Booking failed: ${err.message}. Please let the user know and suggest selecting a different clinic.`)
-      setMessages(prev => [...prev, { role: 'assistant', text: userMsg, error: true }])
+        ? `This clinic doesn't support online booking for this service. Please select a different clinic from the map or list.`
+        : `Booking failed: ${err.message}. Please select a different clinic and try again.`
+      // Show one clean, deterministic error message. The server kept the session
+      // in AWAITING_CONFIRMATION, so the user can pick another clinic and retry —
+      // no extra LLM round-trip needed.
+      setMessages(prev => [...prev, { id: `err-${Date.now()}`, role: 'assistant', text: userMsg, error: true }])
       setLoading(false)
     }
   }
@@ -869,7 +914,13 @@ export default function Chat({ donorId, donorName }) {
 
   return (
     <>
-    {passport && passportOpen && <BookingPassport data={passport} onClose={() => setPassportOpen(false)} />}
+    {passport && passportOpen && (
+      <BookingPassport
+        data={passport}
+        onClose={() => setPassportOpen(false)}
+        onNewBooking={() => { setPassportOpen(false); startNewBooking() }}
+      />
+    )}
     <div style={{ display: 'flex', height: '100%', gap: 0, borderRadius: 14, overflow: 'hidden', boxShadow: '0 1px 6px rgba(0,0,0,0.06)', border: '1px solid #e2e8f0' }}>
     <div style={{
       background: '#ffffff',
@@ -891,7 +942,7 @@ export default function Chat({ donorId, donorName }) {
         </div>
         {messages.length > 0 && (
           <button
-            onClick={() => { setMessages([]); setHistory([]); setHasStarted(false); setHasClinics(false); setSession(s => ({ ...s, clinicSelected: false, bookingConfirmed: false })) }}
+            onClick={resetBooking}
             style={{
               display: 'flex', alignItems: 'center', gap: 5,
               padding: '5px 10px', borderRadius: 8,
@@ -1055,8 +1106,6 @@ export default function Chat({ donorId, donorName }) {
                     <ClinicCards
                       clinics={m.clinics}
                       onBook={handleBook}
-                      isDOT={session.isDOT}
-                      preferWeekend={/weekend|saturday|sunday|sat\b|sun\b/i.test(m.triggerText || '')}
                     />
                   )}
                   {m.datePicker && (
@@ -1070,19 +1119,32 @@ export default function Chat({ donorId, donorName }) {
                     <BookingSummary summary={m.booking_summary} onConfirm={handleConfirm} onEdit={handleEdit} />
                   )}
                   {m.showPassport && passport && (
-                    <button
-                      onClick={() => setPassportOpen(true)}
-                      style={{
-                        display: 'inline-flex', alignItems: 'center', gap: 8,
-                        marginTop: 10,
-                        background: 'linear-gradient(135deg, #c8102e, #8b0000)',
-                        color: '#fff', border: 'none', borderRadius: 20,
-                        padding: '8px 20px', fontSize: 12.5, fontWeight: 700,
-                        cursor: 'pointer', boxShadow: '0 2px 8px rgba(200,16,46,0.3)',
-                      }}
-                    >
-                      📋 View Booking Passport
-                    </button>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginTop: 10 }}>
+                      <button
+                        onClick={() => setPassportOpen(true)}
+                        style={{
+                          display: 'inline-flex', alignItems: 'center', gap: 8,
+                          background: 'linear-gradient(135deg, #c8102e, #8b0000)',
+                          color: '#fff', border: 'none', borderRadius: 20,
+                          padding: '8px 20px', fontSize: 12.5, fontWeight: 700,
+                          cursor: 'pointer', boxShadow: '0 2px 8px rgba(200,16,46,0.3)',
+                        }}
+                      >
+                        📋 View Booking Passport
+                      </button>
+                      <button
+                        onClick={startNewBooking}
+                        style={{
+                          display: 'inline-flex', alignItems: 'center', gap: 8,
+                          background: '#fff', color: '#c8102e',
+                          border: '1.5px solid #fecaca', borderRadius: 20,
+                          padding: '8px 20px', fontSize: 12.5, fontWeight: 700,
+                          cursor: 'pointer',
+                        }}
+                      >
+                        ➕ Book another test
+                      </button>
+                    </div>
                   )}
                   {m.role === 'assistant' && !m.streaming && m.usage && (
                     <div style={{ marginTop: 8, display: 'flex', gap: 6 }}>
@@ -1204,7 +1266,94 @@ export default function Chat({ donorId, donorName }) {
         </p>
       </div>
     </div>
-    <McpActivityPanel calls={mcpCalls} loading={loading} />
+    {hasClinics && !session.bookingConfirmed ? (
+      mapCollapsed ? (
+        // ── Collapsed: thin strip with expand button ──
+        <div style={{
+          width: 44, flexShrink: 0,
+          borderLeft: '1px solid #e2e8f0', background: '#fff',
+          display: 'flex', flexDirection: 'column', alignItems: 'center',
+          paddingTop: 10, gap: 10,
+        }}>
+          <button
+            onClick={() => setMapCollapsed(false)}
+            title="Expand map"
+            style={{
+              width: 30, height: 30, borderRadius: 8,
+              border: '1px solid #e2e8f0', background: '#f8fafc',
+              cursor: 'pointer', fontSize: 14, color: '#475569',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+            }}
+          >
+            ‹
+          </button>
+          <div style={{
+            writingMode: 'vertical-rl', transform: 'rotate(180deg)',
+            fontSize: 11.5, fontWeight: 700, color: '#475569',
+            letterSpacing: '0.03em', display: 'flex', alignItems: 'center', gap: 6,
+          }}>
+            🗺️ Clinic map · {lastClinics.length} sites
+          </div>
+        </div>
+      ) : (
+        // ── Expanded: drag handle + resizable map panel ──
+        <div style={{ width: mapWidth, flexShrink: 0, display: 'flex', flexDirection: 'row' }}>
+          {/* Drag handle */}
+          <div
+            onMouseDown={startMapResize}
+            title="Drag to resize"
+            style={{
+              width: 6, flexShrink: 0, cursor: 'col-resize',
+              background: '#e2e8f0',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+            }}
+            onMouseEnter={e => (e.currentTarget.style.background = '#c8102e')}
+            onMouseLeave={e => (e.currentTarget.style.background = '#e2e8f0')}
+          >
+            <div style={{ width: 2, height: 28, background: '#fff', borderRadius: 2, opacity: 0.7 }} />
+          </div>
+          {/* Map content column */}
+          <div style={{
+            flex: 1, minWidth: 0, background: '#f8fafc',
+            display: 'flex', flexDirection: 'column', overflow: 'hidden',
+          }}>
+            <div style={{
+              padding: '10px 14px', fontSize: 12, fontWeight: 700,
+              color: '#475569', background: '#fff',
+              borderBottom: '1px solid #e2e8f0', flexShrink: 0,
+              display: 'flex', alignItems: 'center', gap: 6,
+            }}>
+              <span>🗺️</span> Clinic map
+              <span style={{ fontSize: 11, color: '#94a3b8', fontWeight: 500 }}>
+                · {lastClinics.length} sites
+              </span>
+              <button
+                onClick={() => setMapCollapsed(true)}
+                title="Collapse map"
+                style={{
+                  marginLeft: 'auto', width: 26, height: 26, borderRadius: 7,
+                  border: '1px solid #e2e8f0', background: '#f8fafc',
+                  cursor: 'pointer', fontSize: 13, color: '#475569',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                }}
+              >
+                ›
+              </button>
+            </div>
+            <div style={{ flex: 1, minHeight: 0 }}>
+              <ClinicMap
+                clinics={lastClinics}
+                donorZip={donor?.zip}
+                donorName={donor ? `${donor.first_name} ${donor.last_name}` : null}
+                onBook={handleBook}
+              />
+            </div>
+          </div>
+        </div>
+      )
+    ) : (
+      <McpActivityPanel calls={mcpCalls} loading={loading} />
+    )}
     </div>
     </>
   )
