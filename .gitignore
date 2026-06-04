@@ -19,6 +19,9 @@ env/
 .env
 !.env.example
 
+# Local secret/handoff notes — never commit (contain live keys)
+*.local.md
+
 # pytest / coverage
 .pytest_cache/
 .coverage
