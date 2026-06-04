@@ -111,11 +111,16 @@ async def get_results_summary(
     reason_for_test: str | None = None,
     specimen_type: str | None = None,
     regulation: str | None = None,
+    group_by_reason: bool = False,
 ) -> dict:
     """Get completed drug test result counts grouped by disposition.
-    date_range examples: 'last 30 days', 'last 90 days', 'last quarter', 'current year'."""
-    log.info("get_results_summary(date_range=%s, disposition=%s)", date_range, disposition)
-    result = await handle_get_results_summary(CLIENT_ID, date_range, disposition, reason_for_test, specimen_type, regulation, use_mock=USE_MOCK_ANALYTICS)
+    date_range examples: 'last 30 days', 'last 90 days', 'last quarter', 'current year'.
+    Set group_by_reason=true to ALSO get a per-reason breakdown as `by_reason`:
+    [{reason, total, positive, positive_rate_pct}, ...]. Use this whenever the
+    user asks for positive rate / volume / counts broken down by test reason —
+    do NOT make one tool call per reason."""
+    log.info("get_results_summary(date_range=%s, disposition=%s, group_by_reason=%s)", date_range, disposition, group_by_reason)
+    result = await handle_get_results_summary(CLIENT_ID, date_range, disposition, reason_for_test, specimen_type, regulation, group_by_reason=group_by_reason, use_mock=USE_MOCK_ANALYTICS)
     log.info("get_results_summary → total=%s", result.get("total"))
     return result
 

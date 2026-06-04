@@ -13,9 +13,9 @@
 ### Demo Flow
 
 **Step 1 — Open with the headline question:**
-> "What is our positive rate for Q1 2026 and how does it compare to the industry benchmark?"
+> "What is our positive rate for Q1 2026, and how does it break down by test reason?"
 
-*What to show:* The assistant pulls `get_results_summary` for Q1 2026, surfaces the positive rate instantly, and benchmarks it against the 4% industry standard for financial services firms. If the rate is below 4%, it says so clearly. If above, it flags it unprompted.
+*What to show:* The assistant pulls `get_results_summary` for Q1 2026, surfaces the overall positive rate instantly, and breaks it down by reason (Pre-Employment / Random / For Cause / Return to Duty) so the driver of the rate is visible without a follow-up question.
 
 **Step 2 — Drill into volume:**
 > "How many total tests did we run this quarter, broken down by test type?"
@@ -32,7 +32,7 @@
 
 **Talking points:**
 - Zero manual report extraction — the CCO talks directly to the data
-- Proactive benchmark flagging — the AI volunteers the comparison, she doesn't have to ask
+- Proactive insight surfacing — the AI volunteers drivers and outliers, she doesn't have to ask
 - Audit-ready: the same questions asked every quarter give consistent, reproducible answers
 
 ---
@@ -124,7 +124,7 @@ Scenario 1 (5 min) → pause for reaction → Scenario 2 (7 min) → Scenario 3 
 
 **If the audience is HR Ops / CHRO:** Lead with Scenario 2. Pipeline risk and onboarding delays are felt daily.
 
-**If the audience is the CFO or CFO's team:** Lead with Scenario 1. Board reporting and benchmark comparison speak directly to governance and liability.
+**If the audience is the CFO or CFO's team:** Lead with Scenario 1. Board reporting and quarter-over-quarter program metrics speak directly to governance and liability.
 
 **Handling the "is this live data?" question:**  
-> *"This is seeded with realistic synthetic data that mirrors the shape of what a firm your size would see — positive rate distribution, pipeline volumes, turnaround benchmarks. The architecture and the AI behavior are production-grade. Swapping in your live eScreen feed is a configuration change, not a rebuild."*
+> *"This is seeded with realistic synthetic data that mirrors the shape of what a firm your size would see — positive rate distribution, pipeline volumes, turnaround times. The architecture and the AI behavior are production-grade. Swapping in your live eScreen feed is a configuration change, not a rebuild."*

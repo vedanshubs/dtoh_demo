@@ -9,6 +9,7 @@ async def handle_get_results_summary(
     reason_for_test: str | None = None,
     specimen_type: str | None = None,
     regulation: str | None = None,
+    group_by_reason: bool = False,
     use_mock: bool = True,
 ) -> dict:
     if use_mock:
@@ -19,4 +20,5 @@ async def handle_get_results_summary(
         reason_for_test=reason_for_test,
         specimen_type=specimen_type,
         regulation=regulation,
+        group_by_reason=group_by_reason,
     )

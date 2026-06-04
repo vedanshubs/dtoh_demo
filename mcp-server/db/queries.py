@@ -62,12 +62,12 @@ def _add_like_filter(sql, params, col, val):
     return sql, params
 
 
-async def query_results_summary(client_id, date_range, disposition=None, reason_for_test=None, specimen_type=None, regulation=None):
+async def query_results_summary(client_id, date_range, disposition=None, reason_for_test=None, specimen_type=None, regulation=None, group_by_reason=False):
     disposition    = _normalize(disposition,    _DISPOSITION_MAP)
     reason_for_test = _normalize(reason_for_test, _REASON_MAP)
     start, end = parse_date_range(date_range)
-    log.info("query_results_summary: client_id=%s date=%s→%s disposition=%s reason=%s specimen=%s regulation=%s",
-             client_id, start, end, disposition, reason_for_test, specimen_type, regulation)
+    log.info("query_results_summary: client_id=%s date=%s→%s disposition=%s reason=%s specimen=%s regulation=%s group_by_reason=%s",
+             client_id, start, end, disposition, reason_for_test, specimen_type, regulation, group_by_reason)
     conn = get_connection()
     try:
         with conn.cursor() as cur:
@@ -92,7 +92,38 @@ async def query_results_summary(client_id, date_range, disposition=None, reason_
             rows = cur.fetchall()
             log.info("query_results_summary: %d disposition rows returned", len(rows))
             total = sum(r["count"] for r in rows)
-            return {"client_id": client_id, "date_range": date_range, "total": total, "breakdown": rows}
+            result = {"client_id": client_id, "date_range": date_range, "total": total, "breakdown": rows}
+
+            # Optional per-reason breakdown with positive_rate_pct precomputed.
+            # Ignores the `disposition` filter (we always want totals + positives per reason);
+            # respects specimen_type and regulation filters.
+            if group_by_reason:
+                reason_sql = """
+                    SELECT
+                        tr.ReasonForTest AS reason,
+                        COUNT(*)         AS total,
+                        SUM(CASE WHEN dr.Disposition = 'Positive' THEN 1 ELSE 0 END) AS positive
+                    FROM CollectionOrder co
+                    JOIN TestReport  tr ON tr.CollectionOrderId = co.CollectionOrderId
+                    JOIN DrugReport  dr ON dr.TestReportId      = tr.TestReportId
+                    WHERE co.AccountNumber = %s
+                      AND tr.DateOfService BETWEEN %s AND %s
+                """
+                r_params = [client_id, start, end]
+                reason_sql, r_params = _add_filter(reason_sql, r_params, "dr.SampleType", specimen_type)
+                reason_sql, r_params = _add_filter(reason_sql, r_params, "tr.Regulation", regulation)
+                reason_sql += " GROUP BY tr.ReasonForTest ORDER BY total DESC"
+                cur.execute(reason_sql, r_params)
+                by_reason = cur.fetchall()
+                for r in by_reason:
+                    t = r["total"] or 0
+                    p = int(r["positive"] or 0)
+                    r["positive"] = p
+                    r["positive_rate_pct"] = round(100.0 * p / t, 1) if t else 0.0
+                result["by_reason"] = by_reason
+                log.info("query_results_summary: %d reason rows returned", len(by_reason))
+
+            return result
     finally:
         conn.close()
 

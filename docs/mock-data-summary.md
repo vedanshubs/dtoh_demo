@@ -149,7 +149,7 @@ All fictional individuals placed within the clinic service area (Manhattan NY, H
 
 These are intentional signals the AI analytics should surface:
 
-1. **NY-HQ positive rate spike** — 9% in Q4 2025 (vs. 4% industry benchmark), driven almost entirely by THC
+1. **NY-HQ positive rate spike** — 9% in Q4 2025, driven almost entirely by THC
 2. **Q1 2026 For Cause surge** — 4 extra For Cause tests/month at all offices
 3. **NY-HQ gradual normalisation** — positive rate drops back toward 5.5% in Q1 2026, showing trend recovery
 4. **NJ-Weehawken slowest turnaround** — highest lab transit times of all offices

@@ -1,10 +1,10 @@
 import Chat from './components/Chat'
 
 const QUICK_QUERIES = [
-  { icon: '📊', label: 'Positive rate', query: "What's our positive rate for pre-employment tests this quarter?" },
-  { icon: '🧪', label: 'Analyte breakdown', query: 'Which substances showed the most positives in the last 90 days?' },
-  { icon: '⏱️', label: 'SLA compliance', query: 'Are we meeting our 5-day turnaround SLA?' },
-  { icon: '🔄', label: 'Pipeline status', query: 'How many tests are currently waiting for MRO review?' },
+  { icon: '📊', label: 'Positive rate',       query: "What's our positive rate so far this year, broken down by test reason?" },
+  { icon: '🧪', label: 'Substance breakdown', query: 'Which substances are driving our positives this year?' },
+  { icon: '⏱️', label: 'SLA performance',    query: 'How are we tracking against our 5-day turnaround SLA?' },
+  { icon: '🔄', label: 'Pipeline',            query: "What's currently in the pipeline, and where are the bottlenecks?" },
 ]
 
 export default function App() {
