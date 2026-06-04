@@ -24,6 +24,35 @@ _REASON_MAP = {
     "TR": ("Transfer",        "Transfer"),
 }
 
+# The UI/booking_summary sends human labels (e.g. "Pre-Employment"), not codes.
+# Normalize those to the canonical codes above so the correct reason reaches eScreen.
+_REASON_LABELS = {
+    "pre-employment":      "PE",
+    "pre employment":      "PE",
+    "preemployment":       "PE",
+    "random":              "RA",
+    "post-accident":       "PA",
+    "post accident":       "PA",
+    "return to duty":      "RD",
+    "return-to-duty":      "RD",
+    "follow-up":           "FU",
+    "follow up":           "FU",
+    "reasonable suspicion": "RS",
+    "for cause":           "RS",
+    "for-cause":           "RS",
+}
+
+
+def _reason_code(reason_for_test: str) -> str:
+    """Accept either a code ('PE') or a human label ('Pre-Employment') and
+    return the canonical code _REASON_MAP understands."""
+    if not reason_for_test:
+        return "PE"
+    rt = reason_for_test.strip()
+    if rt.upper() in _REASON_MAP:
+        return rt.upper()
+    return _REASON_LABELS.get(rt.lower(), "PE")
+
 _ENVELOPE = """\
 <soapenv:Envelope
     xmlns:esc="http://schemas.datacontract.org/2004/07/eScreen.WebServiceHelper.Model"
@@ -198,7 +227,7 @@ async def register_scheduled_event(
     service_identifier: str,
     reason_for_test: str,
 ) -> dict:
-    drug_reason, occ_reason = _REASON_MAP.get(reason_for_test, ("PreEmp", "PreEmployment"))
+    drug_reason, occ_reason = _REASON_MAP[_reason_code(reason_for_test)]
 
     today = datetime.now()
     start_date  = today.strftime("%Y-%m-%dT00:00:00")

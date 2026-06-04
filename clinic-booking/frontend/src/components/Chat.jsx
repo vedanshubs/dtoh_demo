@@ -715,9 +715,21 @@ export default function Chat({ donorId, donorName, donor }) {
       // and the map share the exact same order and numbering. DOT / walk-in
       // remain visible as badges but do not affect ordering.
       const returnedClinics = data.clinics?.length ? data.clinics : null
-      const rankedClinics = returnedClinics
-        ? [...returnedClinics].sort((a, b) => (a.Distance ?? Infinity) - (b.Distance ?? Infinity))
-        : null
+      let rankedClinics = null
+      if (returnedClinics) {
+        // De-dup by site id — eScreen can return the same site twice.
+        const seen = new Set()
+        const unique = returnedClinics.filter(c => {
+          const id = c.EscreenSiteId ?? c.CollectionSiteId
+          if (id == null || !seen.has(id)) { if (id != null) seen.add(id); return true }
+          return false
+        })
+        // Distance ascending; treat 0/missing as "unknown" → sort last, so real
+        // nearest clinics lead (eScreen leaves Distance=0 on some sites, which
+        // otherwise floats look-alike duplicates to the top as the "nearest").
+        const dist = c => (c.Distance == null || c.Distance <= 0) ? Infinity : c.Distance
+        rankedClinics = unique.sort((a, b) => dist(a) - dist(b))
+      }
       if (rankedClinics) { setHasClinics(true); setLastClinics(rankedClinics) }
 
       // ── Booking summary (proposed, awaiting confirmation) ──
