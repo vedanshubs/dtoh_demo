@@ -74,6 +74,10 @@ foreach ($f in @("schema_candidates.sql","schema_test_types.sql","schema_poc2.sq
     Get-Content "$db\$f" -Raw | docker exec -i escreen-db mysql -uescreen -pescreen escreen
     Write-Host "Loaded $f"
 }
+
+# Required for LIVE eScreen clinic search: replace placeholder service codes
+# with 1001 (the code eScreen recognises). Skip if running fully in mock mode.
+Get-Content "$db\patch_service_identifiers.sql" -Raw | docker exec -i escreen-db mysql -uescreen -pescreen escreen
 ```
 
 ### 2. Create Python Virtual Environments
@@ -98,9 +102,10 @@ cd data-viz\frontend     && npm install && cd ..\..
 Each service has a `.env.example` — copy and fill in your values:
 
 ```powershell
-Copy-Item mcp-server\.env.example              mcp-server\.env
-Copy-Item clinic-booking\api-server\.env.example clinic-booking\api-server\.env
-Copy-Item data-viz\api-server\.env.example      data-viz\api-server\.env
+Copy-Item mcp-server\.env.example                  mcp-server\.env
+Copy-Item clinic-booking\api-server\.env.example   clinic-booking\api-server\.env
+Copy-Item data-viz\api-server\.env.example         data-viz\api-server\.env
+Copy-Item clinic-booking\frontend\.env.example     clinic-booking\frontend\.env
 ```
 
 Key variables:
@@ -110,10 +115,16 @@ Key variables:
 | `ESCREEN_USERNAME` | `mcp-server/.env` | eScreen SOAP username |
 | `ESCREEN_PASSWORD` | `mcp-server/.env` | eScreen SOAP password |
 | `ESCREEN_ELECTRONIC_CLIENT_ID` | `mcp-server/.env` | eScreen client ID |
+| `ESCREEN_PFX_PATH` / `ESCREEN_PFX_PASSPHRASE` | `mcp-server/.env` | Path + passphrase for the mutual-TLS client cert (the `.pfx`, which is gitignored — copy it manually) |
+| `ESCREEN_CLIENT_ACCOUNT` | `mcp-server/.env` | Must be `UBS001` to match the seeded DB |
 | `USE_MOCK_CLINICS` | `mcp-server/.env` | `true` = mock clinics, `false` = live SOAP |
 | `USE_MOCK_ANALYTICS` | `mcp-server/.env` | `true` = mock data, `false` = live MySQL |
-| `OPENAI_API_KEY` | `clinic-booking/api-server/.env` | OpenAI API key for the chatbot |
+| `OPENAI_API_KEY` | `clinic-booking/api-server/.env`, `data-viz/api-server/.env` | OpenAI API key for the chatbots |
+| `DEMO_CLIENT_ID` | `data-viz/api-server/.env` | Must be `UBS001` (matches `CollectionOrder.AccountNumber`); `DEMO_CLIENT` returns 0 rows |
+| `VITE_GOOGLE_MAPS_API_KEY` | `clinic-booking/frontend/.env` | Google Maps JS API key for the clinic map; restrict by referrer to `localhost:5173` |
 | `DB_HOST` / `DB_PORT` | all `.env` files | MySQL connection (default: localhost:3307) |
+
+> **Note:** the `.pfx` client certificate and all `.env` files are gitignored — they must be copied to each machine manually.
 
 ---
 
