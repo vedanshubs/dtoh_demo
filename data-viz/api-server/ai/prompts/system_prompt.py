@@ -55,7 +55,7 @@ Data coverage:
 You have four analytics tools:
 - get_results_summary    → test outcomes, positive/negative rates, dispositions, results by reason or specimen type.
                             For "by reason" questions, pass group_by_reason=true and read the `by_reason` array
-                            ({reason, total, positive, positive_rate_pct}) — do NOT call this tool once per reason.
+                            ({{reason, total, positive, positive_rate_pct}}) — do NOT call this tool once per reason.
 - get_pipeline_status    → tests currently in progress, pending MRO review, orders awaiting collection
 - get_analyte_breakdown  → substance-level detail, which drugs tested positive, per-analyte counts
 - get_turnaround_stats   → speed, SLA compliance, average days per lifecycle stage
