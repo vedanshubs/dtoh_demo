@@ -168,13 +168,13 @@ function ContextualActions({ session, hasClinics, onSend }) {
       { label: 'Search 10 Miles',        msg: 'Search within 10 miles' },
       { label: 'Search 25 Miles',        msg: 'Search within 25 miles' },
     ]
-  } else if (testType) {
+  } else if (testType && session.reasonForTest) {
     actions = [
       { label: 'Find Clinics Near Me',  msg: 'Find clinics near me' },
       { label: 'Search 10 Miles',       msg: 'Search within 10 miles' },
     ]
   } else {
-    // No test type yet — actions hidden; test type chips shown via welcome message
+    // Reason or test type not yet collected — chips shown via welcome/quick_replies
     return null
   }
   return (
@@ -516,6 +516,10 @@ export default function Chat({ donorId, donorName, donor, onDonorCreated }) {
     { label: 'Breath Alcohol Test',       isDOT: false },
   ]
 
+  const REASON_OPTIONS = [
+    'Pre-Employment', 'Random', 'For Cause', 'Post-Accident', 'Return to Duty',
+  ]
+
   // Full reset of a booking cycle — clears all frontend state AND the server-side
   // per-donor state machine. Used by both "Clear" and "Book another test" so a
   // second booking in the same session starts from a clean slate.
@@ -533,8 +537,8 @@ export default function Chat({ donorId, donorName, donor, onDonorCreated }) {
 
   const welcomeMessage = () => ({
     role: 'assistant',
-    text: `What test do you need?\n\nYou can describe the full request — for example: "pre-employment DOT urine, nearest walk-in" — or select a test type below:`,
-    chips: TEST_TYPE_OPTIONS.map(t => t.label),
+    text: `What's the reason for this test?\n\nYou can describe the full request — for example: "pre-employment DOT urine, nearest walk-in" — or select a reason below:`,
+    chips: REASON_OPTIONS,
   })
 
   // "Book another test" — clean reset, then immediately re-show the welcome.

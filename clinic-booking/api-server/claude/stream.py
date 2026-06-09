@@ -21,6 +21,32 @@ from transport.client import MCPClientManager
 log = logging.getLogger(__name__)
 
 
+def _extract_first_json(text: str) -> dict:
+    """Parse text that may contain multiple concatenated JSON objects; return the first valid one."""
+    try:
+        return json.loads(text)
+    except json.JSONDecodeError:
+        pass
+    depth = 0
+    start = None
+    for i, ch in enumerate(text):
+        if ch == '{':
+            if depth == 0:
+                start = i
+            depth += 1
+        elif ch == '}':
+            depth -= 1
+            if depth == 0 and start is not None:
+                try:
+                    obj = json.loads(text[start:i + 1])
+                    if isinstance(obj, dict):
+                        log.warning("Extracted first JSON object from multi-object response (len=%d)", len(text))
+                        return obj
+                except json.JSONDecodeError:
+                    start = None
+    return {}
+
+
 class MessageExtractor:
     """Pulls the `message` string value out of a streaming JSON blob token-by-token."""
     _MARKERS = ('"message":"', '"message": "', '"message" : "', '"message"  :  "')
@@ -137,11 +163,7 @@ async def run_turn_stream(
 
         if choice.finish_reason == "stop":
             text = choice.message.content or ""
-            raw = {}
-            try:
-                raw = json.loads(text)
-            except json.JSONDecodeError:
-                pass
+            raw = _extract_first_json(text)
 
             # Same nested-reply unwrap as Phase 2
             for _ in range(3):
@@ -299,9 +321,8 @@ async def run_turn_stream(
 
     log.info("Synthesis complete (%d chars) | tokens: %s", len(full_text), usage_totals)
 
-    try:
-        raw = json.loads(full_text)
-    except json.JSONDecodeError:
+    raw = _extract_first_json(full_text)
+    if not raw:
         raw = {"message": full_text, "actions": []}
 
     # Defensive unwrap: if the model nested a Reply inside `message`

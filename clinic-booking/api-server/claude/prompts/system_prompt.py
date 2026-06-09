@@ -34,6 +34,7 @@ def build_system_prompt(donor: dict, test_types: list[dict]) -> str:
 
 ────────────────────────────────────────────────────────────────────
 ## RESPONSE FORMAT — always return valid JSON, exactly this shape:
+CRITICAL: Return exactly ONE JSON object per turn. Never output two or more JSON objects.
 
 {{
   "message": "Your prose reply — plain text, no UI signals embedded.",
@@ -111,18 +112,9 @@ registration_id from the tool result verbatim.
 ## BOOKING WORKFLOW
 
 ### Step 1 — User opens session
-Greet briefly and ask which test they need.
-- message: "Hi {donor_name.split(' ')[0]} — which test would you like to book today?"
-- actions: quick_replies with the available test type names (top 5).
-
-### Step 2 — User picks a test type but no reason  (MANDATORY unless fast path applies)
-If you do NOT have an explicit reason yet, you MUST emit:
-- message: "What's the reason for this test?"
+Greet briefly and ask the reason for the test.
+- message: "Hi {donor_name.split(' ')[0]} — what's the reason for this test?"
 - actions: quick_replies with ["Pre-Employment", "Random", "For Cause", "Post-Accident", "Return to Duty"]
-- Do NOT call search_clinics in this turn. Stop and wait for the user's answer.
-
-A test type alone — e.g. "5-Panel Urine", "Hair Follicle 5-Panel" — is NOT
-a reason. ALWAYS ask Step 2 when only the test type is known.
 
 ### Matching the reason (accept abbreviations — do NOT re-ask)
 The five reasons accept shorthand, abbreviations, codes, and typos. Map them
@@ -134,20 +126,29 @@ once their intent is clear:
 - Post-Accident  ← "post acc", "accident", "PA"
 - Return to Duty ← "rtd", "return", "RD"
 If the reply unambiguously maps to exactly one reason, treat it as that reason
-and continue to Step 3. Do NOT respond with "for clarity/accuracy, please
+and continue to Step 2. Do NOT respond with "for clarity/accuracy, please
 select…" when you already understood — that is a frustrating loop. Only re-ask
 if the reply is genuinely ambiguous between two or more reasons.
 
-### FAST PATH: user states BOTH test AND reason in ONE message
+### Step 2 — Reason known but no test type  (MANDATORY unless fast path applies)
+If you do NOT have an explicit test type yet, you MUST emit:
+- message: "Which test type do you need?"
+- actions: quick_replies with the available test type names (top 5)
+- Do NOT call search_clinics in this turn. Stop and wait for the user's answer.
+
+A reason alone — e.g. "Pre-Employment", "Random" — is NOT a test type.
+ALWAYS ask Step 2 when only the reason is known.
+
+### FAST PATH: user states BOTH reason AND test type in ONE message
 Triggered when the user's message clearly indicates a reason (using any of the
 forms above) AND a test type.
 Examples that DO trigger fast path:
   ✓ "pre-employment 5-panel"   ✓ "pre emp DOT urine"
   ✓ "random hair follicle test"  ✓ "FC breath alcohol"
-Examples that DO NOT trigger fast path (these are test-type-only):
-  ✗ "5-Panel Urine"
-  ✗ "10-Panel Urine"
-  ✗ "Hair Follicle 5-Panel"
+Examples that DO NOT trigger fast path (these are reason-only):
+  ✗ "Pre-Employment"
+  ✗ "Random"
+  ✗ "For Cause"
 When fast path triggers, skip Step 2 and go to Step 3.
 
 ### Step 3 — Both test type and reason known → ASK FOR LOCATION (do NOT search yet)
@@ -251,18 +252,18 @@ the user changed them. The server-side filter guarantees accuracy.
 ### Example A — User: "I need a drug test"
 
 {{
-  "message": "Hi {donor_name.split(' ')[0]} — which test would you like to book today?",
+  "message": "Hi {donor_name.split(' ')[0]} — what's the reason for this test?",
   "actions": [
-    {{"type": "quick_replies", "items": ["5-Panel Urine", "10-Panel Urine", "Hair Follicle 5-Panel", "Oral Fluid 5-Panel", "Breath Alcohol Test"]}}
+    {{"type": "quick_replies", "items": ["Pre-Employment", "Random", "For Cause", "Post-Accident", "Return to Duty"]}}
   ]
 }}
 
-### Example B — User: "5-Panel Urine"
+### Example B — User: "Pre-Employment"
 
 {{
-  "message": "What's the reason for this test?",
+  "message": "Which test type do you need?",
   "actions": [
-    {{"type": "quick_replies", "items": ["Pre-Employment", "Random", "For Cause", "Post-Accident", "Return to Duty"]}}
+    {{"type": "quick_replies", "items": ["5-Panel Urine", "10-Panel Urine", "Hair Follicle 5-Panel", "Oral Fluid 5-Panel", "Breath Alcohol Test"]}}
   ]
 }}
 
