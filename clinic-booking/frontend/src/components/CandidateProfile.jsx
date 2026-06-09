@@ -121,7 +121,7 @@ export default function CandidateProfile({ donorId, onBeginBooking }) {
         <ProfileRow label="Phone" value={formatPhone(donor.day_phone)} />
         <ProfileRow label="Email" value={donor.email} />
         <ProfileRow label="Address" value={`${donor.address1}, ${donor.city}, ${donor.state} ${donor.zip}`} />
-        <ProfileRow label="ID Document" value={`${donor.other_id} — ${idTypeLabel}`} />
+        {donor.other_id && <ProfileRow label="ID Document" value={`${donor.other_id}${idTypeLabel ? ` — ${idTypeLabel}` : ''}`} />}
       </div>
 
       {/* CTA */}

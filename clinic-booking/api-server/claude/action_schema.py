@@ -28,6 +28,14 @@ class QuickReplies(_Strict):
     items: list[str] = Field(..., min_length=1, max_length=8)
 
 
+class LocationRequest(_Strict):
+    """Ask the user where to search — renders an inline ZIP + radius form.
+    Emitted once test type AND reason are known, BEFORE search_clinics is called."""
+    type: Literal["location_request"]
+    default_zip:    str = ""    # prefill — the donor's home ZIP
+    default_radius: float = 10  # prefill — default search radius in miles
+
+
 class BookingSummary(_Strict):
     """Proposed booking shown as a confirmation card BEFORE place_order is called."""
     type: Literal["booking_summary"]
@@ -57,7 +65,7 @@ class BookingConfirmed(_Strict):
 
 
 Action = Annotated[
-    Union[QuickReplies, BookingSummary, BookingConfirmed],
+    Union[QuickReplies, LocationRequest, BookingSummary, BookingConfirmed],
     Field(discriminator="type"),
 ]
 

@@ -38,9 +38,9 @@ export default function CandidateSelector({ onSelect, selectedId }) {
           <h2 style={{
             fontSize: 12, fontWeight: 600, color: '#64748b',
             letterSpacing: '0.07em', textTransform: 'uppercase',
-          }}>Candidates</h2>
+          }}>Sample Profiles</h2>
           {!loading && !error && (
-            <span style={{ fontSize: 11, color: '#94a3b8' }}>{donors.length} available</span>
+            <span style={{ fontSize: 11, color: '#94a3b8' }}>Demo shortcut · {donors.length} available</span>
           )}
         </div>
       </div>

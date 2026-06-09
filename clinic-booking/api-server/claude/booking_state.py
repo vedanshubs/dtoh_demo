@@ -32,6 +32,7 @@ class State(str, Enum):
     IDLE                  = "idle"
     SELECTING_TEST        = "selecting_test"
     SELECTING_REASON      = "selecting_reason"
+    COLLECTING_LOCATION   = "collecting_location"
     SEARCHING             = "searching"
     CHOOSING_CLINIC       = "choosing_clinic"
     AWAITING_CONFIRMATION = "awaiting_confirmation"
@@ -40,9 +41,10 @@ class State(str, Enum):
 
 # Allowed transitions. Anything not listed is rejected.
 _ALLOWED: dict[State, set[State]] = {
-    State.IDLE:                  {State.SELECTING_TEST, State.SELECTING_REASON, State.SEARCHING},
-    State.SELECTING_TEST:        {State.SELECTING_REASON, State.SEARCHING, State.IDLE},
-    State.SELECTING_REASON:      {State.SEARCHING, State.SELECTING_TEST, State.IDLE},
+    State.IDLE:                  {State.SELECTING_TEST, State.SELECTING_REASON, State.COLLECTING_LOCATION, State.SEARCHING},
+    State.SELECTING_TEST:        {State.SELECTING_REASON, State.COLLECTING_LOCATION, State.SEARCHING, State.IDLE},
+    State.SELECTING_REASON:      {State.COLLECTING_LOCATION, State.SEARCHING, State.SELECTING_TEST, State.IDLE},
+    State.COLLECTING_LOCATION:   {State.SEARCHING, State.CHOOSING_CLINIC, State.SELECTING_TEST, State.SELECTING_REASON, State.IDLE},
     State.SEARCHING:             {State.CHOOSING_CLINIC, State.IDLE},
     State.CHOOSING_CLINIC:       {State.AWAITING_CONFIRMATION, State.SEARCHING, State.IDLE},
     State.AWAITING_CONFIRMATION: {State.CONFIRMED, State.CHOOSING_CLINIC, State.SEARCHING, State.IDLE},
@@ -160,6 +162,15 @@ def infer_state_from_actions(session: BookingSession, actions: list[dict], clini
         session.propose_booking(b)
         return
 
+    # location_request: ask for ZIP + radius before searching
+    if "location_request" in types and not clinics_returned:
+        if session.state in (State.IDLE, State.SELECTING_TEST, State.SELECTING_REASON):
+            try:
+                session.transition(State.COLLECTING_LOCATION, "asked for ZIP + radius")
+            except ValueError as e:
+                log.debug("state inference (location_request): %s", e)
+        return
+
     # search_clinics tool fired → SEARCHING / CHOOSING_CLINIC
     if clinics_returned:
         # A new search after a confirmed booking starts a fresh cycle: clear the
@@ -175,7 +186,7 @@ def infer_state_from_actions(session: BookingSession, actions: list[dict], clini
                 log.warning("state inference (re-book): %s", e)
             return
         # If we're already past SEARCHING, leave it; otherwise advance.
-        if session.state in (State.IDLE, State.SELECTING_TEST, State.SELECTING_REASON, State.SEARCHING):
+        if session.state in (State.IDLE, State.SELECTING_TEST, State.SELECTING_REASON, State.COLLECTING_LOCATION, State.SEARCHING):
             try:
                 if session.state != State.SEARCHING:
                     session.transition(State.SEARCHING, "search_clinics returned")

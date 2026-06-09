@@ -7,6 +7,12 @@ const QuickReplies = z.object({
   items: z.array(z.string()).min(1).max(8),
 })
 
+const LocationRequest = z.object({
+  type: z.literal('location_request'),
+  default_zip:    z.string().default(''),
+  default_radius: z.number().default(10),
+})
+
 const BookingSummary = z.object({
   type: z.literal('booking_summary'),
   candidate:          z.string(),
@@ -33,7 +39,7 @@ const BookingConfirmed = z.object({
   appointment_window: z.string().nullish(),
 })
 
-const Action = z.discriminatedUnion('type', [QuickReplies, BookingSummary, BookingConfirmed])
+const Action = z.discriminatedUnion('type', [QuickReplies, LocationRequest, BookingSummary, BookingConfirmed])
 
 export const ReplyEnvelope = z.object({
   message: z.string().default(''),

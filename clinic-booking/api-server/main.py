@@ -224,6 +224,77 @@ async def get_donor(donor_id: int):
     return donor
 
 
+class CreateDonorRequest(BaseModel):
+    first_name:    str
+    last_name:     str
+    ssn:           str
+    dob:           str            # YYYY-MM-DD
+    day_phone:     str
+    email:         str | None = None
+    address1:      str
+    city:          str
+    state:         str
+    zip:           str
+    other_id:      str | None = None
+    other_id_type: str | None = None   # D=Driver License, P=Passport, E=Employer, S=State ID
+
+
+@app.post("/api/donors")
+async def create_donor(req: CreateDonorRequest):
+    """Insert a self-entered donor into the candidates table and return the new
+    row (including its id). PII is stored server-side only — it never flows
+    through the chat/LLM. place_order later re-fetches it by id."""
+    from fastapi import HTTPException
+    import re
+
+    ssn   = re.sub(r"\D", "", req.ssn or "")
+    phone = re.sub(r"\D", "", req.day_phone or "")
+    zip5  = re.sub(r"\D", "", req.zip or "")[:5]
+    state = (req.state or "").strip().upper()[:2]
+
+    # Validation — keep messages user-friendly; the form mirrors these rules.
+    errors = []
+    if not req.first_name.strip():            errors.append("First name is required")
+    if not req.last_name.strip():             errors.append("Last name is required")
+    if len(ssn) != 9:                          errors.append("SSN must be 9 digits")
+    if not re.match(r"^\d{4}-\d{2}-\d{2}$", req.dob or ""): errors.append("Date of birth must be YYYY-MM-DD")
+    if len(phone) != 10:                       errors.append("Phone must be 10 digits")
+    if not req.address1.strip():              errors.append("Address is required")
+    if not req.city.strip():                  errors.append("City is required")
+    if len(state) != 2:                        errors.append("State must be a 2-letter code")
+    if len(zip5) != 5:                         errors.append("ZIP must be 5 digits")
+    if errors:
+        raise HTTPException(status_code=422, detail="; ".join(errors))
+
+    try:
+        conn = _get_db()
+    except Exception as e:
+        log.error("create_donor: DB unavailable: %s", e)
+        raise HTTPException(status_code=503, detail="Database unavailable — cannot save profile")
+
+    try:
+        with conn.cursor() as cur:
+            cur.execute(
+                """INSERT INTO candidates
+                   (first_name, last_name, ssn, dob, day_phone, email,
+                    address1, city, state, zip, other_id, other_id_type)
+                   VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)""",
+                (req.first_name.strip(), req.last_name.strip(), ssn, req.dob, phone,
+                 (req.email or "").strip() or None, req.address1.strip(), req.city.strip(),
+                 state, zip5, (req.other_id or "").strip() or None,
+                 (req.other_id_type or "").strip().upper()[:1] or None),
+            )
+            new_id = cur.lastrowid
+        conn.commit()
+        conn.close()
+        log.info("create_donor: inserted candidate id=%s (%s %s)", new_id, req.first_name, req.last_name)
+    except Exception as e:
+        log.error("create_donor: insert failed: %s", e)
+        raise HTTPException(status_code=500, detail="Failed to save profile")
+
+    return _load_donor_full(new_id)
+
+
 @app.post("/api/chat")
 async def chat(req: ChatRequest):
     donor = _load_donor_full(req.donor_id)

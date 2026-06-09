@@ -6,6 +6,8 @@ import BookingPassport from './BookingPassport'
 import McpActivityPanel from './McpActivityPanel'
 import ClinicMap from './ClinicMap'
 import InlineDatePicker from './InlineDatePicker'
+import PersonalInfoForm from './PersonalInfoForm'
+import LocationForm from './LocationForm'
 import { safeParseActions, findAction } from '../lib/actionSchema'
 
 /* Markdown helpers */
@@ -131,17 +133,20 @@ function attr(clinic, name) {
   return clinic.Attributes?.find(a => a.AttributeName === name)?.AttributeValue ?? null
 }
 
-function hasWeekendHours(clinic) {
-  // Prefer pre-parsed hours_by_day (enriched MCP response)
+function weekendLabel(clinic) {
+  // Returns null | "Sat Open" | "Sun Open" | "Weekend Open"
   if (clinic.hours_by_day) {
-    const sat = clinic.hours_by_day['Saturday']
-    const sun = clinic.hours_by_day['Sunday']
-    return (sat && !sat.closed) || (sun && !sun.closed)
+    const satOpen = !!(clinic.hours_by_day['Saturday'] && !clinic.hours_by_day['Saturday'].closed)
+    const sunOpen = !!(clinic.hours_by_day['Sunday']   && !clinic.hours_by_day['Sunday'].closed)
+    if (satOpen && sunOpen) return 'Weekend Open'
+    if (satOpen) return 'Sat Open'
+    if (sunOpen) return 'Sun Open'
+    return null
   }
-  // Fallback: parse raw Clinic Hours attribute string
+  // Fallback: raw Clinic Hours string only exposes Saturday
   const h = attr(clinic, 'Clinic Hours') || ''
   const m = h.match(/SaturdayHoursOpen:(\d{2}:\d{2})/)
-  return !!(m && m[1] !== '00:00')
+  return (m && m[1] !== '00:00') ? 'Sat Open' : null
 }
 
 /* Contextual quick-action buttons */
@@ -240,7 +245,7 @@ function ClinicCards({ clinics, onBook }) {
         const mobile      = c.mobile_collections ?? attr(c, 'Mobile Drug Collections') === 'Yes'
         const physMD      = attr(c, 'Physicals Performed by MD/DO') === 'Yes'
         const physNP      = attr(c, 'Physicals Performed by NP/PA') === 'Yes'
-        const weekend   = hasWeekendHours(c)
+        const weekend   = weekendLabel(c)
         const hoursDisplay = c.hours_display || null
         const isBest   = i === 0
 
@@ -316,7 +321,7 @@ function ClinicCards({ clinics, onBook }) {
                 <span style={{ fontSize: 10.5, fontWeight: 600, color: '#0369a1', background: '#e0f2fe', border: '1px solid #7dd3fc', borderRadius: 20, padding: '2px 8px' }}>Transit Nearby</span>
               )}
               {weekend && (
-                <span style={{ fontSize: 10.5, fontWeight: 600, color: '#6d28d9', background: '#ede9fe', border: '1px solid #c4b5fd', borderRadius: 20, padding: '2px 8px' }}>Sat Open</span>
+                <span style={{ fontSize: 10.5, fontWeight: 600, color: '#6d28d9', background: '#ede9fe', border: '1px solid #c4b5fd', borderRadius: 20, padding: '2px 8px' }}>{weekend}</span>
               )}
               {afterHrs && (
                 <span style={{ fontSize: 10.5, fontWeight: 600, color: '#1e293b', background: '#f1f5f9', border: '1px solid #cbd5e1', borderRadius: 20, padding: '2px 8px' }}>After Hours</span>
@@ -404,7 +409,9 @@ function ClinicCards({ clinics, onBook }) {
 }
 
 /* Main component */
-export default function Chat({ donorId, donorName, donor }) {
+export default function Chat({ donorId, donorName, donor, onDonorCreated }) {
+  const [creatingDonor,     setCreatingDonor]     = useState(false)
+  const [createError,       setCreateError]       = useState(null)
   const [messages,          setMessages]          = useState([])
   const [history,           setHistory]           = useState([])
   const [input,             setInput]             = useState('')
@@ -428,8 +435,9 @@ export default function Chat({ donorId, donorName, donor }) {
     clinicSelected: false, bookingConfirmed: false, isDOT: false,
   })
 
-  const bottomRef = useRef(null)
-  const inputRef  = useRef(null)
+  const bottomRef     = useRef(null)
+  const inputRef      = useRef(null)
+  const autoStartRef  = useRef(false)   // set by self-entry form to skip the profile review step
   const lastActivityRef      = useRef(Date.now())
   // ── Streaming refs ──
   const abortRef        = useRef(null)
@@ -472,10 +480,17 @@ export default function Chat({ donorId, donorName, donor }) {
   }, [messages, loading])
 
   useEffect(() => {
-    setMessages([]); setHistory([]); setHasStarted(false); setHasClinics(false); setLastClinics([])
+    setMessages([]); setHistory([]); setHasClinics(false); setLastClinics([])
     setLastBookingSummary(null); setPassport(null); setPassportOpen(false); setMcpCalls([])
     setPendingClinic(null); setShowTimeoutWarning(false); lastActivityRef.current = Date.now()
     setSession({ testType: null, reasonForTest: null, selectedClinic: null, clinicSelected: false, bookingConfirmed: false, isDOT: false, preferredDate: null })
+    if (autoStartRef.current) {
+      autoStartRef.current = false
+      setHasStarted(true)
+      setMessages([welcomeMessage()])
+    } else {
+      setHasStarted(false)
+    }
   }, [donorId])
 
   // Session timeout: warn after 30 min of inactivity
@@ -700,6 +715,7 @@ export default function Chat({ donorId, donorName, donor }) {
       }
       const messageText = rawMsg
       const quickReplies = findAction(actions, 'quick_replies')?.items || []
+      const locationRequestAction = findAction(actions, 'location_request')
       const bookingSummaryAction = findAction(actions, 'booking_summary')
       const bookingConfirmedAction = findAction(actions, 'booking_confirmed')
 
@@ -805,6 +821,9 @@ export default function Chat({ donorId, donorName, donor }) {
               clinics: showClinics,
               triggerText: msg,
               booking_summary: summaryForMsg,
+              locationRequest: locationRequestAction
+                ? { default_zip: locationRequestAction.default_zip, default_radius: locationRequestAction.default_radius }
+                : null,
               showPassport: isBookingConfirmed,
               quickReplies,
               usage: data.usage || null,
@@ -921,9 +940,43 @@ export default function Chat({ donorId, donorName, donor }) {
     }
   }
   const handleEdit = () => send('Edit details')
-  const handleKey     = (e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send() } }
 
-  const isEmpty = messages.length === 0 && !loading
+  // Self-entered profile → POST /api/donors (PII goes straight to the backend,
+  // never through the chat). On success, lift the created donor to App, which
+  // sets donorId and surfaces the CandidateProfile "review your details" gate.
+  const handlePersonalInfoSubmit = async (formData) => {
+    setCreatingDonor(true)
+    setCreateError(null)
+    try {
+      const res = await fetch('/api/donors', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      })
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}))
+        throw new Error(err.detail || `Could not save profile (${res.status})`)
+      }
+      const created = await res.json()
+      autoStartRef.current = true   // skip profile-review step for self-entered donors
+      onDonorCreated?.(created)
+    } catch (err) {
+      setCreateError(err.message || 'Could not save profile.')
+    } finally {
+      setCreatingDonor(false)
+    }
+  }
+
+  // ZIP + radius form submitted → ask the assistant to search those params.
+  const handleLocationSubmit = (zip, radius) => {
+    // Replace the location-form bubble with the chosen location display.
+    setMessages(prev => prev.map(m =>
+      m.locationRequest ? { ...m, locationRequest: null, text: `📍 Searching near **${zip}** within **${radius} miles**` } : m
+    ))
+    send(`Search near ZIP ${zip} within ${radius} miles.`)
+  }
+
+  const handleKey     = (e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send() } }
 
   return (
     <>
@@ -984,25 +1037,18 @@ export default function Chat({ donorId, donorName, donor }) {
           />
         )}
 
-        {/* Empty state */}
-        {isEmpty && !donorId && (
-          <div style={{ textAlign: 'center', paddingTop: '10%', animation: 'fadeSlideIn 0.4s ease' }}>
-            <div style={{
-              width: 62, height: 62, borderRadius: '50%',
-              background: 'linear-gradient(135deg, #fef2f2, #fee2e2)',
-              border: '2px solid #fecaca',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              margin: '0 auto 16px',
-            }}>
-              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#c8102e" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                <rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
-                <line x1="8" y1="14" x2="8" y2="14" strokeWidth="2.5"/><line x1="12" y1="14" x2="16" y2="14"/><line x1="8" y1="18" x2="8" y2="18" strokeWidth="2.5"/><line x1="12" y1="18" x2="16" y2="18"/>
-              </svg>
-            </div>
-            <div style={{ fontSize: 16, fontWeight: 700, color: '#0f172a', marginBottom: 6 }}>No candidate selected</div>
-            <p style={{ fontSize: 13, color: '#64748b', maxWidth: 300, margin: '0 auto', lineHeight: 1.65 }}>
-              Select an employee from the panel on the left to begin scheduling a drug test.
+        {/* Entry: self-entered details (with sample-profile shortcut in the left panel) */}
+        {!donorId && (
+          <div style={{ animation: 'fadeSlideIn 0.4s ease' }}>
+            <div style={{ fontSize: 16, fontWeight: 700, color: '#0f172a', marginBottom: 4 }}>Let's get you booked</div>
+            <p style={{ fontSize: 13, color: '#64748b', lineHeight: 1.6, marginBottom: 14 }}>
+              Enter your details to start scheduling a drug test.
             </p>
+            <PersonalInfoForm
+              onSubmit={handlePersonalInfoSubmit}
+              submitting={creatingDonor}
+              serverError={createError}
+            />
           </div>
         )}
 
@@ -1075,12 +1121,12 @@ export default function Chat({ donorId, donorName, donor }) {
               // the card has its own Confirm/Edit buttons, so the chips would be a duplicate.
               const quickRepliesRaw = m.quickReplies?.length
                 ? m.quickReplies
-                : (!hasChips && m.role === 'assistant' && !m.clinics && !m.booking_summary && !m.datePicker ? parseQuickReplies(m.text) : [])
-              const quickReplies = m.booking_summary ? [] : quickRepliesRaw
+                : (!hasChips && m.role === 'assistant' && !m.clinics && !m.booking_summary && !m.datePicker && !m.locationRequest ? parseQuickReplies(m.text) : [])
+              const quickReplies = (m.booking_summary || m.locationRequest) ? [] : quickRepliesRaw
               const hasQuickReplies = quickReplies.length > 0
-              const displayText = (m.clinics || hasQuickReplies || hasChips || m.booking_summary || m.datePicker) ? stripList(m.text) : m.text
+              const displayText = (m.clinics || hasQuickReplies || hasChips || m.booking_summary || m.datePicker || m.locationRequest) ? stripList(m.text) : m.text
               return (
-                <div style={{ maxWidth: (m.clinics || m.booking_summary || m.datePicker) ? '92%' : '76%', minWidth: 0 }}>
+                <div style={{ maxWidth: (m.clinics || m.booking_summary || m.datePicker || m.locationRequest) ? '92%' : '76%', minWidth: 0 }}>
                   {displayText && (
                     <div style={{
                       padding: '12px 16px',
@@ -1126,6 +1172,13 @@ export default function Chat({ donorId, donorName, donor }) {
                       clinicName={m.clinicName}
                       hoursByDay={m.hoursByDay}
                       onSelect={handleDateSelect}
+                    />
+                  )}
+                  {m.locationRequest && (
+                    <LocationForm
+                      defaultZip={m.locationRequest.default_zip}
+                      defaultRadius={m.locationRequest.default_radius}
+                      onSubmit={handleLocationSubmit}
                     />
                   )}
                   {m.booking_summary && (
@@ -1226,7 +1279,7 @@ export default function Chat({ donorId, donorName, donor }) {
       <div style={{ padding: '12px 16px', borderTop: '1px solid #f1f5f9', background: '#fff', flexShrink: 0, paddingTop: donorId && hasStarted ? 8 : 12 }}>
         {!donorId && (
           <div style={{ textAlign: 'center', fontSize: 12, color: '#94a3b8', padding: '8px 0 4px' }}>
-            Select a candidate to enable chat
+            Enter your details above (or pick a sample candidate) to enable chat
           </div>
         )}
         <div style={{
@@ -1244,7 +1297,7 @@ export default function Chat({ donorId, donorName, donor }) {
             onChange={e => setInput(e.target.value)}
             onKeyDown={handleKey}
             disabled={!donorId || loading}
-            placeholder={donorId ? 'Ask about clinics, test types, or booking\u2026' : 'Select a candidate first'}
+            placeholder={donorId ? 'Ask about clinics, test types, or booking\u2026' : 'Enter your details above first'}
             rows={1}
             style={{
               flex: 1, border: 'none', background: 'transparent',
@@ -1305,7 +1358,7 @@ export default function Chat({ donorId, donorName, donor }) {
             fontSize: 11.5, fontWeight: 700, color: '#475569',
             letterSpacing: '0.03em', display: 'flex', alignItems: 'center', gap: 6,
           }}>
-            🗺️ Clinic map · {lastClinics.length} sites
+            🗺️ Clinic map · {Math.min(lastClinics.length, 20)} of {lastClinics.length} sites
           </div>
         </div>
       ) : (
@@ -1338,7 +1391,7 @@ export default function Chat({ donorId, donorName, donor }) {
             }}>
               <span>🗺️</span> Clinic map
               <span style={{ fontSize: 11, color: '#94a3b8', fontWeight: 500 }}>
-                · {lastClinics.length} sites
+                · {Math.min(lastClinics.length, 20)} of {lastClinics.length} sites
               </span>
               <button
                 onClick={() => setMapCollapsed(true)}
@@ -1355,7 +1408,7 @@ export default function Chat({ donorId, donorName, donor }) {
             </div>
             <div style={{ flex: 1, minHeight: 0 }}>
               <ClinicMap
-                clinics={lastClinics}
+                clinics={lastClinics.slice(0, 20)}
                 donorZip={donor?.zip}
                 donorName={donor ? `${donor.first_name} ${donor.last_name}` : null}
                 onBook={handleBook}

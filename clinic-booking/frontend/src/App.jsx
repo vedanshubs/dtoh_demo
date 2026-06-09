@@ -228,7 +228,7 @@ function DonorBadge({ donor }) {
         <div style={{ fontSize: 12, fontWeight: 600, color: '#fff', lineHeight: 1.2 }}>
           {donor.first_name} {donor.last_name}
         </div>
-        <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.7)', lineHeight: 1, marginTop: 1 }}>{donor.role}</div>
+        <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.7)', lineHeight: 1, marginTop: 1 }}>{donor.role || 'Employee'}</div>
       </div>
     </div>
   )
@@ -275,7 +275,7 @@ function BookingLayout({ donorId, donor, onSelectDonor, isMobile }) {
         </div>
       )}
       <div style={{ flex: 1, overflow: 'hidden', padding: '16px', background: '#f8fafc', minHeight: 0 }}>
-        <BookingChat donorId={donorId} donorName={donor ? donor.first_name : null} donor={donor} />
+        <BookingChat donorId={donorId} donorName={donor ? donor.first_name : null} donor={donor} onDonorCreated={onSelectDonor} />
       </div>
     </div>
   )
